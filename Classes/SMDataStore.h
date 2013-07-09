@@ -334,6 +334,11 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
                         onSuccess:(SMDataStoreSuccessBlock)successBlock
                         onFailure:(SMDataStoreFailureBlock)failureBlock;
 
+#pragma mark - Create and Append Related Objects
+///-------------------------------
+/// @name Create and Append Related Objects
+///-------------------------------
+
 /**
  Create and save related objects, then subsequently save them to another object's relationship value, all in one call.
  
@@ -383,6 +388,11 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
  @since Available in iOS SDK 2.1.0 and later.
  */
 - (void)createAndAppendRelatedObjects:(NSArray *)objects toObjectWithId:(NSString *)objectId inSchema:(NSString *)schema relatedField:(NSString *)field options:(SMRequestOptions *)options successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMDataStoreBulkSuccessBlock)successBlock onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
+
+#pragma mark - Append Existing Objects
+///-------------------------------
+/// @name Append Existing Objects
+///-------------------------------
 
 /**
  Append objects to an array without needing to update the entire object at once. This goes for fields of type `Array` as well as one-to-many relationships.
@@ -452,8 +462,15 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
  */
 - (void)appendObjects:(NSArray *)objects toObjectWithId:(NSString *)objectId inSchema:(NSString *)schema field:(NSString *)field options:(SMRequestOptions *)options successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMDataStoreSuccessBlock)successBlock onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
 
+#pragma mark - Delete Existing Objects
+///-------------------------------
+/// @name Delete Existing Objects
+///-------------------------------
+
 /**
- Delete relationship references to an object, with the option of deleting the objects themselves in the same call.
+ Delete objects or relationship references from an array without needing to update the entire object at once.
+ 
+ Includes the option of deleting the objects themselves in the same call (for relationship fields only). If you are deleting from a field of `Array` type, pass `NO` to the `cascadeDelete` parameter, as this option is only applicable to relationship fields. 
  
  @param objects An array of IDs to delete.
  @param objectId The primary key of the object with the relationship being edited.
@@ -465,10 +482,12 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
  
  @since Available in iOS SDK 2.1.0 and later.
  */
-- (void)deleteRelatedObjects:(NSArray *)objects fromObjectWithId:(NSString *)objectId inSchema:(NSString *)schema field:(NSString *)field cascadeDelete:(BOOL)cascadeDelete onSuccess:(SMSuccessBlock)successBlock onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
+- (void)deleteObjects:(NSArray *)objects fromObjectWithId:(NSString *)objectId inSchema:(NSString *)schema field:(NSString *)field cascadeDelete:(BOOL)cascadeDelete onSuccess:(SMSuccessBlock)successBlock onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
 
 /**
- Delete relationship references to an object, with the option of deleting the objects themselves in the same call.
+ Delete objects or relationship references from an array without needing to update the entire object at once.
+ 
+ Includes the option of deleting the objects themselves in the same call (for relationship fields only). If you are deleting from a field of `Array` type, pass `NO` to the `cascadeDelete` parameter, as this option is only applicable to relationship fields.
  
  Includes parameter for request options.
  
@@ -485,10 +504,12 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
  
  @since Available in iOS SDK 2.1.0 and later.
  */
-- (void)deleteRelatedObjects:(NSArray *)objects fromObjectWithId:(NSString *)objectId inSchema:(NSString *)schema field:(NSString *)field cascadeDelete:(BOOL)cascadeDelete options:(SMRequestOptions *)options onSuccess:(SMSuccessBlock)successBlock onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
+- (void)deleteObjects:(NSArray *)objects fromObjectWithId:(NSString *)objectId inSchema:(NSString *)schema field:(NSString *)field cascadeDelete:(BOOL)cascadeDelete options:(SMRequestOptions *)options onSuccess:(SMSuccessBlock)successBlock onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
 
 /**
- Delete relationship references to an object, with the option of deleting the objects themselves in the same call.
+ Delete objects or relationship references from an array without needing to update the entire object at once.
+ 
+ Includes the option of deleting the objects themselves in the same call (for relationship fields only). If you are deleting from a field of `Array` type, pass `NO` to the `cascadeDelete` parameter, as this option is only applicable to relationship fields.
  
  Includes parameters for request options and callback queues.
  
@@ -505,7 +526,7 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
  
  @since Available in iOS SDK 2.1.0 and later.
  */
-- (void)deleteRelatedObjects:(NSArray *)objects fromObjectWithId:(NSString *)objectId inSchema:(NSString *)schema field:(NSString *)field cascadeDelete:(BOOL)cascadeDelete options:(SMRequestOptions *)options successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMSuccessBlock)successBlock onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
+- (void)deleteObjects:(NSArray *)objects fromObjectWithId:(NSString *)objectId inSchema:(NSString *)schema field:(NSString *)field cascadeDelete:(BOOL)cascadeDelete options:(SMRequestOptions *)options successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMSuccessBlock)successBlock onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
 
 
 #pragma mark - Delete an Object

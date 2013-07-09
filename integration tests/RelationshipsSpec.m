@@ -1319,7 +1319,7 @@ describe(@"Delete Existing Values", ^{
             
             NSArray *categoryPrimaryKeys = [NSArray arrayWithObjects:categoryPK1, categoryPK2, nil];
             dispatch_group_enter(group);
-            [dataStore deleteRelatedObjects:categoryPrimaryKeys fromObjectWithId:todoPrimaryKey inSchema:@"todo" field:@"categories" cascadeDelete:YES options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
+            [dataStore deleteObjects:categoryPrimaryKeys fromObjectWithId:todoPrimaryKey inSchema:@"todo" field:@"categories" cascadeDelete:YES options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
                 success = YES;
                 timeout = NO;
                 dispatch_group_leave(group);
@@ -1424,7 +1424,7 @@ describe(@"Delete Existing Values", ^{
             
             NSArray *categoryPrimaryKeys = [NSArray arrayWithObjects:categoryPK1, categoryPK2, nil];
             dispatch_group_enter(group);
-            [dataStore deleteRelatedObjects:categoryPrimaryKeys fromObjectWithId:todoPrimaryKey inSchema:@"todo" field:@"categories" cascadeDelete:NO options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
+            [dataStore deleteObjects:categoryPrimaryKeys fromObjectWithId:todoPrimaryKey inSchema:@"todo" field:@"categories" cascadeDelete:NO options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
                 success = YES;
                 timeout = NO;
                 dispatch_group_leave(group);
@@ -1578,7 +1578,7 @@ describe(@"Delete Existing Values", ^{
             timeout = YES;
 
             dispatch_group_enter(group);
-            [dataStore deleteRelatedObjects:nil fromObjectWithId:todoPrimaryKey inSchema:@"todo" field:@"categories" cascadeDelete:NO options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
+            [dataStore deleteObjects:nil fromObjectWithId:todoPrimaryKey inSchema:@"todo" field:@"categories" cascadeDelete:NO options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
                 timeout = NO;
                 dispatch_group_leave(group);
             } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
@@ -1631,7 +1631,7 @@ describe(@"Delete Existing Values", ^{
             
             NSArray *categoryPrimaryKeys = [NSArray array];
             dispatch_group_enter(group);
-            [dataStore deleteRelatedObjects:categoryPrimaryKeys fromObjectWithId:nil inSchema:@"todo" field:@"categories" cascadeDelete:NO options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
+            [dataStore deleteObjects:categoryPrimaryKeys fromObjectWithId:nil inSchema:@"todo" field:@"categories" cascadeDelete:NO options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
                 timeout = NO;
                 dispatch_group_leave(group);
             } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
@@ -1682,7 +1682,7 @@ describe(@"Delete Existing Values", ^{
             
             NSArray *categoryPrimaryKeys = [NSArray array];
             dispatch_group_enter(group);
-            [dataStore deleteRelatedObjects:categoryPrimaryKeys fromObjectWithId:todoPrimaryKey inSchema:nil field:@"categories" cascadeDelete:NO options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
+            [dataStore deleteObjects:categoryPrimaryKeys fromObjectWithId:todoPrimaryKey inSchema:nil field:@"categories" cascadeDelete:NO options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
                 timeout = NO;
                 dispatch_group_leave(group);
             } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
@@ -1735,7 +1735,7 @@ describe(@"Delete Existing Values", ^{
             
             NSArray *categoryPrimaryKeys = [NSArray array];
             dispatch_group_enter(group);
-            [dataStore deleteRelatedObjects:categoryPrimaryKeys fromObjectWithId:todoPrimaryKey inSchema:@"todo" field:nil cascadeDelete:NO options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
+            [dataStore deleteObjects:categoryPrimaryKeys fromObjectWithId:todoPrimaryKey inSchema:@"todo" field:nil cascadeDelete:NO options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^() {
                 timeout = NO;
                 dispatch_group_leave(group);
             } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
