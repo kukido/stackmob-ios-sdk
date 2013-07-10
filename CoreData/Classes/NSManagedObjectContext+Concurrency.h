@@ -214,6 +214,13 @@
  */
 - (void)executeFetchRequest:(NSFetchRequest *)request returnManagedObjectIDs:(BOOL)returnIDs successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue options:(SMRequestOptions *)options onSuccess:(SMResultsSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock;
 
+////////// ADD DOCS
+- (void)countForFetchRequest:(NSFetchRequest *)request onSuccess:(void (^)(NSUInteger))successBlock onFailure:(SMFailureBlock)failureBlock;
+
+- (void)countForFetchRequest:(NSFetchRequest *)request successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(void (^)(NSUInteger))successBlock onFailure:(SMFailureBlock)failureBlock;
+
+- (void)countForFetchRequest:(NSFetchRequest *)request successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue options:(SMRequestOptions *)options  onSuccess:(void (^)(NSUInteger))successBlock onFailure:(SMFailureBlock)failureBlock;
+
 ///-------------------------------
 /// @name Synchronous Fetch
 ///-------------------------------
@@ -264,6 +271,11 @@
  @since Available in iOS SDK 1.2.0 and later.
  */
 - (NSArray *)executeFetchRequestAndWait:(NSFetchRequest *)request returnManagedObjectIDs:(BOOL)returnIDs options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error;
+
+/////////// DOCS
+- (NSUInteger)countForFetchRequestAndWait:(NSFetchRequest *)request error:(NSError *__autoreleasing *)error;
+
+- (NSUInteger)countForFetchRequestAndWait:(NSFetchRequest *)request options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error;
 
 ///-------------------------------
 /// @name Observing Contexts

@@ -22,10 +22,280 @@
 #import "User3.h"
 #import "Person.h"
 #import "Superpower.h"
+#import "SMTestProperties.h"
 
 SPEC_BEGIN(NSManagedObjectContext_ConcurrencySpec)
 
+describe(@"countForFetchRequest, network", ^{
+    __block SMTestProperties *testProperties = nil;
+    __block NSMutableArray *arrayOfObjects = nil;
+    beforeAll(^{
+        testProperties = [[SMTestProperties alloc] init];
+        arrayOfObjects = [NSMutableArray array];
+        for (int i=0; i < 10; i++) {
+            NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+            [newManagedObject setValue:@"bob" forKey:@"title"];
+            [newManagedObject setValue:[newManagedObject assignObjectId] forKey:[newManagedObject primaryKeyField]];
+            
+            [arrayOfObjects addObject:newManagedObject];
+        }
+        __block BOOL saveSuccess = NO;
+        __block NSError *error = nil;
+        
+        saveSuccess = [testProperties.moc saveAndWait:&error];
+        [[theValue(saveSuccess) should] beYes];
+    });
+    afterAll(^{
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        for (NSManagedObject *obj in arrayOfObjects) {
+            [testProperties.moc deleteObject:obj];
+        }
+        __block NSError *error = nil;
+        BOOL saveSuccess = [testProperties.moc saveAndWait:&error];
+        [[theValue(saveSuccess) should] beYes];
+        [arrayOfObjects removeAllObjects];
+        
+    });
+    it(@"async works", ^{
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        __block dispatch_group_t group = dispatch_group_create();
+        __block dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        dispatch_group_enter(group);
+        [testProperties.moc countForFetchRequest:fetch successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSUInteger result) {
+            [[theValue(result) should] equal:theValue(10)];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error) {
+            [error shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+    it(@"async with predicate works", ^{
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        __block dispatch_group_t group = dispatch_group_create();
+        __block dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        [fetch setPredicate:[NSPredicate predicateWithFormat:@"title == 'bob'"]];
+        dispatch_group_enter(group);
+        [testProperties.moc countForFetchRequest:fetch successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSUInteger result) {
+            [[theValue(result) should] equal:theValue(10)];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error) {
+            [error shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+    it(@"async with incorrect schema fails smoothly", ^{
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        __block dispatch_group_t group = dispatch_group_create();
+        __block dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Oauth2test"];
+        dispatch_group_enter(group);
+        [testProperties.moc countForFetchRequest:fetch successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSUInteger result) {
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error) {
+            [error shouldNotBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+    it(@"sync works", ^{
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        NSError *error = nil;
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        NSUInteger count = [testProperties.moc countForFetchRequestAndWait:fetch error:&error];
+        
+        [[theValue(count) should] equal:theValue(10)];
+        [error shouldBeNil];
+    });
+    it(@"sync with predicate works", ^{
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        NSError *error = nil;
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        [fetch setPredicate:[NSPredicate predicateWithFormat:@"title == 'bob'"]];
+        NSUInteger count = [testProperties.moc countForFetchRequestAndWait:fetch error:&error];
+        
+        [[theValue(count) should] equal:theValue(10)];
+        [error shouldBeNil];
+    });
+    it(@"sync with incorrect schema fails smoothly", ^{
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        NSError *error = nil;
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Oauth2test"];
+        NSUInteger count = [testProperties.moc countForFetchRequestAndWait:fetch error:&error];
+        
+        [[theValue(count) should] equal:theValue(NSNotFound)];
+        [error shouldNotBeNil];
+    });
+    it(@"fetch request with maually set count result type works", ^{
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        NSError *error = nil;
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        [fetch setResultType:NSCountResultType];
+        NSArray *count = [testProperties.moc executeFetchRequest:fetch error:&error];
+        
+        [[[count objectAtIndex:0] should] equal:theValue(10)];
+        [error shouldBeNil];
+    });
+});
 
+describe(@"countForFetchRequest, cache", ^{
+    __block SMTestProperties *testProperties = nil;
+    __block NSMutableArray *arrayOfObjects = nil;
+    beforeAll(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        arrayOfObjects = [NSMutableArray array];
+        for (int i=0; i < 10; i++) {
+            NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+            [newManagedObject setValue:@"bob" forKey:@"title"];
+            [newManagedObject setValue:[newManagedObject assignObjectId] forKey:[newManagedObject primaryKeyField]];
+            
+            [arrayOfObjects addObject:newManagedObject];
+        }
+        __block BOOL saveSuccess = NO;
+        __block NSError *error = nil;
+        
+        saveSuccess = [testProperties.moc saveAndWait:&error];
+        [[theValue(saveSuccess) should] beYes];
+        
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        error = nil;
+        [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        
+        [error shouldBeNil];
+    });
+    afterAll(^{
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        for (NSManagedObject *obj in arrayOfObjects) {
+            [testProperties.moc deleteObject:obj];
+        }
+        __block NSError *error = nil;
+        BOOL saveSuccess = [testProperties.moc saveAndWait:&error];
+        [[theValue(saveSuccess) should] beYes];
+        [arrayOfObjects removeAllObjects];
+        SM_CACHE_ENABLED = NO;
+        
+    });
+    it(@"async works", ^{
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        __block dispatch_group_t group = dispatch_group_create();
+        __block dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        dispatch_group_enter(group);
+        [testProperties.moc countForFetchRequest:fetch successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSUInteger result) {
+            [[theValue(result) should] equal:theValue(10)];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error) {
+            [error shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+    it(@"async with predicates works", ^{
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        __block dispatch_group_t group = dispatch_group_create();
+        __block dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        [fetch setPredicate:[NSPredicate predicateWithFormat:@"title == 'bob'"]];
+        dispatch_group_enter(group);
+        [testProperties.moc countForFetchRequest:fetch successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSUInteger result) {
+            [[theValue(result) should] equal:theValue(10)];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error) {
+            [error shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+    it(@"sync works", ^{
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        NSError *error = nil;
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        NSUInteger count = [testProperties.moc countForFetchRequestAndWait:fetch error:&error];
+        
+        [[theValue(count) should] equal:theValue(10)];
+        [error shouldBeNil];
+    });
+    it(@"sync with predicate works", ^{
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        NSError *error = nil;
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        [fetch setPredicate:[NSPredicate predicateWithFormat:@"title == 'bob'"]];
+        NSUInteger count = [testProperties.moc countForFetchRequestAndWait:fetch error:&error];
+        
+        [[theValue(count) should] equal:theValue(10)];
+        [error shouldBeNil];
+    });
+    it(@"fetch request with maually set count result type works", ^{
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        NSError *error = nil;
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        [fetch setResultType:NSCountResultType];
+        NSArray *count = [testProperties.moc executeFetchRequest:fetch error:&error];
+        
+        [[[count objectAtIndex:0] should] equal:theValue(10)];
+        [error shouldBeNil];
+    });
+});
+/*
+describe(@"CacheElseNetwork count", ^{
+    __block SMTestProperties *testProperties = nil;
+    __block NSMutableArray *arrayOfObjects = nil;
+    beforeAll(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        arrayOfObjects = [NSMutableArray array];
+        for (int i=0; i < 10; i++) {
+            NSDictionary *todoDict = 
+            [newManagedObject setValue:@"bob" forKey:@"title"];
+            [newManagedObject setValue:[newManagedObject assignObjectId] forKey:[newManagedObject primaryKeyField]];
+            
+            [arrayOfObjects addObject:newManagedObject];
+        }
+        __block BOOL saveSuccess = NO;
+        __block NSError *error = nil;
+        
+        saveSuccess = [testProperties.moc saveAndWait:&error];
+        [[theValue(saveSuccess) should] beYes];
+    });
+    afterAll(^{
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        for (NSManagedObject *obj in arrayOfObjects) {
+            [testProperties.moc deleteObject:obj];
+        }
+        __block NSError *error = nil;
+        BOOL saveSuccess = [testProperties.moc saveAndWait:&error];
+        [[theValue(saveSuccess) should] beYes];
+        [arrayOfObjects removeAllObjects];
+        SM_CACHE_ENABLED = NO;
+        
+    });
+    it(@"cacheElseNetwork", ^{
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        NSError *error = nil;
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        [fetch setPredicate:[NSPredicate predicateWithFormat:@"title == 'bob'"]];
+        NSUInteger count = [testProperties.moc countForFetchRequestAndWait:fetch error:&error];
+        
+        [[theValue(count) should] equal:theValue(10)];
+        [error shouldBeNil];
+    });
+});
+*/
 describe(@"fetching runs in the background", ^{
     __block SMClient *client = nil;
     __block SMCoreDataStore *cds = nil;
