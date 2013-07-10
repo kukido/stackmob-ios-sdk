@@ -1308,6 +1308,133 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     return nil;
 }
 
+// Returns NSArray<NSManagedObject>
+- (id)SM_fetchObjects:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError * __autoreleasing *)error {
+    
+    if (SM_CORE_DATA_DEBUG) { DLog() }
+    
+    if (SM_CACHE_ENABLED) {
+        id resultsToReturn = nil;
+        NSError *tempError = nil;
+        switch ([self.coreDataStore cachePolicy]) {
+            case SMCachePolicyTryNetworkOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
+                resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
+                break;
+            case SMCachePolicyTryCacheOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
+                resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
+                break;
+            case SMCachePolicyTryNetworkElseCache:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
+                resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:&tempError];
+                if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
+                    resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
+                }
+                break;
+            case SMCachePolicyTryCacheElseNetwork:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
+                resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
+                if (*error) {
+                    return nil;
+                }
+                if ([resultsToReturn count] == 0) {
+                    resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
+                }
+                break;
+            default:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: default") }
+                if (error != NULL) {
+                    NSError *errorToReturn = [[NSError alloc] initWithDomain:SMErrorDomain code:SMErrorInvalidArguments userInfo:nil];
+                    *error = (__bridge id)(__bridge_retained CFTypeRef)errorToReturn;
+                }
+                break;
+        }
+        
+        if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch results to return are %@ with error %@", resultsToReturn, *error) }
+        return resultsToReturn;
+    } else {
+        id resultsToReturn = nil;
+        resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
+        return resultsToReturn;
+    }
+}
+
+// Returns NSArray<NSManagedObjectID>
+- (id)SM_fetchObjectIDs:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error {
+    if (SM_CORE_DATA_DEBUG) { DLog() }
+    
+    NSFetchRequest *fetchCopy = [fetchRequest copy];
+    
+    [fetchCopy setResultType:NSManagedObjectResultType];
+    
+    if ([fetchRequest fetchBatchSize] > 0) {
+        [fetchCopy setFetchBatchSize:[fetchRequest fetchBatchSize]];
+    }
+    
+    NSArray *objects = [self SM_fetchObjects:fetchCopy withContext:context options:options error:error];
+    
+    // Error check
+    if (*error != nil) {
+        return nil;
+    }
+    
+    return [objects map:^(id item) {
+        return [item objectID];
+    }];
+}
+
+- (NSArray *)SM_fetchCount:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError * __autoreleasing *)error {
+    
+    if (SM_CORE_DATA_DEBUG) { DLog() }
+    
+    if (SM_CACHE_ENABLED) {
+        NSArray *resultsToReturn = nil;
+        NSError *tempError = nil;
+        switch ([self.coreDataStore cachePolicy]) {
+            case SMCachePolicyTryNetworkOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
+                resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
+                break;
+            case SMCachePolicyTryCacheOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
+                resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
+                break;
+            case SMCachePolicyTryNetworkElseCache:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
+                resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:&tempError];
+                if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
+                    resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
+                }
+                break;
+            case SMCachePolicyTryCacheElseNetwork:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
+                resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
+                if (error != NULL && *error) {
+                    return nil;
+                }
+                if ([resultsToReturn objectAtIndex:0] == [NSNumber numberWithUnsignedInt:0]) {
+                    resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
+                }
+                break;
+            default:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: default") }
+                if (error != NULL) {
+                    NSError *errorToReturn = [[NSError alloc] initWithDomain:SMErrorDomain code:SMErrorInvalidArguments userInfo:nil];
+                    *error = (__bridge id)(__bridge_retained CFTypeRef)errorToReturn;
+                }
+                break;
+        }
+        
+        if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch results to return are %@", resultsToReturn) }
+        return resultsToReturn;
+    } else {
+        NSArray *resultsToReturn = nil;
+        resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
+        return resultsToReturn;
+    }
+}
+
 - (id)SM_fetchObjectsFromNetwork:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError * __autoreleasing *)error {
     
     if (SM_CORE_DATA_DEBUG) { DLog() }
@@ -1464,26 +1591,6 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
 }
 
-- (BOOL)containsSMPredicate:(NSPredicate *)predicate {
-    
-    if (SM_CORE_DATA_DEBUG) { DLog() }
-    
-    if ([predicate isKindOfClass:[SMPredicate class]]) {
-        return YES;
-    }
-    else if ([predicate isKindOfClass:[NSCompoundPredicate class]]) {
-        NSCompoundPredicate *compoundPredicate = (NSCompoundPredicate *)predicate;
-        for (NSPredicate *subPredicate in [compoundPredicate subpredicates]) {
-            if([self containsSMPredicate:subPredicate]) {
-                return YES;
-            }
-        }
-        
-    }
-    
-    return NO;
-}
-
 - (id)SM_fetchObjectsFromCache:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context error:(NSError * __autoreleasing *)error {
     
     if (SM_CORE_DATA_DEBUG) { DLog() }
@@ -1535,49 +1642,6 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     }];
     
     return [NSArray arrayWithArray:results];
-    
-}
-
-
-- (NSPredicate *)SM_parsePredicate:(NSPredicate *)predicate
-{
-    NSPredicate *predicateToReturn = predicate;
-    
-    if ([predicate isKindOfClass:[NSCompoundPredicate class]]) {
-        // apply SM_parsePredicate to each subpredicate of the compound predicate
-        NSCompoundPredicate *compoundPredicate = (NSCompoundPredicate*)predicate;
-        NSArray *subpredicates = compoundPredicate.subpredicates;
-        NSMutableArray *newSubpredicates = [NSMutableArray arrayWithCapacity:[subpredicates count]];
-        for (NSPredicate *subpredicate in subpredicates) {
-            [newSubpredicates addObject:[self SM_parsePredicate:subpredicate]];
-        }
-        predicateToReturn = [[NSCompoundPredicate alloc] initWithType:compoundPredicate.compoundPredicateType subpredicates:newSubpredicates];
-    }
-    else {
-        NSComparisonPredicate *comparisonPredicate = (NSComparisonPredicate *)predicate;
-        NSManagedObjectID *objectID = nil;
-        if ([comparisonPredicate.rightExpression.constantValue isKindOfClass:[NSManagedObject class]]) {
-            objectID = [(NSManagedObject *)comparisonPredicate.rightExpression.constantValue objectID];
-            NSString *referenceObject = [self referenceObjectForObjectID:objectID];
-            NSManagedObjectID *cacheObjectID = [self SM_retrieveCacheObjectForRemoteID:referenceObject entityName:[[objectID entity] name] createIfNeeded:NO];
-            
-            NSExpression *rightExpression = [NSExpression expressionForConstantValue:cacheObjectID];
-            predicateToReturn = [NSComparisonPredicate predicateWithLeftExpression:comparisonPredicate.leftExpression rightExpression:rightExpression modifier:comparisonPredicate.comparisonPredicateModifier type:comparisonPredicate.predicateOperatorType options:comparisonPredicate.options];
-            
-            
-        } else if ([comparisonPredicate.rightExpression.constantValue isKindOfClass:[NSManagedObjectID class]]) {
-            objectID = (NSManagedObjectID *)comparisonPredicate.rightExpression.constantValue;
-            NSString *referenceObject = [self referenceObjectForObjectID:objectID];
-            NSManagedObjectID *cacheObjectID = [self SM_retrieveCacheObjectForRemoteID:referenceObject entityName:[[objectID entity] name] createIfNeeded:NO];
-            
-            NSExpression *rightExpression = [NSExpression expressionForConstantValue:cacheObjectID];
-            predicateToReturn = [NSComparisonPredicate predicateWithLeftExpression:comparisonPredicate.leftExpression rightExpression:rightExpression modifier:comparisonPredicate.comparisonPredicateModifier type:comparisonPredicate.predicateOperatorType options:comparisonPredicate.options];
-            
-            
-        }
-    }
-    
-    return predicateToReturn;
     
 }
 
@@ -1667,131 +1731,66 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     return [NSArray arrayWithObject:[NSNumber numberWithUnsignedInt:localCacheCount]];
 }
 
-// Returns NSArray<NSManagedObject>
-- (id)SM_fetchObjects:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError * __autoreleasing *)error {
+- (BOOL)containsSMPredicate:(NSPredicate *)predicate {
     
     if (SM_CORE_DATA_DEBUG) { DLog() }
     
-    if (SM_CACHE_ENABLED) {
-        id resultsToReturn = nil;
-        NSError *tempError = nil;
-        switch ([self.coreDataStore cachePolicy]) {
-            case SMCachePolicyTryNetworkOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
-                resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
-                break;
-            case SMCachePolicyTryCacheOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
-                resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
-                break;
-            case SMCachePolicyTryNetworkElseCache:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
-                resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:&tempError];
-                if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
-                    resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
-                }
-                break;
-            case SMCachePolicyTryCacheElseNetwork:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
-                resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
-                if (*error) {
-                    return nil;
-                }
-                if ([resultsToReturn count] == 0) {
-                    resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
-                }
-                break;
-            default:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: default") }
-                if (error != NULL) {
-                    NSError *errorToReturn = [[NSError alloc] initWithDomain:SMErrorDomain code:SMErrorInvalidArguments userInfo:nil];
-                    *error = (__bridge id)(__bridge_retained CFTypeRef)errorToReturn;
-                }
-                break;
+    if ([predicate isKindOfClass:[SMPredicate class]]) {
+        return YES;
+    }
+    else if ([predicate isKindOfClass:[NSCompoundPredicate class]]) {
+        NSCompoundPredicate *compoundPredicate = (NSCompoundPredicate *)predicate;
+        for (NSPredicate *subPredicate in [compoundPredicate subpredicates]) {
+            if([self containsSMPredicate:subPredicate]) {
+                return YES;
+            }
         }
         
-        if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch results to return are %@ with error %@", resultsToReturn, *error) }
-        return resultsToReturn;
-    } else {
-        id resultsToReturn = nil;
-        resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
-        return resultsToReturn;
     }
+    
+    return NO;
 }
 
-// Returns NSArray<NSManagedObjectID>
-- (id)SM_fetchObjectIDs:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error {
-    if (SM_CORE_DATA_DEBUG) { DLog() }
+- (NSPredicate *)SM_parsePredicate:(NSPredicate *)predicate
+{
+    NSPredicate *predicateToReturn = predicate;
     
-    NSFetchRequest *fetchCopy = [fetchRequest copy];
-    
-    [fetchCopy setResultType:NSManagedObjectResultType];
-    
-    if ([fetchRequest fetchBatchSize] > 0) {
-        [fetchCopy setFetchBatchSize:[fetchRequest fetchBatchSize]];
-    }
-    
-    NSArray *objects = [self SM_fetchObjects:fetchCopy withContext:context options:options error:error];
-    
-    // Error check
-    if (*error != nil) {
-        return nil;
-    }
-    
-    return [objects map:^(id item) {
-        return [item objectID];
-    }];
-}
-
-- (NSArray *)SM_fetchCount:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError * __autoreleasing *)error {
-    
-    if (SM_CORE_DATA_DEBUG) { DLog() }
-    
-    if (SM_CACHE_ENABLED) {
-        NSArray *resultsToReturn = nil;
-        NSError *tempError = nil;
-        switch ([self.coreDataStore cachePolicy]) {
-            case SMCachePolicyTryNetworkOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
-                resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
-                break;
-            case SMCachePolicyTryCacheOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
-                resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
-                break;
-            case SMCachePolicyTryNetworkElseCache:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
-                resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:&tempError];
-                if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
-                    resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
-                }
-                break;
-            case SMCachePolicyTryCacheElseNetwork:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
-                resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
-                if (error != NULL && *error) {
-                    return nil;
-                }
-                if ([resultsToReturn objectAtIndex:0] == 0) {
-                    resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
-                }
-                break;
-            default:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: default") }
-                if (error != NULL) {
-                    NSError *errorToReturn = [[NSError alloc] initWithDomain:SMErrorDomain code:SMErrorInvalidArguments userInfo:nil];
-                    *error = (__bridge id)(__bridge_retained CFTypeRef)errorToReturn;
-                }
-                break;
+    if ([predicate isKindOfClass:[NSCompoundPredicate class]]) {
+        // apply SM_parsePredicate to each subpredicate of the compound predicate
+        NSCompoundPredicate *compoundPredicate = (NSCompoundPredicate*)predicate;
+        NSArray *subpredicates = compoundPredicate.subpredicates;
+        NSMutableArray *newSubpredicates = [NSMutableArray arrayWithCapacity:[subpredicates count]];
+        for (NSPredicate *subpredicate in subpredicates) {
+            [newSubpredicates addObject:[self SM_parsePredicate:subpredicate]];
         }
-        
-        if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch results to return are %@", resultsToReturn) }
-        return resultsToReturn;
-    } else {
-        NSArray *resultsToReturn = nil;
-        resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
-        return resultsToReturn;
+        predicateToReturn = [[NSCompoundPredicate alloc] initWithType:compoundPredicate.compoundPredicateType subpredicates:newSubpredicates];
     }
+    else {
+        NSComparisonPredicate *comparisonPredicate = (NSComparisonPredicate *)predicate;
+        NSManagedObjectID *objectID = nil;
+        if ([comparisonPredicate.rightExpression.constantValue isKindOfClass:[NSManagedObject class]]) {
+            objectID = [(NSManagedObject *)comparisonPredicate.rightExpression.constantValue objectID];
+            NSString *referenceObject = [self referenceObjectForObjectID:objectID];
+            NSManagedObjectID *cacheObjectID = [self SM_retrieveCacheObjectForRemoteID:referenceObject entityName:[[objectID entity] name] createIfNeeded:NO];
+            
+            NSExpression *rightExpression = [NSExpression expressionForConstantValue:cacheObjectID];
+            predicateToReturn = [NSComparisonPredicate predicateWithLeftExpression:comparisonPredicate.leftExpression rightExpression:rightExpression modifier:comparisonPredicate.comparisonPredicateModifier type:comparisonPredicate.predicateOperatorType options:comparisonPredicate.options];
+            
+            
+        } else if ([comparisonPredicate.rightExpression.constantValue isKindOfClass:[NSManagedObjectID class]]) {
+            objectID = (NSManagedObjectID *)comparisonPredicate.rightExpression.constantValue;
+            NSString *referenceObject = [self referenceObjectForObjectID:objectID];
+            NSManagedObjectID *cacheObjectID = [self SM_retrieveCacheObjectForRemoteID:referenceObject entityName:[[objectID entity] name] createIfNeeded:NO];
+            
+            NSExpression *rightExpression = [NSExpression expressionForConstantValue:cacheObjectID];
+            predicateToReturn = [NSComparisonPredicate predicateWithLeftExpression:comparisonPredicate.leftExpression rightExpression:rightExpression modifier:comparisonPredicate.comparisonPredicateModifier type:comparisonPredicate.predicateOperatorType options:comparisonPredicate.options];
+            
+            
+        }
+    }
+    
+    return predicateToReturn;
+    
 }
 
 ////////////////////////////

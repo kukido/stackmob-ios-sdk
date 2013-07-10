@@ -249,41 +249,7 @@ describe(@"countForFetchRequest, cache", ^{
         [[[count objectAtIndex:0] should] equal:theValue(10)];
         [error shouldBeNil];
     });
-});
-/*
-describe(@"CacheElseNetwork count", ^{
-    __block SMTestProperties *testProperties = nil;
-    __block NSMutableArray *arrayOfObjects = nil;
-    beforeAll(^{
-        SM_CACHE_ENABLED = YES;
-        testProperties = [[SMTestProperties alloc] init];
-        arrayOfObjects = [NSMutableArray array];
-        for (int i=0; i < 10; i++) {
-            NSDictionary *todoDict = 
-            [newManagedObject setValue:@"bob" forKey:@"title"];
-            [newManagedObject setValue:[newManagedObject assignObjectId] forKey:[newManagedObject primaryKeyField]];
-            
-            [arrayOfObjects addObject:newManagedObject];
-        }
-        __block BOOL saveSuccess = NO;
-        __block NSError *error = nil;
-        
-        saveSuccess = [testProperties.moc saveAndWait:&error];
-        [[theValue(saveSuccess) should] beYes];
-    });
-    afterAll(^{
-        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        for (NSManagedObject *obj in arrayOfObjects) {
-            [testProperties.moc deleteObject:obj];
-        }
-        __block NSError *error = nil;
-        BOOL saveSuccess = [testProperties.moc saveAndWait:&error];
-        [[theValue(saveSuccess) should] beYes];
-        [arrayOfObjects removeAllObjects];
-        SM_CACHE_ENABLED = NO;
-        
-    });
-    it(@"cacheElseNetwork", ^{
+    it(@"cacheElseNetwork, cache filled", ^{
         [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheElseNetwork];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
@@ -295,7 +261,73 @@ describe(@"CacheElseNetwork count", ^{
         [error shouldBeNil];
     });
 });
-*/
+
+describe(@"CacheElseNetwork count", ^{
+    __block SMTestProperties *testProperties = nil;
+    __block NSMutableArray *arrayOfObjects = nil;
+    beforeAll(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        arrayOfObjects = [NSMutableArray array];
+        dispatch_group_t group = dispatch_group_create();
+        dispatch_queue_t queue = dispatch_queue_create("createqueue", NULL);
+        for (int i=0; i < 10; i++) {
+            NSDictionary *todoDict = [NSDictionary dictionaryWithObjectsAndKeys:@"bob", @"title", nil];
+            dispatch_group_enter(group);
+            [[testProperties.client dataStore] createObject:todoDict inSchema:@"todo" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+                dispatch_group_leave(group);
+            } onFailure:^(NSError *theError, NSDictionary *theObject, NSString *schema) {
+                dispatch_group_leave(group);
+            }];
+        }
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+    afterAll(^{
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        dispatch_group_t group = dispatch_group_create();
+        dispatch_queue_t queue = dispatch_queue_create("createqueue", NULL);
+        
+        __block NSArray *todoObjects = nil;
+        SMQuery *query = [[SMQuery alloc] initWithSchema:@"todo"];
+        dispatch_group_enter(group);
+        [[testProperties.client dataStore] performQuery:query options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *results) {
+            todoObjects = results;
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error) {
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        if (todoObjects) {
+            [todoObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                dispatch_group_enter(group);
+                [[testProperties.client dataStore] deleteObjectId:[obj objectForKey:@"todo_id"] inSchema:@"todo" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSString *theObjectId, NSString *schema) {
+                    dispatch_group_leave(group);
+                } onFailure:^(NSError *theError, NSString *theObjectId, NSString *schema) {
+                    dispatch_group_leave(group);
+                }];
+            }];
+            
+            dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        }
+        
+        SM_CACHE_ENABLED = NO;
+        
+    });
+    it(@"cacheElseNetwork, cache not filled", ^{
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        NSError *error = nil;
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        [fetch setPredicate:[NSPredicate predicateWithFormat:@"title == 'bob'"]];
+        NSUInteger count = [testProperties.moc countForFetchRequestAndWait:fetch error:&error];
+        
+        [[theValue(count) should] equal:theValue(10)];
+        [error shouldBeNil];
+    });
+});
+
 describe(@"fetching runs in the background", ^{
     __block SMClient *client = nil;
     __block SMCoreDataStore *cds = nil;
