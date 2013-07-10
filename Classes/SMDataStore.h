@@ -477,8 +477,7 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMResults
  
  @since Available in iOS SDK 1.2.0 and later.
  */
-- (void)performCount:(SMQuery *)query options:(SMRequestOptions *)options successCallbackQueue:(dispatch_queue_t)successCallbackQueue
-failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMCountSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock;
+- (void)performCount:(SMQuery *)query options:(SMRequestOptions *)options successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMCountSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock;
 
 #pragma mark - Custom Code
 ///-------------------------------
