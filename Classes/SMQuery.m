@@ -131,6 +131,9 @@
 
 - (void)where:(NSString *)field isIn:(NSArray *)valuesArray
 {
+    if ([valuesArray count] == 0) {
+        [NSException raise:SMExceptionInvalidArugments format:@"Array passed does not contain any values, and must contain at least one."];
+    }
     NSMutableDictionary *requestParametersCopy = [self.requestParameters mutableCopy];
     NSString *possibleValues = [valuesArray componentsJoinedByString:@","];
     [requestParametersCopy setObject:possibleValues
@@ -140,6 +143,9 @@
 
 - (void)where:(NSString *)field isNotIn:(NSArray *)valuesArray
 {
+    if ([valuesArray count] == 0) {
+        [NSException raise:SMExceptionInvalidArugments format:@"Array passed does not contain any values, and must contain at least one."];
+    }
     NSMutableDictionary *requestParametersCopy = [self.requestParameters mutableCopy];
     NSString *possibleValues = [valuesArray componentsJoinedByString:@","];
     [requestParametersCopy setObject:possibleValues
@@ -235,7 +241,12 @@
 }
 
 - (void)fromIndex:(NSUInteger)start toIndex:(NSUInteger)end
-{
+{    
+    // Check that end >= start
+    if (!(end >= start)) {
+        [NSException raise:SMExceptionInvalidArugments format:@"Error setting pagination limits: toIndex must be a value greater or equal to fromIndex."];
+    }
+    
     NSString *rangeHeader = [NSString stringWithFormat:@"objects=%i-%i", (int)start, (int)end];
     
     NSMutableDictionary *requestHeadersCopy = [self.requestHeaders mutableCopy];
@@ -244,7 +255,6 @@
     self.requestHeaders = [NSDictionary dictionaryWithDictionary:requestHeadersCopy];
 }
 
-// TODO: verify that asking for Range 0-N where N is > the # records doesn't explode
 - (void)limit:(NSUInteger)count {
     [self fromIndex:0 toIndex:count-1];
 }
