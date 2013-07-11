@@ -15,6 +15,7 @@
  */
 
 #import "SMResponseBlocks.h"
+#import "SMCoreDataStore.h"
 
 /**
  `SMRequestOptions` is a class designed to supply various choices to requests, including:
@@ -69,9 +70,19 @@
     typedef void (^SMFailureRetryBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON, SMRequestOptions *options, SMFullResponseSuccessBlock successBlock, SMFullResponseFailureBlock failureBlock);
  
  @since Available in iOS SDK 1.0.0 and later.
- 
  */
 @property (nonatomic, strong) SMFailureRetryBlock retryBlock;
+
+/**
+ A cache policy for the request these options are passed to.
+ 
+ Use to override the current default cache policy exclusively for one request.
+ 
+ @note This option is only used for Core Data fetch requests.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+@property (nonatomic) SMCachePolicy cachePolicy;
 
 ///-------------------------------
 /// @name Initialize
@@ -128,6 +139,21 @@
  */
 + (SMRequestOptions *)optionsWithReturnedFieldsRestrictedTo:(NSArray *)fields;
 
+/**
+ Options that will add a cache policy for the request it is passed to.
+ 
+ Use to override the current default cache policy exclusively for one request.
+ 
+ @note This option is only used for Core Data fetch requests.
+ 
+ @param cachePolicy The cache policy.
+ 
+ @return An `SMRequestOptions` object with a cache policy set.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
++ (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy;
+
 #pragma mark - Expanding relationships
 ///-------------------------------
 /// @name Expanding Relationships
@@ -176,5 +202,6 @@
  @since Available in iOS SDK 1.0.0 and later.
  */
 - (void)addSMErrorServiceUnavailableRetryBlock:(SMFailureRetryBlock)retryBlock;
+
 
 @end

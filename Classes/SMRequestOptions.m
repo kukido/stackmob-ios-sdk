@@ -23,6 +23,7 @@
 @synthesize tryRefreshToken = _SM_tryRefreshToken;
 @synthesize numberOfRetries = _SM_numberOfRetries;
 @synthesize retryBlock = _SM_retryBlock;
+@synthesize cachePolicy = _cachePolicy;
 
 
 + (SMRequestOptions *)options
@@ -33,6 +34,7 @@
     opts.tryRefreshToken = YES;
     opts.numberOfRetries = 3;
     opts.retryBlock = nil;
+    //opts.cachePolicy = -1;
     return opts;
 }
 
@@ -62,6 +64,13 @@
 {
     SMRequestOptions *opt = [SMRequestOptions options];
     [opt restrictReturnedFieldsTo:fields];
+    return opt;
+}
+
++ (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy
+{
+    SMRequestOptions *opt = [SMRequestOptions options];
+    opt.cachePolicy = cachePolicy;
     return opt;
 }
 

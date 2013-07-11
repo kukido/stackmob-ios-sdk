@@ -19,6 +19,7 @@
 #import "SMIntegrationTestHelpers.h"
 #import "SMCoreDataIntegrationTestHelpers.h"
 #import "Person.h"
+#import "SMTestProperties.h"
 
 SPEC_BEGIN(LocalReadCacheSpec)
 
@@ -39,6 +40,31 @@ pending_(@"completion block when purging is sucessful", ^{
     
 });
 
+describe(@"Per Request Cache Policy", ^{
+    __block SMTestProperties *testProperties;
+    beforeAll(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        [SMCoreDataIntegrationTestHelpers removeSQLiteDatabaseAndMapsWithPublicKey:testProperties.client.publicKey];
+        
+        for (int i=0; i < 10; i++) {
+            NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+            [todo setValue:[todo assignObjectId] forKey:[todo primaryKeyField]];
+        }
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        [[theValue(success) should] beYes];
+        [error shouldBeNil];
+    });
+    afterAll(^{
+        
+        
+        SM_CACHE_ENABLED = NO;
+    });
+    
+});
+
+/*
 describe(@"LocalReadCacheInitialization", ^{
     __block SMClient *client = nil;
     __block SMCoreDataStore *cds = nil;
@@ -1484,9 +1510,7 @@ describe(@"Testing cache using Entity with a GeoPoint attribute", ^{
         }];
     });
 });
-
-
-
+*/
 
 // MISC TESTS
 
