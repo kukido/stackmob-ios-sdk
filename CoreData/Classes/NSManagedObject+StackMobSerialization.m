@@ -121,7 +121,7 @@
                     
                     NSDate *dateValue = propertyValue;
                     long double convertedDate = (long double)[dateValue timeIntervalSince1970] * 1000.0000;
-                    NSNumber *numberToSet = [NSNumber numberWithUnsignedLongLong:convertedDate];
+                    NSNumber *numberToSet = [NSNumber numberWithLongLong:convertedDate];
                     [objectDictionary setObject:numberToSet forKey:fieldName];
                     
                 } else if (attributeDescription.attributeType == NSBooleanAttributeType) {

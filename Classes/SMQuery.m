@@ -284,7 +284,7 @@
     
         long double convertedValue = (long double)[value timeIntervalSince1970] * 1000.0000;
         
-        return [NSNumber numberWithUnsignedLongLong:floorl(convertedValue)];
+        return [NSNumber numberWithLongLong:floorl(convertedValue)];
     }
     
     return value;
