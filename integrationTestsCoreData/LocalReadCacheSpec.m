@@ -40,6 +40,160 @@ pending_(@"completion block when purging is sucessful", ^{
     
 });
 
+describe(@"Cache Results option", ^{
+    __block SMTestProperties *testProperties;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+    });
+    afterEach(^{
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        NSError *error = nil;
+        NSArray *array = [testProperties.moc executeFetchRequestAndWait:request error:&error];
+        
+        [error shouldBeNil];
+        [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        if ([testProperties.moc hasChanges]) {
+            error = nil;
+            [testProperties.moc saveAndWait:&error];
+            [error shouldBeNil];
+        }
+        
+        SM_CACHE_ENABLED = NO;
+    });
+    it(@"default is YES works saves", ^{
+        for (int i=0; i < 10; i++) {
+            NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+            [todo setValue:[todo assignObjectId] forKey:[todo primaryKeyField]];
+        }
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        [[theValue(success) should] beYes];
+        [error shouldBeNil];
+        
+        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        SMRequestOptions *fetchOptions = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly];
+        error = nil;
+        NSArray *array = [testProperties.moc executeFetchRequestAndWait:request returnManagedObjectIDs:YES options:fetchOptions error:&error];
+        
+        [error shouldBeNil];
+        [[array should] haveCountOf:10];
+        
+    });
+    it(@"setting cacheResults to NO works saves", ^{
+        for (int i=0; i < 10; i++) {
+            NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+            [todo setValue:[todo assignObjectId] forKey:[todo primaryKeyField]];
+        }
+        SMRequestOptions *options = [SMRequestOptions optionsWithCacheResults:NO];
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error options:options];
+        [[theValue(success) should] beYes];
+        [error shouldBeNil];
+        
+        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        SMRequestOptions *fetchOptions = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly];
+        error = nil;
+        NSArray *array = [testProperties.moc executeFetchRequestAndWait:request returnManagedObjectIDs:YES options:fetchOptions error:&error];
+        
+        [error shouldBeNil];
+        [[array should] haveCountOf:0];
+        
+    });
+    it(@"default is YES works fetches", ^{
+        dispatch_group_t group = dispatch_group_create();
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        
+        for (int i=0; i < 10; i++) {
+            dispatch_group_enter(group);
+            [[testProperties.client dataStore] createObject:[NSDictionary dictionaryWithObjectsAndKeys:@"todo", @"title", nil] inSchema:@"todo" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+                dispatch_group_leave(group);
+            } onFailure:^(NSError *error, NSDictionary *theObject, NSString *schema) {
+                [error shouldBeNil];
+                dispatch_group_leave(group);
+            }];
+        }
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        NSFetchRequest *request1 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        SMRequestOptions *fetchOptions = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryNetworkOnly];
+        NSError *error = nil;
+        NSArray *array = [testProperties.moc executeFetchRequestAndWait:request1 returnManagedObjectIDs:YES options:fetchOptions error:&error];
+        
+        [error shouldBeNil];
+        [[array should] haveCountOf:10];
+        
+        NSFetchRequest *request2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        SMRequestOptions *fetchOptions2 = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly];
+        error = nil;
+        NSArray *array2 = [testProperties.moc executeFetchRequestAndWait:request2 returnManagedObjectIDs:YES options:fetchOptions2 error:&error];
+        
+        [error shouldBeNil];
+        [[array2 should] haveCountOf:10];
+        
+    });
+    it(@"setting cache results to NO works fetches", ^{
+        dispatch_group_t group = dispatch_group_create();
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        
+        for (int i=0; i < 10; i++) {
+            dispatch_group_enter(group);
+            [[testProperties.client dataStore] createObject:[NSDictionary dictionaryWithObjectsAndKeys:@"todo", @"title", nil] inSchema:@"todo" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+                dispatch_group_leave(group);
+            } onFailure:^(NSError *error, NSDictionary *theObject, NSString *schema) {
+                [error shouldBeNil];
+                dispatch_group_leave(group);
+            }];
+        }
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        NSFetchRequest *request1 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        SMRequestOptions *fetchOptions = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryNetworkOnly];
+        fetchOptions.cacheResults = NO;
+        NSError *error = nil;
+        NSArray *array = [testProperties.moc executeFetchRequestAndWait:request1 returnManagedObjectIDs:YES options:fetchOptions error:&error];
+        
+        [error shouldBeNil];
+        [[array should] haveCountOf:10];
+        
+        NSFetchRequest *request2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        SMRequestOptions *fetchOptions2 = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly];
+        error = nil;
+        NSArray *array2 = [testProperties.moc executeFetchRequestAndWait:request2 returnManagedObjectIDs:YES options:fetchOptions2 error:&error];
+        
+        [error shouldBeNil];
+        [[array2 should] haveCountOf:0];
+        
+    });
+    it(@"setting cacheResults to NO works saves", ^{
+        for (int i=0; i < 10; i++) {
+            NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+            [todo setValue:[todo assignObjectId] forKey:[todo primaryKeyField]];
+        }
+        SMRequestOptions *options = [SMRequestOptions optionsWithCacheResults:NO];
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error options:options];
+        [[theValue(success) should] beYes];
+        [error shouldBeNil];
+        
+        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        SMRequestOptions *fetchOptions = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly];
+        error = nil;
+        NSArray *array = [testProperties.moc executeFetchRequestAndWait:request returnManagedObjectIDs:YES options:fetchOptions error:&error];
+        
+        [error shouldBeNil];
+        [[array should] haveCountOf:0];
+        
+    });
+});
+
+/*
 describe(@"Per Request Cache Policy", ^{
     __block SMTestProperties *testProperties;
     beforeAll(^{
@@ -57,13 +211,37 @@ describe(@"Per Request Cache Policy", ^{
         [error shouldBeNil];
     });
     afterAll(^{
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        SMRequestOptions *options = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly];
+        NSError *error = nil;
+        NSArray *array = [testProperties.moc executeFetchRequestAndWait:request returnManagedObjectIDs:YES options:options error:&error];
         
+        [error shouldBeNil];
+        [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        if ([testProperties.moc hasChanges]) {
+            error = nil;
+            [testProperties.moc saveAndWait:&error];
+            [error shouldBeNil];
+        }
         
         SM_CACHE_ENABLED = NO;
     });
-    
+    it(@"setting policy", ^{
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        SMRequestOptions *options = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly];
+        NSError *error = nil;
+        NSArray *array = [testProperties.moc executeFetchRequestAndWait:request returnManagedObjectIDs:YES options:options error:&error];
+        
+        [error shouldBeNil];
+        [[array should] haveCountOf:0];
+    });
 });
-
+*/
 /*
 describe(@"LocalReadCacheInitialization", ^{
     __block SMClient *client = nil;

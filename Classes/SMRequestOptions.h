@@ -84,6 +84,11 @@
  */
 @property (nonatomic) SMCachePolicy cachePolicy;
 
+/**
+ ADD DOCS
+ */
+@property (nonatomic) BOOL cacheResults;
+
 ///-------------------------------
 /// @name Initialize
 ///-------------------------------
@@ -153,6 +158,11 @@
  @since Available in iOS SDK 2.1.0 and later.
  */
 + (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy;
+
+/**
+ Add DOCS
+ */
++ (SMRequestOptions *)optionsWithCacheResults:(BOOL)cacheResults;
 
 #pragma mark - Expanding relationships
 ///-------------------------------
