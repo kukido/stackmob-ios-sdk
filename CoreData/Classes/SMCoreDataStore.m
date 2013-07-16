@@ -227,12 +227,14 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
 	}
 }
 
+/*
 - (void)setCachePolicy:(SMCachePolicy)cachePolicy
 {
     if (self.cachePolicy != cachePolicy) {
         
     }
 }
+ */
 
 - (void)setDefaultMergePolicy:(id)mergePolicy applyToMainThreadContextAndParent:(BOOL)apply
 {
