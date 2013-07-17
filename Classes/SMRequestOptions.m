@@ -35,7 +35,7 @@
     opts.tryRefreshToken = YES;
     opts.numberOfRetries = 3;
     opts.retryBlock = nil;
-    //opts.cachePolicy = -1;
+    opts.cachePolicy = -1;
     opts.cacheResults = YES;
     return opts;
 }
