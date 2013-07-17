@@ -588,13 +588,11 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         if (!*stop) {
             if (SM_CORE_DATA_DEBUG) { DLog(@"Serialized object dictionary: %@", truncateOutputIfExceedsMaxLogLength(serializedObjDict)) }
             
-            if ([self.coreDataStore.session.regularOAuthClient.version isEqualToString:@"0"]) {
-                // Add relationship headers if needed
-                NSMutableDictionary *headerDict = [NSMutableDictionary dictionary];
-                if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
-                    [headerDict setObject:[serializedObjDict objectForKey:StackMobRelationsKey] forKey:StackMobRelationsKey];
-                    [options setHeaders:headerDict];
-                }
+            // Add relationship headers if needed
+            NSMutableDictionary *headerDict = [NSMutableDictionary dictionary];
+            if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
+                [headerDict setObject:[serializedObjDict objectForKey:StackMobRelationsKey] forKey:StackMobRelationsKey];
+                [options setHeaders:headerDict];
             }
             
             dispatch_group_enter(callbackGroup);
@@ -806,17 +804,15 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             
         };
         
-        // if there are relationships present in the update, send as a POST
+        // if there are relationships present in the update send as a POST
         AFJSONRequestOperation *op = nil;
         if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
             
-            if ([self.coreDataStore.session.regularOAuthClient.version isEqualToString:@"0"]) {
-                // Add relationship headers if needed
-                NSMutableDictionary *headerDict = [NSMutableDictionary dictionary];
-                if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
-                    [headerDict setObject:[serializedObjDict objectForKey:StackMobRelationsKey] forKey:StackMobRelationsKey];
-                    [options setHeaders:headerDict];
-                }
+            // Add relationship headers if needed
+            NSMutableDictionary *headerDict = [NSMutableDictionary dictionary];
+            if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
+                [headerDict setObject:[serializedObjDict objectForKey:StackMobRelationsKey] forKey:StackMobRelationsKey];
+                [options setHeaders:headerDict];
             }
             
             op = [[self coreDataStore] postOperationForObject:[serializedObjDict objectForKey:SerializedDictKey] inSchema:schemaName options:options successCallbackQueue:queue failureCallbackQueue:queue onSuccess:operationSuccesBlock onFailure:operationFailureBlock];
@@ -2553,7 +2549,16 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             }
             __block NSMutableArray *arrayToReturn = [NSMutableArray array];
             [(NSArray *)relationshipContents enumerateObjectsUsingBlock:^(id expandedObject, NSUInteger idx, BOOL *stop) {
-                NSString *relatedObjectPrimaryKey = [expandedObject objectForKey:[[relationship destinationEntity] SMPrimaryKeyField]];
+                NSString *relatedObjectPrimaryKey = nil;
+                @try {
+                    relatedObjectPrimaryKey = [expandedObject objectForKey:[[relationship destinationEntity] SMPrimaryKeyField]];
+                }
+                @catch (NSException *exception) {
+                    relatedObjectPrimaryKey = [expandedObject objectForKey:[self.coreDataStore.session userPrimaryKeyField]];
+                }
+                
+                // TODO account for nil primary key
+                
                 NSManagedObjectID *relationshipObjectID = [self newObjectIDForEntity:[relationship destinationEntity] referenceObject:relatedObjectPrimaryKey];
                 [arrayToReturn addObject:relationshipObjectID];
                 
@@ -2589,7 +2594,17 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             if (![relationshipContents isKindOfClass:[NSDictionary class]]) {
                 [NSException raise:SMExceptionIncompatibleObject format:@"Relationship contents should be a Dictionary for a to-one relationship with expansion. The relationship passed has contents that are of class type %@. Confirm that this relationship was meant to be to-one.", [relationshipContents class]];
             }
-            NSString *relatedObjectPrimaryKey = [relationshipContents objectForKey:[[relationship destinationEntity] primaryKeyField]];
+            
+            NSString *relatedObjectPrimaryKey = nil;
+            @try {
+                relatedObjectPrimaryKey = [relationshipContents objectForKey:[[relationship destinationEntity] SMPrimaryKeyField]];
+            }
+            @catch (NSException *exception) {
+                relatedObjectPrimaryKey = [relationshipContents objectForKey:[self.coreDataStore.session userPrimaryKeyField]];
+            }
+            
+            // TODO account for nil primary key
+            
             NSManagedObjectID *relationshipObjectID = [self newObjectIDForEntity:[relationship destinationEntity] referenceObject:relatedObjectPrimaryKey];
             
             [self SM_serializeAndCacheObjectWithID:relatedObjectPrimaryKey values:relationshipContents entity:[relationship destinationEntity] context:context];
