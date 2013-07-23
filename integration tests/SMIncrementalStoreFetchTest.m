@@ -1060,7 +1060,7 @@ describe(@"empty string", ^{
         }
         
     });
-    it(@"equal to empty string", ^{
+    it(@"not equal to empty string", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];

@@ -150,6 +150,7 @@ describe(@"countForFetchRequest, cache", ^{
     beforeAll(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
+        [SMCoreDataIntegrationTestHelpers removeSQLiteDatabaseAndMapsWithPublicKey:testProperties.client.publicKey];
         arrayOfObjects = [NSMutableArray array];
         for (int i=0; i < 10; i++) {
             NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
@@ -268,6 +269,7 @@ describe(@"CacheElseNetwork count", ^{
     beforeAll(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
+        [SMCoreDataIntegrationTestHelpers removeSQLiteDatabaseAndMapsWithPublicKey:testProperties.client.publicKey];
         arrayOfObjects = [NSMutableArray array];
         dispatch_group_t group = dispatch_group_create();
         dispatch_queue_t queue = dispatch_queue_create("createqueue", NULL);

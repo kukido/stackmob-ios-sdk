@@ -22,17 +22,17 @@ extern NSString *const SMDirtyQueueNotification;
 
 extern BOOL SM_CACHE_ENABLED;
 
-typedef enum {
-    SMCachePolicyTryNetworkOnly = 0,
-    SMCachePolicyTryCacheOnly  = 1,
-    SMCachePolicyTryNetworkElseCache = 2,
-    SMCachePolicyTryCacheElseNetwork = 3,
-} SMCachePolicy;
+typedef NS_ENUM(NSInteger, SMCachePolicy) {
+    SMCachePolicyTryNetworkOnly,
+    SMCachePolicyTryCacheOnly,
+    SMCachePolicyTryNetworkElseCache,
+    SMCachePolicyTryCacheElseNetwork
+};
 
-typedef enum {
+typedef NS_ENUM(NSInteger, SMMergeObjectKey) {
     SMClientObject = 0,
     SMServerObject = 1,
-} SMMergeObjectKey;
+};
 
 typedef int (^SMMergePolicy)(NSDictionary *clientObject, NSDictionary *serverObject, NSDate *serverBaseLastModDate);
 typedef void (^SMSyncCallback)(NSArray *objects);
