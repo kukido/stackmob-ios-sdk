@@ -108,4 +108,29 @@
     self.retryBlock = retryBlock;
 }
 
+- (void)associateKey:(NSString *)key withSchema:(NSString *)schema
+{
+    if (!self.headers) {
+        self.headers = [NSDictionary dictionary];
+    }
+    NSMutableDictionary *tempHeadersDict = [self.headers mutableCopy];
+    if ([tempHeadersDict objectForKey:@"X-StackMob-Relations"]) {
+        NSString *newRelationsHeader = [NSString stringWithFormat:@"%@&%@=%@", [tempHeadersDict objectForKey:@"X-StackMob-Relations" ], key, schema];
+        [tempHeadersDict setValue:newRelationsHeader forKey:@"X-StackMob-Relations"];
+    } else {
+        [tempHeadersDict setValue:[NSString stringWithFormat:@"%@=%@", key, schema] forKey:@"X-StackMob-Relations"];
+    }
+    self.headers = tempHeadersDict;
+}
+
+- (void)setValue:(NSString *)value forHeaderKey:(NSString *)key
+{
+    if (!self.headers) {
+        self.headers = [NSDictionary dictionary];
+    }
+    NSMutableDictionary *tempHeadersDict = [self.headers mutableCopy];
+    [tempHeadersDict setObject:value forKey:key];
+    self.headers = tempHeadersDict;
+}
+
 @end

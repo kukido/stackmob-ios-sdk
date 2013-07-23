@@ -85,7 +85,17 @@
 @property (nonatomic) SMCachePolicy cachePolicy;
 
 /**
- ADD DOCS
+ Whether or not any fetched or saved objects should be cached.
+ 
+ Default is `YES`. You should only need to set this option if you do not want objects to be cached for a particular request.
+ 
+ Applied to saves, fetches, and any objects that need to be retrieved, such as related objects, during the process of either of these operations.
+ 
+ Pass the options to one of the save or fetch methods in the `NSManagedObjectContext+Concurrency` category.
+ 
+ @note This option is only used for Core Data requests.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
  */
 @property (nonatomic) BOOL cacheResults;
 
@@ -143,6 +153,45 @@
  @since Available in iOS SDK 1.1.2 and later.
  */
 + (SMRequestOptions *)optionsWithReturnedFieldsRestrictedTo:(NSArray *)fields;
+
+#pragma mark - Adding Headers
+///-------------------------------
+/// @name Adding Headers
+///-------------------------------
+
+/**
+ Adds a new request header.
+ 
+ @param value The value of the header.
+ @param key The header key.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+- (void)setValue:(NSString *)value forHeaderKey:(NSString *)key;
+
+#pragma mark - Associating Keys With Schemas
+///-------------------------------
+/// @name Associating Keys With Schemas
+///-------------------------------
+
+/**
+ Associates a relationship key with its schema.
+ 
+ Used when including nested related objects as full dictionaries or arrays of dictionaries to associate the relationship key with its schema on StackMob.
+ 
+ This method should only be used when creating/updating objects using the datastore API.
+ 
+ @param key The name of the relationship key.
+ @param schema The name of the related schema.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+- (void)associateKey:(NSString *)key withSchema:(NSString *)schema;
+
+#pragma mark - Cache Options
+///-------------------------------
+/// @name Cache Options
+///-------------------------------
 
 /**
  Options that will define a cache policy for the request it is passed to.
@@ -228,6 +277,5 @@
  @since Available in iOS SDK 1.0.0 and later.
  */
 - (void)addSMErrorServiceUnavailableRetryBlock:(SMFailureRetryBlock)retryBlock;
-
 
 @end
