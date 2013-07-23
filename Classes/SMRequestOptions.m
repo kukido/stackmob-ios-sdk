@@ -23,6 +23,8 @@
 @synthesize tryRefreshToken = _SM_tryRefreshToken;
 @synthesize numberOfRetries = _SM_numberOfRetries;
 @synthesize retryBlock = _SM_retryBlock;
+@synthesize cachePolicy = _cachePolicy;
+@synthesize cacheResults = _cacheResults;
 
 
 + (SMRequestOptions *)options
@@ -33,6 +35,8 @@
     opts.tryRefreshToken = YES;
     opts.numberOfRetries = 3;
     opts.retryBlock = nil;
+    opts.cachePolicy = -1;
+    opts.cacheResults = YES;
     return opts;
 }
 
@@ -65,14 +69,18 @@
     return opt;
 }
 
-- (void)setValue:(NSString *)value forHeaderKey:(NSString *)key
++ (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy
 {
-    if (!self.headers) {
-        self.headers = [NSDictionary dictionary];
-    }
-    NSMutableDictionary *tempHeadersDict = [self.headers mutableCopy];
-    [tempHeadersDict setObject:value forKey:key];
-    self.headers = tempHeadersDict;
+    SMRequestOptions *opt = [SMRequestOptions options];
+    opt.cachePolicy = cachePolicy;
+    return opt;
+}
+
++ (SMRequestOptions *)optionsWithCacheResults:(BOOL)cacheResults
+{
+    SMRequestOptions *opt = [SMRequestOptions options];
+    opt.cacheResults = cacheResults;
+    return opt;
 }
 
 - (void)setExpandDepth:(NSUInteger)depth
@@ -112,6 +120,16 @@
     } else {
         [tempHeadersDict setValue:[NSString stringWithFormat:@"%@=%@", key, schema] forKey:@"X-StackMob-Relations"];
     }
+    self.headers = tempHeadersDict;
+}
+
+- (void)setValue:(NSString *)value forHeaderKey:(NSString *)key
+{
+    if (!self.headers) {
+        self.headers = [NSDictionary dictionary];
+    }
+    NSMutableDictionary *tempHeadersDict = [self.headers mutableCopy];
+    [tempHeadersDict setObject:value forKey:key];
     self.headers = tempHeadersDict;
 }
 

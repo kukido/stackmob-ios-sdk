@@ -16,7 +16,6 @@
 
 #import <CoreData/CoreData.h>
 #import "SMClient.h"
-#import "SMQuery.h"
 #import "SMResponseBlocks.h"
 
 #define POST @"POST"
@@ -27,6 +26,7 @@
 @class SMUserSession;
 @class SMRequestOptions;
 @class SMCustomCodeRequest;
+@class SMQuery;
 
 /**
  `SMDataStore` exposes an interface for performing CRUD operations on known StackMob objects and for executing an <SMQuery> or <SMCustomCodeRequest>.
@@ -672,8 +672,7 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMResults
  
  @since Available in iOS SDK 1.2.0 and later.
  */
-- (void)performCount:(SMQuery *)query options:(SMRequestOptions *)options successCallbackQueue:(dispatch_queue_t)successCallbackQueue
-failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMCountSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock;
+- (void)performCount:(SMQuery *)query options:(SMRequestOptions *)options successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMCountSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock;
 
 #pragma mark - Custom Code
 ///-------------------------------

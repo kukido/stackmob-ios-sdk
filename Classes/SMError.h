@@ -21,6 +21,7 @@
 extern NSString *const SMErrorDomain;
 extern NSString *const HTTPErrorDomain;
 extern NSString *const SMExceptionIncompatibleObject;
+extern NSString *const SMExceptionInvalidArugments;
 extern NSString *const SMExceptionUnknownSchema;
 extern NSString *const SMExceptionAddPersistentStore;
 extern NSString *const SMExceptionCannotFillRelationshipFault;

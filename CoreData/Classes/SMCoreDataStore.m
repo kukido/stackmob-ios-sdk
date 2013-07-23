@@ -106,6 +106,9 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
         self.syncCallbackQueue = dispatch_get_main_queue();
         self.cachePurgeQueue = dispatch_queue_create("com.stackmob.cachePurgeQueue", NULL);
         
+        /// Init global request options
+        self.globalRequestOptions = [SMRequestOptions options];
+        
         /// Set default cache and merge policies
         [self setCachePolicy:SMCachePolicyTryNetworkOnly];
         _defaultCoreDataMergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;
@@ -123,9 +126,6 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
         self.syncInProgress = NO;
         self.sendLocalTimestamps = NO;
         self.currentDirtyQueue = nil;
-        
-        /// Init global request options
-        self.globalRequestOptions = [SMRequestOptions options];
         
         /// Add observer for set cache policy
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(SM_didReceiveSetCachePolicyNotification:) name:SMSetCachePolicyNotification object:self.session.networkMonitor];
@@ -226,6 +226,15 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
 		return threadContext;
 	}
 }
+
+/*
+- (void)setCachePolicy:(SMCachePolicy)cachePolicy
+{
+    if (self.cachePolicy != cachePolicy) {
+        
+    }
+}
+ */
 
 - (void)setDefaultMergePolicy:(id)mergePolicy applyToMainThreadContextAndParent:(BOOL)apply
 {

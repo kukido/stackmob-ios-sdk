@@ -588,13 +588,11 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         if (!*stop) {
             if (SM_CORE_DATA_DEBUG) { DLog(@"Serialized object dictionary: %@", truncateOutputIfExceedsMaxLogLength(serializedObjDict)) }
             
-            if ([self.coreDataStore.session.regularOAuthClient.version isEqualToString:@"0"]) {
-                // Add relationship headers if needed
-                NSMutableDictionary *headerDict = [NSMutableDictionary dictionary];
-                if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
-                    [headerDict setObject:[serializedObjDict objectForKey:StackMobRelationsKey] forKey:StackMobRelationsKey];
-                    [options setHeaders:headerDict];
-                }
+            // Add relationship headers if needed
+            NSMutableDictionary *headerDict = [NSMutableDictionary dictionary];
+            if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
+                [headerDict setObject:[serializedObjDict objectForKey:StackMobRelationsKey] forKey:StackMobRelationsKey];
+                [options setHeaders:headerDict];
             }
             
             dispatch_group_enter(callbackGroup);
@@ -649,7 +647,9 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
     dispatch_group_wait(callbackGroup, DISPATCH_TIME_FOREVER);
     
-    [self SM_serializeAndCacheObjects:objectsToBeCached];
+    if (options.cacheResults) {
+        [self SM_serializeAndCacheObjects:objectsToBeCached];
+    }
     
     [options setIsSecure:previousStateOfHTTPSOption];
 
@@ -806,17 +806,15 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             
         };
         
-        // if there are relationships present in the update, send as a POST
+        // if there are relationships present in the update send as a POST
         AFJSONRequestOperation *op = nil;
         if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
             
-            if ([self.coreDataStore.session.regularOAuthClient.version isEqualToString:@"0"]) {
-                // Add relationship headers if needed
-                NSMutableDictionary *headerDict = [NSMutableDictionary dictionary];
-                if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
-                    [headerDict setObject:[serializedObjDict objectForKey:StackMobRelationsKey] forKey:StackMobRelationsKey];
-                    [options setHeaders:headerDict];
-                }
+            // Add relationship headers if needed
+            NSMutableDictionary *headerDict = [NSMutableDictionary dictionary];
+            if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
+                [headerDict setObject:[serializedObjDict objectForKey:StackMobRelationsKey] forKey:StackMobRelationsKey];
+                [options setHeaders:headerDict];
             }
             
             op = [[self coreDataStore] postOperationForObject:[serializedObjDict objectForKey:SerializedDictKey] inSchema:schemaName options:options successCallbackQueue:queue failureCallbackQueue:queue onSuccess:operationSuccesBlock onFailure:operationFailureBlock];
@@ -836,7 +834,9 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
     dispatch_group_wait(callbackGroup, DISPATCH_TIME_FOREVER);
     
-    [self SM_serializeAndCacheObjects:objectsToBeCached];
+    if (options.cacheResults) {
+        [self SM_serializeAndCacheObjects:objectsToBeCached];
+    }
     
 #if !OS_OBJECT_USE_OBJC
     dispatch_release(group);
@@ -1299,13 +1299,141 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             [NSException raise:SMExceptionIncompatibleObject format:@"Unimplemented result type requested."];
             break;
         case NSCountResultType:
-            [NSException raise:SMExceptionIncompatibleObject format:@"Unimplemented result type requested."];
+            return [self SM_fetchCount:fetchRequest withContext:context options:options error:error];
             break;
         default:
             [NSException raise:SMExceptionIncompatibleObject format:@"Unknown result type requested."];
             break;
     }
     return nil;
+}
+
+// Returns NSArray<NSManagedObject>
+- (id)SM_fetchObjects:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError * __autoreleasing *)error {
+    
+    if (SM_CORE_DATA_DEBUG) { DLog() }
+    
+    if (SM_CACHE_ENABLED) {
+        id resultsToReturn = nil;
+        NSError *tempError = nil;
+        SMCachePolicy policyToUse = (options.cachePolicy != -1) ? options.cachePolicy : [self.coreDataStore cachePolicy];
+        switch (policyToUse) {
+            case SMCachePolicyTryNetworkOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
+                resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
+                break;
+            case SMCachePolicyTryCacheOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
+                resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
+                break;
+            case SMCachePolicyTryNetworkElseCache:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
+                resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:&tempError];
+                if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
+                    resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
+                }
+                break;
+            case SMCachePolicyTryCacheElseNetwork:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
+                resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
+                if (*error) {
+                    return nil;
+                }
+                if ([resultsToReturn count] == 0) {
+                    resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
+                }
+                break;
+            default:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: default") }
+                if (error != NULL) {
+                    NSError *errorToReturn = [[NSError alloc] initWithDomain:SMErrorDomain code:SMErrorInvalidArguments userInfo:nil];
+                    *error = (__bridge id)(__bridge_retained CFTypeRef)errorToReturn;
+                }
+                break;
+        }
+        
+        if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch results to return are %@ with error %@", resultsToReturn, *error) }
+        return resultsToReturn;
+    } else {
+        id resultsToReturn = nil;
+        resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
+        return resultsToReturn;
+    }
+}
+
+// Returns NSArray<NSManagedObjectID>
+- (id)SM_fetchObjectIDs:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error {
+    if (SM_CORE_DATA_DEBUG) { DLog() }
+    
+    NSFetchRequest *fetchCopy = [fetchRequest copy];
+    
+    [fetchCopy setResultType:NSManagedObjectResultType];
+    
+    if ([fetchRequest fetchBatchSize] > 0) {
+        [fetchCopy setFetchBatchSize:[fetchRequest fetchBatchSize]];
+    }
+    
+    NSArray *objects = [self SM_fetchObjects:fetchCopy withContext:context options:options error:error];
+    
+    // Error check
+    if (*error != nil) {
+        return nil;
+    }
+    
+    return [objects map:^(id item) {
+        return [item objectID];
+    }];
+}
+
+- (NSArray *)SM_fetchCount:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError * __autoreleasing *)error {
+    
+    if (SM_CORE_DATA_DEBUG) { DLog() }
+    
+    if (SM_CACHE_ENABLED) {
+        NSArray *resultsToReturn = nil;
+        NSError *tempError = nil;
+        switch ([self.coreDataStore cachePolicy]) {
+            case SMCachePolicyTryNetworkOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
+                resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
+                break;
+            case SMCachePolicyTryCacheOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
+                resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
+                break;
+            case SMCachePolicyTryNetworkElseCache:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
+                resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:&tempError];
+                if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
+                    resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
+                }
+                break;
+            case SMCachePolicyTryCacheElseNetwork:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
+                resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
+                if (error != NULL && *error) {
+                    return nil;
+                }
+                if ([resultsToReturn objectAtIndex:0] == [NSNumber numberWithUnsignedInt:0]) {
+                    resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
+                }
+                break;
+            default:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: default") }
+                if (error != NULL) {
+                    NSError *errorToReturn = [[NSError alloc] initWithDomain:SMErrorDomain code:SMErrorInvalidArguments userInfo:nil];
+                    *error = (__bridge id)(__bridge_retained CFTypeRef)errorToReturn;
+                }
+                break;
+        }
+        
+        if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch results to return are %@", resultsToReturn) }
+        return resultsToReturn;
+    } else {
+        NSArray *resultsToReturn = nil;
+        resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
+        return resultsToReturn;
+    }
 }
 
 - (id)SM_fetchObjectsFromNetwork:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError * __autoreleasing *)error {
@@ -1361,7 +1489,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         return nil;
     }
     
-    if (SM_CACHE_ENABLED && ![self containsSMPredicate:[fetchRequest predicate]]) {
+    if (SM_CACHE_ENABLED && options.cacheResults && ![self containsSMPredicate:[fetchRequest predicate]]) {
         
         // Network fetch was successful, run same fetch on local cache and delete results
         NSError *fetchOnCacheError = nil;
@@ -1464,26 +1592,6 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
 }
 
-- (BOOL) containsSMPredicate:(NSPredicate *)predicate {
-    
-    if (SM_CORE_DATA_DEBUG) { DLog() }
-    
-    if ([predicate isKindOfClass:[SMPredicate class]]) {
-        return YES;
-    }
-    else if ([predicate isKindOfClass:[NSCompoundPredicate class]]) {
-        NSCompoundPredicate *compoundPredicate = (NSCompoundPredicate *)predicate;
-        for (NSPredicate *subPredicate in [compoundPredicate subpredicates]) {
-            if([self containsSMPredicate:subPredicate]) {
-                return YES;
-            }
-        }
-        
-    }
-    
-    return NO;
-}
-
 - (id)SM_fetchObjectsFromCache:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context error:(NSError * __autoreleasing *)error {
     
     if (SM_CORE_DATA_DEBUG) { DLog() }
@@ -1538,6 +1646,111 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
 }
 
+- (NSArray *)SM_fetchCountFromNetwork:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError * __autoreleasing *)error {
+    
+    if (SM_CORE_DATA_DEBUG) { DLog() }
+    
+    // Build query for StackMob
+    SMQuery *query = [self queryForFetchRequest:fetchRequest error:error];
+    
+    if (query == nil) {
+        if (error != NULL) {
+            *error = (__bridge id)(__bridge_retained CFTypeRef)*error;
+        }
+        return nil;
+    }
+    
+    __block NSNumber *countResult;
+    
+    // create a group dispatch and queue
+    dispatch_queue_t queue = dispatch_queue_create("com.stackmob.fetchCountFromNetworkQueue", NULL);
+    dispatch_group_t group = dispatch_group_create();
+    
+    __block BOOL success = [self SM_doTokenRefreshIfNeededWithGroup:group queue:queue options:options error:error];
+    
+    if (!success) {
+        return nil;
+    }
+    
+    options.tryRefreshToken = NO;
+    
+    dispatch_group_enter(group);
+    [self.coreDataStore performCount:query options:options successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSNumber *result) {
+        
+        countResult = result;
+        dispatch_group_leave(group);
+    } onFailure:^(NSError *queryError) {
+        
+        if (error != NULL) {
+            *error = (__bridge id)(__bridge_retained CFTypeRef)queryError;
+        }
+        dispatch_group_leave(group);
+        
+    }];
+    
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    
+#if !OS_OBJECT_USE_OBJC
+    dispatch_release(group);
+    dispatch_release(queue);
+#endif
+    
+    if (error != NULL && *error != nil) {
+        return nil;
+    }
+    
+    return [NSArray arrayWithObject:countResult];
+        
+}
+
+- (NSArray *)SM_fetchCountFromCache:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context error:(NSError * __autoreleasing *)error
+{
+    if (SM_CORE_DATA_DEBUG) { DLog() }
+    
+    if ([self containsSMPredicate:[fetchRequest predicate]]) {
+        return nil;
+    }
+    
+    if (fetchRequest.predicate) {
+        [fetchRequest setPredicate:[self SM_parsePredicate:fetchRequest.predicate]];
+    }
+    
+    __block NSUInteger localCacheCount;
+    __block NSError *localCacheError = nil;
+    [self.localManagedObjectContext performBlockAndWait:^{
+        localCacheCount = [self.localManagedObjectContext countForFetchRequest:fetchRequest error:&localCacheError];
+    }];
+    
+    // Error check
+    if (localCacheError != nil) {
+        if (error != NULL) {
+            *error = (__bridge id)(__bridge_retained CFTypeRef)localCacheError;
+        }
+        return nil;
+    }
+    
+    return [NSArray arrayWithObject:[NSNumber numberWithUnsignedInt:localCacheCount]];
+}
+
+- (BOOL)containsSMPredicate:(NSPredicate *)predicate {
+    
+    if (SM_CORE_DATA_DEBUG) { DLog() }
+    
+    if ([predicate isKindOfClass:[SMPredicate class]]) {
+        return YES;
+    }
+    else if ([predicate isKindOfClass:[NSCompoundPredicate class]]) {
+        NSCompoundPredicate *compoundPredicate = (NSCompoundPredicate *)predicate;
+        for (NSPredicate *subPredicate in [compoundPredicate subpredicates]) {
+            if([self containsSMPredicate:subPredicate]) {
+                return YES;
+            }
+        }
+        
+    }
+    
+    return NO;
+}
 
 - (NSPredicate *)SM_parsePredicate:(NSPredicate *)predicate
 {
@@ -1579,83 +1792,6 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
     return predicateToReturn;
     
-}
-
-
-// Returns NSArray<NSManagedObject>
-- (id)SM_fetchObjects:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError * __autoreleasing *)error {
-    
-    if (SM_CORE_DATA_DEBUG) { DLog() }
-    
-    if (SM_CACHE_ENABLED) {
-        id resultsToReturn = nil;
-        NSError *tempError = nil;
-        switch ([self.coreDataStore cachePolicy]) {
-            case SMCachePolicyTryNetworkOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
-                resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
-                break;
-            case SMCachePolicyTryCacheOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
-                resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
-                break;
-            case SMCachePolicyTryNetworkElseCache:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
-                resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:&tempError];
-                if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
-                    resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
-                }
-                break;
-            case SMCachePolicyTryCacheElseNetwork:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
-                resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
-                if (*error) {
-                    return nil;
-                }
-                if ([resultsToReturn count] == 0) {
-                    resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
-                }
-                break;
-            default:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: default") }
-                if (error != NULL) {
-                    NSError *errorToReturn = [[NSError alloc] initWithDomain:SMErrorDomain code:SMErrorInvalidArguments userInfo:nil];
-                    *error = (__bridge id)(__bridge_retained CFTypeRef)errorToReturn;
-                }
-                break;
-        }
-        
-        if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch results to return are %@ with error %@", resultsToReturn, *error) }
-        return resultsToReturn;
-    } else {
-        id resultsToReturn = nil;
-        resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
-        return resultsToReturn;
-    }
-}
-
-// Returns NSArray<NSManagedObjectID>
-- (id)SM_fetchObjectIDs:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error {
-    if (SM_CORE_DATA_DEBUG) { DLog() }
-    
-    NSFetchRequest *fetchCopy = [fetchRequest copy];
-    
-    [fetchCopy setResultType:NSManagedObjectResultType];
-    
-    if ([fetchRequest fetchBatchSize] > 0) {
-        [fetchCopy setFetchBatchSize:[fetchRequest fetchBatchSize]];
-    }
-    
-    NSArray *objects = [self SM_fetchObjects:fetchCopy withContext:context options:options error:error];
-    
-    // Error check
-    if (*error != nil) {
-        return nil;
-    }
-    
-    return [objects map:^(id item) {
-        return [item objectID];
-    }];
 }
 
 ////////////////////////////
@@ -1706,7 +1842,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             } else {
                 optionsForRequest = self.coreDataStore.globalRequestOptions;
             }
-            NSDictionary *serializedObjectDict = [self SM_retrieveAndSerializeObjectWithID:sm_managedObjectReferenceID entity:[sm_managedObject entity] options:optionsForRequest context:context includeRelationships:NO cacheResult:!self.isSaving error:error];
+            NSDictionary *serializedObjectDict = [self SM_retrieveAndSerializeObjectWithID:sm_managedObjectReferenceID entity:[sm_managedObject entity] options:optionsForRequest context:context includeRelationships:NO cacheResult:(!self.isSaving && optionsForRequest.cacheResults) error:error];
             
             if (error != NULL && *error) {
                 return nil;
@@ -1764,7 +1900,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             } else {
                 optionsForRequest = self.coreDataStore.globalRequestOptions;
             }
-            NSDictionary *serializedObjectDict = [self SM_retrieveAndSerializeObjectWithID:sm_managedObjectReferenceID entity:[sm_managedObject entity] options:optionsForRequest context:context includeRelationships:NO cacheResult:YES error:error];
+            NSDictionary *serializedObjectDict = [self SM_retrieveAndSerializeObjectWithID:sm_managedObjectReferenceID entity:[sm_managedObject entity] options:optionsForRequest context:context includeRelationships:NO cacheResult:optionsForRequest.cacheResults error:error];
             
             if (error != NULL && *error) {
                 return nil;
@@ -1951,9 +2087,27 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             
             if (shouldRetreiveFromNetwork) {
                 [arrayToReturn removeAllObjects];
-                // TODO add per-request options?
-                SMRequestOptions *optionsForRetrieval = self.coreDataStore.globalRequestOptions;
-                id resultToReturn =  [self SM_retrieveAndCacheRelatedObjectForRelationship:relationship parentObject:sm_managedObject referenceID:sm_managedObjectReferenceID options:optionsForRetrieval context:context error:error];
+                
+                SMRequestOptions *optionsFromDictionary = [[[NSThread currentThread] threadDictionary] objectForKey:SMRequestSpecificOptions];
+                SMRequestOptions *optionsForRetrieval = nil;
+                if (self.isSaving) {
+                    if (optionsFromDictionary) {
+                        optionsForRetrieval = [SMRequestOptions options];
+                        [optionsForRetrieval setIsSecure:[optionsFromDictionary isSecure]];
+                    } else {
+                        optionsForRetrieval = self.coreDataStore.globalRequestOptions;
+                    }
+                } else {
+                    optionsForRetrieval = self.coreDataStore.globalRequestOptions;
+                }
+                
+                id resultToReturn = nil;
+                if (!self.isSaving && optionsForRetrieval.cacheResults) {
+                    resultToReturn =  [self SM_retrieveAndCacheRelatedObjectForRelationship:relationship parentObject:sm_managedObject referenceID:sm_managedObjectReferenceID options:optionsForRetrieval context:context error:error];
+                } else {
+                    resultToReturn =  [self SM_retrieveRelatedObjectForRelationship:relationship parentObject:sm_managedObject referenceID:sm_managedObjectReferenceID options:optionsForRetrieval context:context error:error];
+                }
+                
                 arrayToReturn = resultToReturn;
             }
             
@@ -1971,9 +2125,26 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 NSRange range = [relatedObjectRemoteID rangeOfString:@":nil"];
                 if (range.location != NSNotFound) {
                     // Retreive object from server
-                    // TODO pull per-request options?
-                    SMRequestOptions *optionsForRetrival = self.coreDataStore.globalRequestOptions;
-                    id resultToReturn =  [self SM_retrieveAndCacheRelatedObjectForRelationship:relationship parentObject:sm_managedObject referenceID:sm_managedObjectReferenceID options:optionsForRetrival context:context error:error];
+                    SMRequestOptions *optionsFromDictionary = [[[NSThread currentThread] threadDictionary] objectForKey:SMRequestSpecificOptions];
+                    SMRequestOptions *optionsForRetrieval = nil;
+                    if (self.isSaving) {
+                        if (optionsFromDictionary) {
+                            optionsForRetrieval = [SMRequestOptions options];
+                            [optionsForRetrieval setIsSecure:[optionsFromDictionary isSecure]];
+                        } else {
+                            optionsForRetrieval = self.coreDataStore.globalRequestOptions;
+                        }
+                    } else {
+                        optionsForRetrieval = self.coreDataStore.globalRequestOptions;
+                    }
+                    
+                    id resultToReturn = nil;
+                    if (!self.isSaving && optionsForRetrieval.cacheResults) {
+                        resultToReturn =  [self SM_retrieveAndCacheRelatedObjectForRelationship:relationship parentObject:sm_managedObject referenceID:sm_managedObjectReferenceID options:optionsForRetrieval context:context error:error];
+                    } else {
+                        resultToReturn =  [self SM_retrieveRelatedObjectForRelationship:relationship parentObject:sm_managedObject referenceID:sm_managedObjectReferenceID options:optionsForRetrieval context:context error:error];
+                    }
+                    
                     return resultToReturn;
                 }
                 
@@ -2418,7 +2589,16 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             }
             __block NSMutableArray *arrayToReturn = [NSMutableArray array];
             [(NSArray *)relationshipContents enumerateObjectsUsingBlock:^(id expandedObject, NSUInteger idx, BOOL *stop) {
-                NSString *relatedObjectPrimaryKey = [expandedObject objectForKey:[[relationship destinationEntity] SMPrimaryKeyField]];
+                NSString *relatedObjectPrimaryKey = nil;
+                @try {
+                    relatedObjectPrimaryKey = [expandedObject objectForKey:[[relationship destinationEntity] SMPrimaryKeyField]];
+                }
+                @catch (NSException *exception) {
+                    relatedObjectPrimaryKey = [expandedObject objectForKey:[self.coreDataStore.session userPrimaryKeyField]];
+                }
+                
+                // TODO account for nil primary key
+                
                 NSManagedObjectID *relationshipObjectID = [self newObjectIDForEntity:[relationship destinationEntity] referenceObject:relatedObjectPrimaryKey];
                 [arrayToReturn addObject:relationshipObjectID];
                 
@@ -2454,7 +2634,17 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             if (![relationshipContents isKindOfClass:[NSDictionary class]]) {
                 [NSException raise:SMExceptionIncompatibleObject format:@"Relationship contents should be a Dictionary for a to-one relationship with expansion. The relationship passed has contents that are of class type %@. Confirm that this relationship was meant to be to-one.", [relationshipContents class]];
             }
-            NSString *relatedObjectPrimaryKey = [relationshipContents objectForKey:[[relationship destinationEntity] primaryKeyField]];
+            
+            NSString *relatedObjectPrimaryKey = nil;
+            @try {
+                relatedObjectPrimaryKey = [relationshipContents objectForKey:[[relationship destinationEntity] SMPrimaryKeyField]];
+            }
+            @catch (NSException *exception) {
+                relatedObjectPrimaryKey = [relationshipContents objectForKey:[self.coreDataStore.session userPrimaryKeyField]];
+            }
+            
+            // TODO account for nil primary key
+            
             NSManagedObjectID *relationshipObjectID = [self newObjectIDForEntity:[relationship destinationEntity] referenceObject:relatedObjectPrimaryKey];
             
             [self SM_serializeAndCacheObjectWithID:relatedObjectPrimaryKey values:relationshipContents entity:[relationship destinationEntity] context:context];
@@ -2738,19 +2928,19 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
 
 - (void)SM_removeRemoteIDsFromDirtyQueue:(NSArray *)arrayOfObjectInfo
 {
-    NSArray *dirtyQueueLists = [NSArray arrayWithObjects:SMDirtyInsertedObjectKeys, SMDirtyUpdatedObjectKeys, SMDirtyUpdatedObjectKeys, nil];
+    NSArray *dirtyQueueLists = [NSArray arrayWithObjects:SMDirtyInsertedObjectKeys, SMDirtyUpdatedObjectKeys, SMDirtyDeletedObjectKeys, nil];
     
     [arrayOfObjectInfo enumerateObjectsUsingBlock:^(id info, NSUInteger idx, BOOL *stop) {
         if (SM_CORE_DATA_DEBUG) { DLog() }
         
-        NSString *objectID = [info objectForKey:ObjectID];
-        NSString *entityName = [info objectForKey:ObjectEntityName];
+        __block NSString *objectID = [info objectForKey:ObjectID];
+        __block NSString *entityName = [info objectForKey:ObjectEntityName];
         
         [dirtyQueueLists enumerateObjectsUsingBlock:^(id listName, NSUInteger innerIdx, BOOL *innerStop) {
             NSMutableArray *listCopyFromDirtyQueue = [[self.dirtyQueue objectForKey:listName] mutableCopy];
             
             NSUInteger indexOfObject = [listCopyFromDirtyQueue indexOfObjectPassingTest:^BOOL(id obj, NSUInteger index, BOOL *stopTest) {
-                return (obj[0] == objectID && obj[1] == entityName);
+                return ([obj[0] isEqualToString:objectID] && [obj[1] isEqualToString:entityName]);
             }];
             
             if (indexOfObject != NSNotFound) {
@@ -3028,7 +3218,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             if ([cacheResults count] != 1) {
                 // more than one result in cache? Or no result in cache?
                 // handle error
-                [NSException raise:SMExceptionCacheError format:@"MORE THAN ONE RESULT IN CACHE FOUND"];
+                [NSException raise:SMExceptionCacheError format:@"On merge of inserts, query for object did not return 1 result. Please contact support. Query: %@", fetchFromCache];
             }
             
             NSManagedObject *clientObject = [cacheResults lastObject];
@@ -3192,7 +3382,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 if ([cacheResults count] != 1) {
                     // more than one result in cache? Or no result in cache?
                     // handle error
-                    [NSException raise:SMExceptionCacheError format:@"MORE THAN ONE RESULT IN CACHE FOUND"];
+                    [NSException raise:SMExceptionCacheError format:@"On merge of updates, query for object did not return 1 result. Please contact support. Query: %@", fetchFromCache];
                 }
                 
                 NSManagedObject *clientObject = [cacheResults lastObject];
@@ -3808,7 +3998,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         __block NSString *entityName = [[managedObjectID entity] name];
         
         NSUInteger indexOfObject = [dirtyObjects indexOfObjectPassingTest:^BOOL(id obj, NSUInteger index, BOOL *stopTest) {
-            return (obj[0] == primaryKey && obj[1] == entityName);
+            return ([obj[0] isEqualToString:primaryKey] && [obj[1] isEqualToString:entityName]);
         }];
         
         if (indexOfObject != NSNotFound) {
