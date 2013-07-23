@@ -2928,19 +2928,19 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
 
 - (void)SM_removeRemoteIDsFromDirtyQueue:(NSArray *)arrayOfObjectInfo
 {
-    NSArray *dirtyQueueLists = [NSArray arrayWithObjects:SMDirtyInsertedObjectKeys, SMDirtyUpdatedObjectKeys, SMDirtyUpdatedObjectKeys, nil];
+    NSArray *dirtyQueueLists = [NSArray arrayWithObjects:SMDirtyInsertedObjectKeys, SMDirtyUpdatedObjectKeys, SMDirtyDeletedObjectKeys, nil];
     
     [arrayOfObjectInfo enumerateObjectsUsingBlock:^(id info, NSUInteger idx, BOOL *stop) {
         if (SM_CORE_DATA_DEBUG) { DLog() }
         
-        NSString *objectID = [info objectForKey:ObjectID];
-        NSString *entityName = [info objectForKey:ObjectEntityName];
+        __block NSString *objectID = [info objectForKey:ObjectID];
+        __block NSString *entityName = [info objectForKey:ObjectEntityName];
         
         [dirtyQueueLists enumerateObjectsUsingBlock:^(id listName, NSUInteger innerIdx, BOOL *innerStop) {
             NSMutableArray *listCopyFromDirtyQueue = [[self.dirtyQueue objectForKey:listName] mutableCopy];
             
             NSUInteger indexOfObject = [listCopyFromDirtyQueue indexOfObjectPassingTest:^BOOL(id obj, NSUInteger index, BOOL *stopTest) {
-                return (obj[0] == objectID && obj[1] == entityName);
+                return ([obj[0] isEqualToString:objectID] && [obj[1] isEqualToString:entityName]);
             }];
             
             if (indexOfObject != NSNotFound) {
@@ -3218,7 +3218,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             if ([cacheResults count] != 1) {
                 // more than one result in cache? Or no result in cache?
                 // handle error
-                [NSException raise:SMExceptionCacheError format:@"MORE THAN ONE RESULT IN CACHE FOUND"];
+                [NSException raise:SMExceptionCacheError format:@"On merge of inserts, query for object did not return 1 result. Please contact support. Query: %@", fetchFromCache];
             }
             
             NSManagedObject *clientObject = [cacheResults lastObject];
@@ -3382,7 +3382,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 if ([cacheResults count] != 1) {
                     // more than one result in cache? Or no result in cache?
                     // handle error
-                    [NSException raise:SMExceptionCacheError format:@"MORE THAN ONE RESULT IN CACHE FOUND"];
+                    [NSException raise:SMExceptionCacheError format:@"On merge of updates, query for object did not return 1 result. Please contact support. Query: %@", fetchFromCache];
                 }
                 
                 NSManagedObject *clientObject = [cacheResults lastObject];
@@ -3998,7 +3998,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         __block NSString *entityName = [[managedObjectID entity] name];
         
         NSUInteger indexOfObject = [dirtyObjects indexOfObjectPassingTest:^BOOL(id obj, NSUInteger index, BOOL *stopTest) {
-            return (obj[0] == primaryKey && obj[1] == entityName);
+            return ([obj[0] isEqualToString:primaryKey] && [obj[1] isEqualToString:entityName]);
         }];
         
         if (indexOfObject != NSNotFound) {
