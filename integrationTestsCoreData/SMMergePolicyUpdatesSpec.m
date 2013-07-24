@@ -749,7 +749,7 @@ describe(@"Insert 1 Online, Update Offline at T1, Delete Online at T2", ^{
         [saveError shouldBeNil];
         
         // Delete online at T2
-        //sleep(3);
+        sleep(1);
         
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();

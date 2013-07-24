@@ -116,8 +116,10 @@
         if ([property isKindOfClass:[NSAttributeDescription class]]) {
             NSAttributeDescription *attributeDescription = (NSAttributeDescription *)property;
             NSString *fieldName = [selfEntity SMFieldNameForProperty:property];
-            if (attributeDescription.attributeType != NSUndefinedAttributeType && propertyValue != nil && propertyValue != [NSNull null]) {
-                if (attributeDescription.attributeType == NSDateAttributeType) {
+            if (attributeDescription.attributeType != NSUndefinedAttributeType) {
+                if (propertyValue == nil || propertyValue == [NSNull null]) {
+                    [objectDictionary setObject:[NSNull null] forKey:fieldName];
+                } else if (attributeDescription.attributeType == NSDateAttributeType) {
                     
                     NSDate *dateValue = propertyValue;
                     long double convertedDate = (long double)[dateValue timeIntervalSince1970] * 1000.0000;
