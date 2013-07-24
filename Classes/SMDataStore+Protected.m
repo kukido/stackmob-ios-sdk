@@ -286,6 +286,19 @@
                     failureBlock(originalRequest, response, error, JSON);
                 }
             }
+        } else if ([response statusCode] == SMErrorMovedPermanently || [response statusCode] == SMErrorFound) {
+            NSString *urlRedirect = [[response allHeaderFields] valueForKey:@"Location"];
+            NSURL *url = [NSURL URLWithString:urlRedirect];
+            NSString *baseURL = [[url baseURL] absoluteString];
+            NSLog(@"base url is %@", baseURL);
+            if ([response statusCode] == SMErrorMovedPermanently) {
+                // Store base URL permantently
+            } else {
+                // Store base URL just for this session
+            }
+            
+            // Retry the request
+            
         } else if ([error domain] == NSURLErrorDomain && [error code] == -1009) {
             if (failureBlock) {
                 NSError *networkNotReachableError = [[NSError alloc] initWithDomain:SMErrorDomain code:SMErrorNetworkNotReachable userInfo:[error userInfo]];
@@ -360,6 +373,16 @@
                         onFailure(originalRequest, response, error, JSON);
                     }
                 }
+            } else if ([response statusCode] == SMErrorFound) {
+                NSString *urlRedirect = [[response allHeaderFields] valueForKey:@"Location"];
+                NSURL *url = [NSURL URLWithString:urlRedirect];
+                NSString *baseURL = [[url baseURL] absoluteString];
+                NSLog(@"base url is %@", baseURL);
+                
+                // Set the base url
+                
+                // Retry the request
+                
             } else if ([error domain] == NSURLErrorDomain && [error code] == -1009) {
                 if (onFailure) {
                     NSError *networkNotReachableError = [[NSError alloc] initWithDomain:SMErrorDomain code:SMErrorNetworkNotReachable userInfo:[error userInfo]];
