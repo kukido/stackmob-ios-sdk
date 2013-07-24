@@ -21,6 +21,311 @@
 
 SPEC_BEGIN(SMCoreDataStoreTest)
 
+describe(@"can set a field to nil, string", ^{
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        testProperties = [[SMTestProperties alloc] init];
+        // Create todo
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        [todoObject setValue:@"title" forKey:@"title"];
+        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+    });
+    afterEach(^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"sets field to nil correctly", ^{
+        // Read Todo
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"title"];
+        
+        // Set to nil
+        [[results objectAtIndex:0] setValue:nil forKey:@"title"];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read todo
+        NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:fetch2 error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        
+        [[[results objectAtIndex:0] valueForKey:@"title"] shouldBeNil];
+    });
+});
+
+describe(@"can set a field to nil, date", ^{
+    __block SMTestProperties *testProperties = nil;
+    __block NSDate *date = nil;
+    beforeEach(^{
+        testProperties = [[SMTestProperties alloc] init];
+        // Create todo
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:testProperties.moc];
+        date = [NSDate date];
+        [todoObject setValue:date forKey:@"time"];
+        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+    });
+    afterEach(^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"sets field to nil correctly", ^{
+        // Read Todo
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        NSTimeInterval ti = [[[results objectAtIndex:0] valueForKey:@"time"] timeIntervalSince1970];
+        [[theValue(ti - [date timeIntervalSince1970]) should] beLessThan:theValue(0.001)];
+        
+        // Set to nil
+        [[results objectAtIndex:0] setValue:nil forKey:@"time"];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read todo
+        NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:fetch2 error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        
+        [[[results objectAtIndex:0] valueForKey:@"time"] shouldBeNil];
+    });
+});
+
+describe(@"can set a field to nil, int", ^{
+    __block SMTestProperties *testProperties = nil;
+    __block NSNumber *born = nil;
+    beforeEach(^{
+        testProperties = [[SMTestProperties alloc] init];
+        // Create todo
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:testProperties.moc];
+        born = [NSNumber numberWithInt:1980];
+        [todoObject setValue:born forKey:@"yearBorn"];
+        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+    });
+    afterEach(^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"sets field to nil correctly", ^{
+        // Read Todo
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        [[[[results objectAtIndex:0] valueForKey:@"yearBorn"] should] equal:[NSNumber numberWithInt:1980]];
+        
+        // Set to nil
+        [[results objectAtIndex:0] setValue:nil forKey:@"yearBorn"];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read todo
+        NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:fetch2 error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        
+        [[[results objectAtIndex:0] valueForKey:@"yearBorn"] shouldBeNil];
+    });
+});
+
+/*
+describe(@"can set a field to nil, binary", ^{
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        testProperties = [[SMTestProperties alloc] init];
+        // Create todo
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
+        NSError *error = nil;
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        NSString* pathToImageFile = [bundle pathForResource:@"goatPic" ofType:@"jpeg"];
+        NSData *theData = [NSData dataWithContentsOfFile:pathToImageFile options:NSDataReadingMappedIfSafe error:&error];
+        [error shouldBeNil];
+        NSString *dataString = [SMBinaryDataConversion stringForBinaryData:theData name:@"whatever" contentType:@"image/jpeg"];
+        [todoObject setValue:dataString forKey:@"pic"];
+        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        
+        error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+    });
+    afterEach(^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"sets field to nil correctly", ^{
+        // Read Todo
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldNotBeNil];
+        
+        // Set to nil
+        [[results objectAtIndex:0] setValue:nil forKey:@"pic"];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read todo
+        NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:fetch2 error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        
+        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldBeNil];
+    });
+});
+*/
+/*
+describe(@"can set a field to nil, geopoint", ^{
+    __block SMTestProperties *testProperties = nil;
+    __block SMGeoPoint *geo = nil;
+    beforeEach(^{
+        testProperties = [[SMTestProperties alloc] init];
+        // Create todo
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:testProperties.moc];
+        geo = [SMGeoPoint geoPointWithLatitude:[NSNumber numberWithDouble:30.5] longitude:[NSNumber numberWithDouble:30.5]];
+        //geo = [SMGeoPoint geoPointWithLatitude:[NSNumber numberWithInt:30] longitude:[NSNumber numberWithInt:30]];
+        [todoObject setValue:[NSKeyedArchiver archivedDataWithRootObject:geo] forKey:@"geopoint"];
+        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+    });
+    afterEach(^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"sets field to nil correctly", ^{
+        // Read Todo
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        NSData *data = [[results objectAtIndex:0] valueForKey:@"geopoint"];
+        [data shouldNotBeNil];
+        SMGeoPoint *geoPoint = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        [[geoPoint should] equal:geo];
+        
+        // Set to nil
+        [[results objectAtIndex:0] setValue:nil forKey:@"geopoint"];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read todo
+        NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:fetch2 error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        
+        [[[results objectAtIndex:0] valueForKey:@"geopoint"] shouldBeNil];
+    });
+});
+*/
+
 describe(@"create an instance of SMCoreDataStore from SMClient", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
