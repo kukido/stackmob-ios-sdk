@@ -28,6 +28,8 @@
 
 @property (nonatomic, copy) NSString *oauthStorageKey;
 @property (readwrite, nonatomic, copy) SMTokenRefreshFailureBlock tokenRefreshFailureBlock;
+@property(nonatomic, readwrite, copy) NSString *publicKey;
+@property(nonatomic, readwrite, copy) NSString *version;
 
 - (NSURL *)SM_getStoreURLForUserIdentifierTable;
 - (void)SM_createStoreURLPathIfNeeded:(NSURL *)storeURL;
@@ -51,6 +53,8 @@
 @synthesize networkMonitor = _SM_networkMonitor;
 @synthesize userIdentifierMap = _SM_userIdentifierMap;
 @synthesize tokenRefreshFailureBlock = _tokenRefreshFailureBlock;
+@synthesize publicKey = _publicKey;
+@synthesize version = _version;
 
 - (id)initWithAPIVersion:(NSString *)version
                  apiHost:(NSString *)apiHost
@@ -75,6 +79,8 @@
         self.userPasswordField = userPasswordField;
         self.refreshing = NO;
         self.tokenRefreshFailureBlock = nil;
+        self.publicKey = publicKey;
+        self.version = version;
         
         NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
         if (!applicationName) {
@@ -333,6 +339,22 @@
 - (void)setTokenRefreshFailureBlock:(void (^)(NSError *error, SMFailureBlock originalFailureBlock))block
 {
     _tokenRefreshFailureBlock = block;
+}
+
+- (void)setNewAPIHost:(NSString *)apiHost
+{
+    self.regularOAuthClient = nil;
+    self.secureOAuthClient = nil;
+    self.tokenClient = nil;
+    
+    self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"http" apiHost:apiHost publicKey:self.publicKey];
+    self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"https" apiHost:apiHost publicKey:self.publicKey];
+    self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiHost]]];
+    NSString *acceptHeader = [NSString stringWithFormat:@"application/vnd.stackmob+json; version=%@", self.version];
+    [self.tokenClient setDefaultHeader:@"Accept" value:acceptHeader];
+    [self.tokenClient setDefaultHeader:@"X-StackMob-API-Key" value:self.publicKey];
+    [self.tokenClient setDefaultHeader:@"Content-Type" value:@"application/x-www-form-urlencoded"];
+    [self.tokenClient setDefaultHeader:@"User-Agent" value:[NSString stringWithFormat:@"StackMob/%@ (%@/%@; %@;)", SDK_VERSION, smDeviceModel(), smSystemVersion(), [[NSLocale currentLocale] localeIdentifier]]];
 }
 
 

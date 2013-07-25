@@ -325,4 +325,13 @@ typedef void (^SMTokenRefreshFailureBlock)(NSError *error, SMFailureBlock origin
  */
 - (BOOL)accessTokenHasExpired;
 
+/**
+ Internal method used for changing API hosts, triggered by `SMClient`.
+ 
+ @param apiHost The new host.
+ 
+ @since Available in iOS SDK 1.0.0 and later.
+ */
+- (void)setNewAPIHost:(NSString *)apiHost;
+
 @end

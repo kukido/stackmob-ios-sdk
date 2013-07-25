@@ -230,6 +230,9 @@
 		DEC2534A1750303F0023BEDA /* AFHTTPRequestOperation+RemoveContentType.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC253481750303F0023BEDA /* AFHTTPRequestOperation+RemoveContentType.m */; };
 		DEC5F9FA169B979B00A44722 /* SMIncrementalStoreNode.h in Headers */ = {isa = PBXBuildFile; fileRef = DEC5F9F8169B979B00A44722 /* SMIncrementalStoreNode.h */; };
 		DEC5F9FB169B979B00A44722 /* SMIncrementalStoreNode.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC5F9F9169B979B00A44722 /* SMIncrementalStoreNode.m */; };
+		DEC6351717A1CBCB00EC678D /* SMHTTPRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = DEC6351517A1CBCB00EC678D /* SMHTTPRequestOperation.h */; };
+		DEC6351817A1CBCB00EC678D /* SMHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC6351617A1CBCB00EC678D /* SMHTTPRequestOperation.m */; };
+		DEC6351B17A1DBB800EC678D /* SMCusCodeReqIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB16BCB15DC606300893EE5 /* SMCusCodeReqIntegrationSpec.m */; };
 		DED7D2A81655749900FBAF06 /* SMNetworkReachability.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DE079B9A16499B0900C8AAA0 /* SMNetworkReachability.h */; };
 		DED7D2A91655749900FBAF06 /* SystemInformation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEA9ED94164B2BAB006B7326 /* SystemInformation.h */; };
 		DEDD40451629224E00F5C8E0 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE64D61B1623BAE800237570 /* Security.framework */; };
@@ -516,6 +519,8 @@
 		DEC570FA15D065FC00D9E44E /* SMCoreDataStoreTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCoreDataStoreTest.m; sourceTree = "<group>"; };
 		DEC5F9F8169B979B00A44722 /* SMIncrementalStoreNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMIncrementalStoreNode.h; sourceTree = "<group>"; };
 		DEC5F9F9169B979B00A44722 /* SMIncrementalStoreNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMIncrementalStoreNode.m; sourceTree = "<group>"; };
+		DEC6351517A1CBCB00EC678D /* SMHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMHTTPRequestOperation.h; sourceTree = "<group>"; };
+		DEC6351617A1CBCB00EC678D /* SMHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMHTTPRequestOperation.m; sourceTree = "<group>"; };
 		DEE18F59160A611E00BDCCC6 /* SMRelationshipHeadersSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMRelationshipHeadersSpec.m; sourceTree = "<group>"; };
 		DEE585271631F3C40009A1DE /* SMUpdateObjectsOptimizationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUpdateObjectsOptimizationSpec.m; sourceTree = "<group>"; };
 		DEEDC32616C984B4008B1CC2 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
@@ -763,6 +768,8 @@
 				DE05E15415E2C02200224E4E /* SMError.m */,
 				DE05E15515E2C02200224E4E /* SMJSONRequestOperation.h */,
 				DE05E15615E2C02200224E4E /* SMJSONRequestOperation.m */,
+				DEC6351517A1CBCB00EC678D /* SMHTTPRequestOperation.h */,
+				DEC6351617A1CBCB00EC678D /* SMHTTPRequestOperation.m */,
 				DEC253471750303F0023BEDA /* AFHTTPRequestOperation+RemoveContentType.h */,
 				DEC253481750303F0023BEDA /* AFHTTPRequestOperation+RemoveContentType.m */,
 				DE05E15815E2C02200224E4E /* SMOAuth2Client.h */,
@@ -982,6 +989,7 @@
 				DE1F26691733375F00DA734F /* FileManagement.h in Headers */,
 				DEC253491750303F0023BEDA /* AFHTTPRequestOperation+RemoveContentType.h in Headers */,
 				DE01742E1756A4BD00E4EA4B /* Person.h in Headers */,
+				DEC6351717A1CBCB00EC678D /* SMHTTPRequestOperation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1324,6 +1332,7 @@
 				1D8351CF16C08D7000814C71 /* Random.m in Sources */,
 				1D8351DF16C0969900814C71 /* SMCoreDataIntegrationTest.xcdatamodeld in Sources */,
 				DEB05FE117A0791600781763 /* URLRedirectSpec.m in Sources */,
+				DEC6351B17A1DBB800EC678D /* SMCusCodeReqIntegrationSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1369,6 +1378,7 @@
 				DE1F266A1733375F00DA734F /* FileManagement.m in Sources */,
 				DEC2534A1750303F0023BEDA /* AFHTTPRequestOperation+RemoveContentType.m in Sources */,
 				DE01742F1756A4BD00E4EA4B /* Person.m in Sources */,
+				DEC6351817A1CBCB00EC678D /* SMHTTPRequestOperation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

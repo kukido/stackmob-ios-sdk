@@ -20,7 +20,7 @@
 #import "SMRequestOptions.h"
 #import "SMNetworkReachability.h"
 #import "SMCustomCodeRequest.h"
-#import "AFHTTPRequestOperation.h"
+#import "SMHTTPRequestOperation.h"
 #import "AFHTTPRequestOperation+RemoveContentType.h"
 
 #define SM_VENDOR_SPECIFIC_JSON @"application/vnd.stackmob+json"
@@ -296,19 +296,6 @@
                     failureBlock(originalRequest, response, error, JSON);
                 }
             }
-        } else if ([response statusCode] == SMErrorMovedPermanently || [response statusCode] == SMErrorFound) {
-            NSString *urlRedirect = [[response allHeaderFields] valueForKey:@"Location"];
-            NSURL *url = [NSURL URLWithString:urlRedirect];
-            NSString *baseURL = [[url baseURL] absoluteString];
-            NSLog(@"base url is %@", baseURL);
-            if ([response statusCode] == SMErrorMovedPermanently) {
-                // Store base URL permantently
-            } else {
-                // Store base URL just for this session
-            }
-            
-            // Retry the request
-            
         } else if ([error domain] == NSURLErrorDomain && [error code] == -1009) {
             if (failureBlock) {
                 NSError *networkNotReachableError = [[NSError alloc] initWithDomain:SMErrorDomain code:SMErrorNetworkNotReachable userInfo:[error userInfo]];
@@ -383,16 +370,6 @@
                         onFailure(originalRequest, response, error, JSON);
                     }
                 }
-            } else if ([response statusCode] == SMErrorFound) {
-                NSString *urlRedirect = [[response allHeaderFields] valueForKey:@"Location"];
-                NSURL *url = [NSURL URLWithString:urlRedirect];
-                NSString *baseURL = [[url baseURL] absoluteString];
-                NSLog(@"base url is %@", baseURL);
-                
-                // Set the base url
-                
-                // Retry the request
-                
             } else if ([error domain] == NSURLErrorDomain && [error code] == -1009) {
                 if (onFailure) {
                     NSError *networkNotReachableError = [[NSError alloc] initWithDomain:SMErrorDomain code:SMErrorNetworkNotReachable userInfo:[error userInfo]];
@@ -496,13 +473,13 @@
             }
         };
         
-        AFHTTPRequestOperation *op = [[self.session oauthClientWithHTTPS:options.isSecure] HTTPRequestOperationWithRequest:request success:successBlock failure:retryBlock];
+        SMHTTPRequestOperation *op = [SMHTTPRequestOperation SMHTTPRequestOperationWithRequest:request success:successBlock failure:retryBlock];
         
         NSSet *whitelistedContentTypes = [NSSet setWithObjects:SM_VENDOR_SPECIFIC_JSON, SM_JSON, SM_TEXT_PLAIN, SM_OCTET_STREAM, nil];
         if (customCodeRequest.responseContentType) {
-            [AFHTTPRequestOperation addAcceptableContentTypes:[whitelistedContentTypes setByAddingObject:customCodeRequest.responseContentType]];
+            [SMHTTPRequestOperation addAcceptableContentTypes:[whitelistedContentTypes setByAddingObject:customCodeRequest.responseContentType]];
         } else {
-            [AFHTTPRequestOperation addAcceptableContentTypes:whitelistedContentTypes];
+            [SMHTTPRequestOperation addAcceptableContentTypes:whitelistedContentTypes];
         }
         
         if (successCallbackQueue) {
