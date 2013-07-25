@@ -95,13 +95,23 @@
     };
 }
 
-- (SMFullResponseSuccessBlock)SMFullResponseSuccessBlockForBulkSuccessBlock:(SMDataStoreBulkSuccessBlock)successBlock
+- (SMFullResponseSuccessBlock)SMFullResponseSuccessBlockForBulkObjectsOfSchema:(NSString *)schema successBlock:(SMDataStoreBulkSuccessBlock)successBlock
 {
     return ^void(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
     {
         if (successBlock) {
             NSDictionary *jsonDict = (NSDictionary *)JSON;
-            successBlock([jsonDict objectForKey:@"succeeded"], [jsonDict objectForKey:@"failed"]);
+            successBlock([jsonDict objectForKey:@"succeeded"], [jsonDict objectForKey:@"failed"], schema);
+        }
+    };
+}
+
+- (SMFullResponseFailureBlock)SMFullResponseFailureBlockForBulkObjects:(NSArray *)objects ofSchema:(NSString *)schema withFailureBlock:(SMDataStoreBulkFailureBlock)failureBlock
+{
+    return ^void(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+    {
+        if (failureBlock) {
+            response == nil ? failureBlock(error, objects, schema) : failureBlock([self errorFromResponse:response JSON:JSON], objects, schema);
         }
     };
 }

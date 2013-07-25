@@ -147,6 +147,65 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
            onSuccess:(SMDataStoreSuccessBlock)successBlock
            onFailure:(SMDataStoreFailureBlock)failureBlock;
 
+
+/**
+ Creates a set of new objects in your StackMob Datastore.
+ 
+ Can only be used to create top level object i.e. you can not send nested dictionary objects.
+ 
+ @param objects The objects to create as dictionary instances.
+ @param schema The StackMob schema in which to create the new objects.
+ @param successBlock <i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray* succeeded, NSArray *failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.
+ @param failureBlock <i>typedef void (^SMDataStoreBulkFailureBlock)(NSError *error, NSArray *objects, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the objects to be created, and the schema.
+ */
+- (void)createObjects:(NSArray *)objects
+            inSchema:(NSString *)schema
+           onSuccess:(SMDataStoreBulkSuccessBlock)successBlock
+           onFailure:(SMDataStoreBulkFailureBlock)failureBlock;
+
+/**
+ Creates a set of new objects in your StackMob Datastore.
+ 
+ Can only be used to create top level object i.e. you can not send nested dictionary objects.
+ 
+ @param objects The objects to create as dictionary instances.
+ @param schema The StackMob schema in which to create the new objects.
+ @param options An options object contains headers and other configuration for this request.
+ @param successBlock <i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray* succeeded, NSArray *failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.
+ @param failureBlock <i>typedef void (^SMDataStoreBulkFailureBlock)(NSError *error, NSArray *objects, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the objects to be created, and the schema.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+- (void)createObjects:(NSArray *)objects
+             inSchema:(NSString *)schema
+              options:(SMRequestOptions *)options
+            onSuccess:(SMDataStoreBulkSuccessBlock)successBlock
+            onFailure:(SMDataStoreBulkFailureBlock)failureBlock;
+
+/**
+ Creates a set of new objects in your StackMob Datastore.
+ 
+ Can only be used to create top level object i.e. you can not send nested dictionary objects.
+ 
+ @param objects The objects to create as dictionary instances.
+ @param schema The StackMob schema in which to create the new objects.
+ @param options An options object contains headers and other configuration for this request.
+ @param successCallbackQueue The dispatch queue used to execute the success block. If nil is passed, the main queue is used.
+ @param failureCallbackQueue The dispatch queue used to execute the failure block. If nil is passed, the main queue is used.
+ @param successBlock <i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray* succeeded, NSArray *failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.
+ @param failureBlock <i>typedef void (^SMDataStoreBulkFailureBlock)(NSError *error, NSArray *objects, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the objects to be created, and the schema.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+- (void)createObjects:(NSArray *)objects
+             inSchema:(NSString *)schema
+              options:(SMRequestOptions *)options
+ successCallbackQueue:(dispatch_queue_t)successCallbackQueue
+ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
+            onSuccess:(SMDataStoreBulkSuccessBlock)successBlock
+            onFailure:(SMDataStoreBulkFailureBlock)failureBlock;
+
+
 #pragma mark - Read an Object
 ///-------------------------------
 /// @name Read an Object
@@ -346,7 +405,7 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
  @param objectId The primary key of the object with the relationship being edited.
  @param schema The primary object's schema.
  @param field The name of the primary object's related field.
- @param successBlock <i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray* succeeded, NSArray *failed)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed objects in two separate arrays.
+ @param successBlock <i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray* succeeded, NSArray *failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.
  @param failureBlock <i>typedef void (^SMDataStoreArrayFailureBlock)(NSError *error, NSString *objectId, NSArray* objects, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the primary key, the objects to be created and appended, and the schema in which the object was to be updated.
  
  @since Available in iOS SDK 2.1.0 and later.
@@ -363,7 +422,7 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
  @param schema The primary object's schema.
  @param field The name of the primary object's related field.
  @param options An options object contains headers and other configuration for this request.
- @param successBlock <i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray* succeeded, NSArray *failed)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed objects in two separate arrays.
+ @param successBlock <i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray* succeeded, NSArray *failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.
  @param failureBlock <i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError *error, NSString *objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the primary key, the objects to be created and appended, and the schema in which the object was to be updated.
  
  @since Available in iOS SDK 2.1.0 and later.
@@ -382,7 +441,7 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
  @param options An options object contains headers and other configuration for this request.
  @param successCallbackQueue The dispatch queue used to execute the success block. If nil is passed, the main queue is used.
  @param failureCallbackQueue The dispatch queue used to execute the failure block. If nil is passed, the main queue is used.
- @param successBlock <i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray* succeeded, NSArray *failed)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed objects in two separate arrays.
+ @param successBlock <i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray* succeeded, NSArray *failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.
  @param failureBlock <i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError *error, NSString *objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the primary key, the objects to be created and appended, and the schema in which the object was to be updated.
  
  @since Available in iOS SDK 2.1.0 and later.
