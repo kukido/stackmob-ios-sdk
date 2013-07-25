@@ -200,8 +200,8 @@ describe(@"CRUD", ^{
                     returnedSchema = schema;
                     NSLog(@"Read %@", object);
                     syncReturn(semaphore);
-                } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
-                    NSLog(@"Failed to read %@: %@", objectId, error);
+                } onFailure:^(NSError *error, NSString *objectID, NSString *schema) {
+                    NSLog(@"Failed to read %@: %@", objectID, error);
                     newBook = nil;
                     syncReturn(semaphore);
                 }];
@@ -233,11 +233,11 @@ describe(@"CRUD", ^{
         it(@"Should delete given non-lowercase schema name", ^{
             [[dataStore.session.regularOAuthClient operationQueue] shouldNotBeNil];
             syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-                [dataStore deleteObjectId:objectId inSchema:@"Book" onSuccess:^(NSString *objectId, NSString *schema) {
+                [dataStore deleteObjectId:objectId inSchema:@"Book" onSuccess:^(NSString *objectID, NSString *schema) {
                     returnedSchema = schema;
-                    NSLog(@"Deleted %@", objectId);
+                    NSLog(@"Deleted %@", objectID);
                     syncReturn(semaphore);
-                } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
+                } onFailure:^(NSError *error, NSString *objectID, NSString *schema) {
                     NSLog(@"Failed to delete %@: %@", schema, error);
                     syncReturn(semaphore);
                 }];
@@ -251,7 +251,7 @@ describe(@"CRUD", ^{
 describe(@"CRUD with GeoPoints", ^{
     __block SMDataStore *dataStore = nil;
     __block SMGeoPoint *point = nil;
-    __block NSDictionary *object = nil;
+    __block NSDictionary *anObject = nil;
     
     beforeEach(^{;
         dataStore = [SMIntegrationTestHelpers dataStore];
@@ -266,7 +266,7 @@ describe(@"CRUD with GeoPoints", ^{
         
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
             [dataStore createObject:args inSchema:@"random" onSuccess:^(NSDictionary *object, NSString *schema) {
-                object = object;
+                anObject = object;
                 syncReturn(semaphore);
             } onFailure:^(NSError *error, NSDictionary *object, NSString *schema) {
                 syncReturn(semaphore);
@@ -275,20 +275,20 @@ describe(@"CRUD with GeoPoints", ^{
     });
     afterEach(^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [dataStore deleteObjectId:[object objectForKey:@"random_id"] inSchema:@"random" onSuccess:^(NSString *objectId, NSString *schema) {
+            [dataStore deleteObjectId:[anObject objectForKey:@"random_id"] inSchema:@"random" onSuccess:^(NSString *objectId, NSString *schema) {
                 syncReturn(semaphore);
             } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
                 syncReturn(semaphore);
             }];
         });
-        object = nil;
+        anObject = nil;
     });
     it(@"Saves SMGeoPoint without error", ^{
-        [object shouldNotBeNil];
+        [anObject shouldNotBeNil];
     });
     it(@"Reads SMGeoPoints correctly", ^{
         
-        SMGeoPoint *geopoint = [object objectForKey:@"geopoint"];
+        SMGeoPoint *geopoint = [anObject objectForKey:@"geopoint"];
         
         [[geopoint.latitude should] equal:point.latitude];
         [[geopoint.longitude should] equal:point.longitude];
@@ -297,7 +297,7 @@ describe(@"CRUD with GeoPoints", ^{
 
 describe(@"read value containing special chartacters", ^{
     __block SMClient *client = nil;
-    __block NSString *objectId = @"matt+matt@matt.com";
+    __block NSString *objId = @"matt+matt@matt.com";
     __block NSString *primaryKey = @"blog_id";
     __block NSString *schemaName = @"blog";
     __block NSString *fieldKey = @"blogname";
@@ -305,7 +305,7 @@ describe(@"read value containing special chartacters", ^{
     beforeEach(^{
         client = [SMIntegrationTestHelpers defaultClient];
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            NSDictionary *createDict = [NSDictionary dictionaryWithObjectsAndKeys:objectId, primaryKey, fieldValue, fieldKey, nil];
+            NSDictionary *createDict = [NSDictionary dictionaryWithObjectsAndKeys:objId, primaryKey, fieldValue, fieldKey, nil];
             [[client dataStore] createObject:createDict inSchema:schemaName onSuccess:^(NSDictionary *object, NSString *schema) {
                 [[[object objectForKey:fieldKey] should] equal:fieldValue];
                 syncReturn(semaphore);
@@ -317,7 +317,7 @@ describe(@"read value containing special chartacters", ^{
     });
     afterEach(^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [[client dataStore] deleteObjectId:objectId inSchema:schemaName onSuccess:^(NSString *objectId, NSString *schema) {
+            [[client dataStore] deleteObjectId:objId inSchema:schemaName onSuccess:^(NSString *objectId, NSString *schema) {
                 syncReturn(semaphore);
             } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
                 [error shouldBeNil];
@@ -327,7 +327,7 @@ describe(@"read value containing special chartacters", ^{
     });
     it(@"reads and updates the value with special characters", ^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [[client dataStore] readObjectWithId:objectId inSchema:schemaName onSuccess:^(NSDictionary *object, NSString *schema) {
+            [[client dataStore] readObjectWithId:objId inSchema:schemaName onSuccess:^(NSDictionary *object, NSString *schema) {
                 [[[object objectForKey:fieldKey] should] equal:fieldValue];
                 syncReturn(semaphore);
             } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
@@ -337,7 +337,7 @@ describe(@"read value containing special chartacters", ^{
         });
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
             NSDictionary *updateDict = [NSDictionary dictionaryWithObjectsAndKeys:@"c*oo^l$blog", fieldKey, nil];
-            [[client dataStore] updateObjectWithId:objectId inSchema:schemaName update:updateDict onSuccess:^(NSDictionary *object, NSString *schema) {
+            [[client dataStore] updateObjectWithId:objId inSchema:schemaName update:updateDict onSuccess:^(NSDictionary *object, NSString *schema) {
                 [[[object objectForKey:fieldKey] should] equal:@"c*oo^l$blog"];
                 syncReturn(semaphore);
             } onFailure:^(NSError *error, NSDictionary *object, NSString *schema) {
@@ -351,7 +351,7 @@ describe(@"read value containing special chartacters", ^{
 
 describe(@"read value containing special chartacters in schema with permissions", ^{
     __block SMClient *client = nil;
-    __block NSString *objectId = @"matt+mat@matt.com";
+    __block NSString *objId = @"matt+mat@matt.com";
     __block NSString *primaryKey = @"blog2_id";
     __block NSString *schemaName = @"blog2";
     __block NSString *fieldKey = @"blogname";
@@ -361,7 +361,7 @@ describe(@"read value containing special chartacters in schema with permissions"
         [client setUserSchema:@"user3"];
         // create user 3
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            NSDictionary *userDict = [NSDictionary dictionaryWithObjectsAndKeys:objectId, @"username", @"1234", @"password", nil];
+            NSDictionary *userDict = [NSDictionary dictionaryWithObjectsAndKeys:objId, @"username", @"1234", @"password", nil];
             [[client dataStore] createObject:userDict inSchema:@"user3" onSuccess:^(NSDictionary *object, NSString *schema) {
                 syncReturn(semaphore);
             } onFailure:^(NSError *error, NSDictionary *object, NSString *schema) {
@@ -372,7 +372,7 @@ describe(@"read value containing special chartacters in schema with permissions"
         
         // login user3
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [client loginWithUsername:objectId password:@"1234" onSuccess:^(NSDictionary *result) {
+            [client loginWithUsername:objId password:@"1234" onSuccess:^(NSDictionary *result) {
                 syncReturn(semaphore);
             } onFailure:^(NSError *error) {
                 [error shouldBeNil];
@@ -382,7 +382,7 @@ describe(@"read value containing special chartacters in schema with permissions"
         
         // create blog2
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            NSDictionary *createDict = [NSDictionary dictionaryWithObjectsAndKeys:objectId, primaryKey, fieldValue, fieldKey, nil];
+            NSDictionary *createDict = [NSDictionary dictionaryWithObjectsAndKeys:objId, primaryKey, fieldValue, fieldKey, nil];
             [[client dataStore] createObject:createDict inSchema:schemaName onSuccess:^(NSDictionary *object, NSString *schema) {
                 [[[object objectForKey:fieldKey] should] equal:fieldValue];
                 syncReturn(semaphore);
@@ -406,7 +406,7 @@ describe(@"read value containing special chartacters in schema with permissions"
         
         // delete blog2
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [[client dataStore] deleteObjectId:objectId inSchema:schemaName onSuccess:^(NSString *objectId, NSString *schema) {
+            [[client dataStore] deleteObjectId:objId inSchema:schemaName onSuccess:^(NSString *objectId, NSString *schema) {
                 syncReturn(semaphore);
             } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
                 [error shouldBeNil];
@@ -416,7 +416,7 @@ describe(@"read value containing special chartacters in schema with permissions"
         
         // delete user3
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [[client dataStore] deleteObjectId:objectId inSchema:@"user3" onSuccess:^(NSString *objectId, NSString *schema) {
+            [[client dataStore] deleteObjectId:objId inSchema:@"user3" onSuccess:^(NSString *objectId, NSString *schema) {
                 syncReturn(semaphore);
             } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
                 [error shouldBeNil];
@@ -426,7 +426,7 @@ describe(@"read value containing special chartacters in schema with permissions"
     });
     it(@"reads and updates the value with special characters", ^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [[client dataStore] readObjectWithId:objectId inSchema:schemaName onSuccess:^(NSDictionary *object, NSString *schema) {
+            [[client dataStore] readObjectWithId:objId inSchema:schemaName onSuccess:^(NSDictionary *object, NSString *schema) {
                 [[[object objectForKey:fieldKey] should] equal:fieldValue];
                 syncReturn(semaphore);
             } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
@@ -436,7 +436,7 @@ describe(@"read value containing special chartacters in schema with permissions"
         });
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
             NSDictionary *updateDict = [NSDictionary dictionaryWithObjectsAndKeys:@"c*ool$blog", fieldKey, nil];
-            [[client dataStore] updateObjectWithId:objectId inSchema:schemaName update:updateDict onSuccess:^(NSDictionary *object, NSString *schema) {
+            [[client dataStore] updateObjectWithId:objId inSchema:schemaName update:updateDict onSuccess:^(NSDictionary *object, NSString *schema) {
                 [[[object objectForKey:fieldKey] should] equal:@"c*ool$blog"];
                 syncReturn(semaphore);
             } onFailure:^(NSError *error, NSDictionary *object, NSString *schema) {

@@ -233,6 +233,13 @@
 		DEC6351717A1CBCB00EC678D /* SMHTTPRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = DEC6351517A1CBCB00EC678D /* SMHTTPRequestOperation.h */; };
 		DEC6351817A1CBCB00EC678D /* SMHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC6351617A1CBCB00EC678D /* SMHTTPRequestOperation.m */; };
 		DEC6351B17A1DBB800EC678D /* SMCusCodeReqIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB16BCB15DC606300893EE5 /* SMCusCodeReqIntegrationSpec.m */; };
+		DEC6351C17A1DD7800EC678D /* CRUDTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C33B0641591355A00BE2570 /* CRUDTests.m */; };
+		DEC6351D17A1DD7C00EC678D /* SMClientIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB8474D159A74D000FF37A3 /* SMClientIntegrationSpec.m */; };
+		DEC6351E17A1DD7F00EC678D /* QueryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 619EDF11159292AC0075BB93 /* QueryTests.m */; };
+		DEC6351F17A1DD8200EC678D /* QueryTestsWithPermissionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1BDE2D1682BFEC009282BA /* QueryTestsWithPermissionsSpec.m */; };
+		DEC6352017A1DD8600EC678D /* SMPushClientIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9ED78164B1D43006B7326 /* SMPushClientIntegrationSpec.m */; };
+		DEC6352117A1DD8900EC678D /* RelationshipsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4FBFCE177E741D00E13A22 /* RelationshipsSpec.m */; };
+		DEC6352217A1DD8C00EC678D /* SMNetworkReachabilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9EEBE164B4F24006B7326 /* SMNetworkReachabilitySpec.m */; };
 		DED7D2A81655749900FBAF06 /* SMNetworkReachability.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DE079B9A16499B0900C8AAA0 /* SMNetworkReachability.h */; };
 		DED7D2A91655749900FBAF06 /* SystemInformation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEA9ED94164B2BAB006B7326 /* SystemInformation.h */; };
 		DEDD40451629224E00F5C8E0 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE64D61B1623BAE800237570 /* Security.framework */; };
@@ -1333,6 +1340,13 @@
 				1D8351DF16C0969900814C71 /* SMCoreDataIntegrationTest.xcdatamodeld in Sources */,
 				DEB05FE117A0791600781763 /* URLRedirectSpec.m in Sources */,
 				DEC6351B17A1DBB800EC678D /* SMCusCodeReqIntegrationSpec.m in Sources */,
+				DEC6351C17A1DD7800EC678D /* CRUDTests.m in Sources */,
+				DEC6351D17A1DD7C00EC678D /* SMClientIntegrationSpec.m in Sources */,
+				DEC6351E17A1DD7F00EC678D /* QueryTests.m in Sources */,
+				DEC6351F17A1DD8200EC678D /* QueryTestsWithPermissionsSpec.m in Sources */,
+				DEC6352017A1DD8600EC678D /* SMPushClientIntegrationSpec.m in Sources */,
+				DEC6352117A1DD8900EC678D /* RelationshipsSpec.m in Sources */,
+				DEC6352217A1DD8C00EC678D /* SMNetworkReachabilitySpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
