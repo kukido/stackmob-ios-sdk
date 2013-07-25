@@ -20,6 +20,112 @@
 
 SPEC_BEGIN(RelationshipsSpec)
 
+describe(@"Create objects", ^{
+    __block SMDataStore *dataStore;
+    beforeAll(^{
+        dataStore = [SMIntegrationTestHelpers dataStore];
+    });
+    afterAll(^{
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        __block NSArray *todos = nil;
+        
+        SMQuery *todoQuery = [[SMQuery alloc] initWithSchema:@"todo"];
+        dispatch_group_enter(group);
+        [dataStore performQuery:todoQuery options:nil successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *results) {
+            todos = results;
+            [todos enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                dispatch_group_enter(group);
+                [dataStore deleteObjectId:[obj valueForKey:@"todo_id"] inSchema:@"todo" options:nil successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSString *objectId, NSString *schema) {
+                    dispatch_group_leave(group);
+                } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
+                    [error shouldBeNil];
+                    dispatch_group_leave(group);
+                }];
+            }];
+            
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error) {
+            [error shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        dataStore = nil;
+    });
+    it(@"creates multiple objects at once", ^{
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        __block NSMutableArray *todos = [NSMutableArray array];
+        for (int i = 0; i < 5; i++) {
+            [todos addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"title", @"title", nil]];
+        }
+        
+        dispatch_group_enter(group);
+        [dataStore createObjects:todos inSchema:@"todo" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed, NSString *schema) {
+            [[succeeded should] haveCountOf:5];
+            [[failed should] haveCountOf:0];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error, NSArray *objects, NSString *schema) {
+            [error shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        SMQuery *todosQuery = [[SMQuery alloc] initWithSchema:@"todo"];
+        dispatch_group_enter(group);
+        [dataStore performCount:todosQuery options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSNumber *count) {
+            [[count should] equal:theValue(5)];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error) {
+            [error shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+    });
+    it(@"fails when objects are nil", ^{
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        dispatch_group_enter(group);
+        [dataStore createObjects:nil inSchema:@"todo" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed, NSString *schema) {
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error, NSArray *objects, NSString *schema) {
+            [error shouldNotBeNil];
+            [[theValue([error code]) should] equal:theValue(SMErrorInvalidArguments)];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+    it(@"fails when schema is nil", ^{
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        __block NSMutableArray *todos = [NSMutableArray array];
+        for (int i = 0; i < 5; i++) {
+            [todos addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"title", @"title", nil]];
+        }
+        
+        dispatch_group_enter(group);
+        [dataStore createObjects:todos inSchema:nil options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed, NSString *schema) {
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error, NSArray *objects, NSString *schema) {
+            [error shouldNotBeNil];
+            [[theValue([error code]) should] equal:theValue(SMErrorInvalidArguments)];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+});
+
 describe(@"Upsert", ^{
     __block SMDataStore *dataStore;
     beforeAll(^{
@@ -459,7 +565,7 @@ describe(@"Create and append", ^{
             NSArray *categories = [NSArray arrayWithObjects:category1, category2, nil];
             
             dispatch_group_enter(group);
-            [dataStore createAndAppendRelatedObjects:categories toObjectWithId:primaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed) {
+            [dataStore createAndAppendRelatedObjects:categories toObjectWithId:primaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed, NSString *schema) {
                 [[succeeded should] haveCountOf:2];
                 [[failed should] haveCountOf:0];
                 success = YES;
@@ -520,7 +626,7 @@ describe(@"Create and append", ^{
             
             dispatch_group_enter(group);
             // createAndAppendRelatedObjects: toObject: inSchema: relatedField:
-            [dataStore createAndAppendRelatedObjects:categories toObjectWithId:primaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed) {
+            [dataStore createAndAppendRelatedObjects:categories toObjectWithId:primaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed, NSString *schema) {
                 [[succeeded should] haveCountOf:2];
                 [[failed should] haveCountOf:1];
                 success = YES;
@@ -548,7 +654,7 @@ describe(@"Create and append", ^{
         __block BOOL timeout = YES;
         
         dispatch_group_enter(group);
-        [dataStore createAndAppendRelatedObjects:nil toObjectWithId:primaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed) {
+        [dataStore createAndAppendRelatedObjects:nil toObjectWithId:primaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed, NSString *schema) {
             timeout = NO;
             dispatch_group_leave(group);
         } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
@@ -576,7 +682,7 @@ describe(@"Create and append", ^{
         NSArray *objects = [NSArray array];
         
         dispatch_group_enter(group);
-        [dataStore createAndAppendRelatedObjects:objects toObjectWithId:primaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed) {
+        [dataStore createAndAppendRelatedObjects:objects toObjectWithId:primaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed, NSString *schema) {
             timeout = NO;
             dispatch_group_leave(group);
         } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
@@ -604,7 +710,7 @@ describe(@"Create and append", ^{
         NSArray *objects = [NSArray array];
         
         dispatch_group_enter(group);
-        [dataStore createAndAppendRelatedObjects:objects toObjectWithId:primaryKey inSchema:nil relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed) {
+        [dataStore createAndAppendRelatedObjects:objects toObjectWithId:primaryKey inSchema:nil relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed, NSString *schema) {
             timeout = NO;
             dispatch_group_leave(group);
         } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
@@ -632,7 +738,7 @@ describe(@"Create and append", ^{
         NSArray *objects = [NSArray array];
         
         dispatch_group_enter(group);
-        [dataStore createAndAppendRelatedObjects:objects toObjectWithId:primaryKey inSchema:@"todo" relatedField:nil options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed) {
+        [dataStore createAndAppendRelatedObjects:objects toObjectWithId:primaryKey inSchema:@"todo" relatedField:nil options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed, NSString *schema) {
             timeout = NO;
             dispatch_group_leave(group);
         } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
@@ -1295,7 +1401,7 @@ describe(@"Delete Existing Values", ^{
             NSDictionary *category2 = [NSDictionary dictionaryWithObjectsAndKeys:@"category2", @"name", nil];
             NSArray *categories = [NSArray arrayWithObjects:category1, category2, nil];
             dispatch_group_enter(group);
-            [dataStore createAndAppendRelatedObjects:categories toObjectWithId:todoPrimaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed) {
+            [dataStore createAndAppendRelatedObjects:categories toObjectWithId:todoPrimaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed, NSString *schema) {
                 categoryPK1 = [succeeded objectAtIndex:0];
                 categoryPK2 = [succeeded objectAtIndex:1];
                 success = YES;
@@ -1400,7 +1506,7 @@ describe(@"Delete Existing Values", ^{
             NSDictionary *category2 = [NSDictionary dictionaryWithObjectsAndKeys:@"category2", @"name", nil];
             NSArray *categories = [NSArray arrayWithObjects:category1, category2, nil];
             dispatch_group_enter(group);
-            [dataStore createAndAppendRelatedObjects:categories toObjectWithId:todoPrimaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed) {
+            [dataStore createAndAppendRelatedObjects:categories toObjectWithId:todoPrimaryKey inSchema:@"todo" relatedField:@"categories" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *succeeded, NSArray *failed, NSString *schema) {
                 categoryPK1 = [succeeded objectAtIndex:0];
                 categoryPK2 = [succeeded objectAtIndex:1];
                 success = YES;
