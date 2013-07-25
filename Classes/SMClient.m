@@ -18,6 +18,8 @@
 #import "SMDataStore.h"
 #import "SMCoreDataStore.h"
 #import "SMUserSession.h"
+#import "SMOAuth2Client.h"
+#import "AFHTTPClient.h"
 #import "SMDataStore+Protected.h"
 #import "SMRequestOptions.h"
 #import "SMError.h"
@@ -138,7 +140,7 @@ static SMClient *defaultClient = nil;
 
 - (void)setUserSchema:(NSString *)userSchema
 {
-    if (_SM_userSchema != userSchema) {
+    if (![_SM_userSchema isEqualToString:userSchema]) {
         _SM_userSchema = [userSchema lowercaseString];
         [self.session setUserSchema:_SM_userSchema];
     }
@@ -146,7 +148,7 @@ static SMClient *defaultClient = nil;
 
 - (void)setUserPrimaryKeyField:(NSString *)userPrimaryKeyField
 {
-    if (_userPrimaryKeyField != userPrimaryKeyField) {
+    if (![_userPrimaryKeyField isEqualToString:userPrimaryKeyField]) {
         _userPrimaryKeyField = userPrimaryKeyField;
         [self.session setUserPrimaryKeyField:userPrimaryKeyField];
     }
@@ -154,9 +156,17 @@ static SMClient *defaultClient = nil;
 
 - (void)setUserPasswordField:(NSString *)userPasswordField
 {
-    if (_SM_userPasswordField != userPasswordField) {
+    if (![_SM_userPasswordField isEqualToString:userPasswordField]) {
         _SM_userPasswordField = userPasswordField;
         [self.session setUserPasswordField:userPasswordField];
+    }
+}
+
+- (void)setApiHost:(NSString *)apiHost
+{
+    if (![_SM_APIHost isEqualToString:apiHost]) {
+        _SM_APIHost = apiHost;
+        [self.session setNewAPIHost:apiHost];
     }
 }
 

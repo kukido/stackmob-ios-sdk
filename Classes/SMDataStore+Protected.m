@@ -20,7 +20,7 @@
 #import "SMRequestOptions.h"
 #import "SMNetworkReachability.h"
 #import "SMCustomCodeRequest.h"
-#import "AFHTTPRequestOperation.h"
+#import "SMHTTPRequestOperation.h"
 #import "AFHTTPRequestOperation+RemoveContentType.h"
 
 #define SM_VENDOR_SPECIFIC_JSON @"application/vnd.stackmob+json"
@@ -473,13 +473,13 @@
             }
         };
         
-        AFHTTPRequestOperation *op = [[self.session oauthClientWithHTTPS:options.isSecure] HTTPRequestOperationWithRequest:request success:successBlock failure:retryBlock];
+        SMHTTPRequestOperation *op = [SMHTTPRequestOperation SMHTTPRequestOperationWithRequest:request success:successBlock failure:retryBlock];
         
         NSSet *whitelistedContentTypes = [NSSet setWithObjects:SM_VENDOR_SPECIFIC_JSON, SM_JSON, SM_TEXT_PLAIN, SM_OCTET_STREAM, nil];
         if (customCodeRequest.responseContentType) {
-            [AFHTTPRequestOperation addAcceptableContentTypes:[whitelistedContentTypes setByAddingObject:customCodeRequest.responseContentType]];
+            [SMHTTPRequestOperation addAcceptableContentTypes:[whitelistedContentTypes setByAddingObject:customCodeRequest.responseContentType]];
         } else {
-            [AFHTTPRequestOperation addAcceptableContentTypes:whitelistedContentTypes];
+            [SMHTTPRequestOperation addAcceptableContentTypes:whitelistedContentTypes];
         }
         
         if (successCallbackQueue) {

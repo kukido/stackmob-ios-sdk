@@ -486,38 +486,38 @@ describe(@"basic auth", ^{
         
         it(@"should disallow getLoggedInUser", ^{
             __block BOOL getDone = NO;
-            __block NSError *error;
+            __block NSError *anError = nil;
             syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
                 [defaultClient getLoggedInUserOnSuccess:^(NSDictionary *userObject) {
                     syncReturn(semaphore);
                 } onFailure:^(NSError *error) {
-                    error = error;
+                    anError = error;
                     getDone = YES;
                     syncReturn(semaphore);
                 }];
             });
             
             [[theValue(getDone) should] beYes];
-            [error shouldNotBeNil];
-            [[theValue(error.code) should] equal:[NSNumber numberWithInt:SMErrorUnauthorized]];
+            [anError shouldNotBeNil];
+            [[theValue(anError.code) should] equal:[NSNumber numberWithInt:SMErrorUnauthorized]];
         });
         
         it(@"should disallow resetPassword", ^{
             __block BOOL getDone = NO;
-            __block NSError *error;
+            __block NSError *anError = nil;
             syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
                 [defaultClient changeLoggedInUserPasswordFrom:@"1234" to:@"4321" onSuccess:^(NSDictionary *userObject) {
                     syncReturn(semaphore);
                 } onFailure:^(NSError *error) {
-                    error = error;
+                    anError = error;
                     getDone = YES;
                     syncReturn(semaphore);
                 }];
             });
             
             [[theValue(getDone) should] beYes];
-            [error shouldNotBeNil];
-            [[theValue(error.code) should] equal:[NSNumber numberWithInt:SMErrorUnauthorized]];
+            [anError shouldNotBeNil];
+            [[theValue(anError.code) should] equal:[NSNumber numberWithInt:SMErrorUnauthorized]];
         });
         
         it(@"should disallow refreshToken", ^{

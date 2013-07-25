@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-#import "SMJSONRequestOperation.h"
+#import "SMHTTPRequestOperation.h"
 #import "SMClient.h"
 
-@implementation SMJSONRequestOperation
-
-+ (NSSet *)acceptableContentTypes {
-    NSSet *defaultAcceptableContentTypes = [super acceptableContentTypes];
-    return [defaultAcceptableContentTypes setByAddingObject:@"application/vnd.stackmob+json"];
-}
+@implementation SMHTTPRequestOperation
 
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
 {
     if (response) {
         NSString *host = [[request URL] host];
+        NSLog(@"host is %@", host);
         if (![[[SMClient defaultClient] apiHost] isEqualToString:host]) {
             [[SMClient defaultClient] setApiHost:host];
         }
     }
     return [super connection:connection willSendRequest:request redirectResponse:response];
+}
+
++ (instancetype)SMHTTPRequestOperationWithRequest:(NSURLRequest *)urlRequest
+										success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
+										failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
+{
+    SMHTTPRequestOperation *requestOperation = [(SMHTTPRequestOperation *)[self alloc] initWithRequest:urlRequest];
+    [requestOperation setCompletionBlockWithSuccess:success failure:failure];
+    
+    return requestOperation;
 }
 
 @end

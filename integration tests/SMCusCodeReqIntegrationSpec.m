@@ -32,6 +32,7 @@ describe(@"SMCusCodeReqIntegration", ^{
     context(@"given a custom code request", ^{
         beforeEach(^{
             client =  [SMIntegrationTestHelpers defaultClient];
+            [SMClient setDefaultClient:client];
             [client shouldNotBeNil];
         });
         // must test 503's first
