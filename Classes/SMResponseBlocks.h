@@ -96,12 +96,26 @@ typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString* objectId, NSString *sc
  
  This is used for some of the append-based relational methods.
  
- @param objectId The object id used in this operation.
- @param schema The schema to which the object belongs.
+ @param succeeded An array of object IDs for those objects that were successfully persisted.
+ @param failed An array of object IDs for those objects that were not successfully persisted.
+ @param schema The schema to which the objects belong.
  
  @since Available in iOS SDK 2.1.0 and later.
  */
-typedef void (^SMDataStoreBulkSuccessBlock)(NSArray* succeeded, NSArray *failed);
+typedef void (^SMDataStoreBulkSuccessBlock)(NSArray* succeeded, NSArray *failed, NSString *schema);
+
+/**
+ The block parameters expected for a failure response from a call to the Datastore which returns the error, array of objects and schema.
+ 
+ This is used for the bulk creation methods.
+ 
+ @param error The request error.
+ @param objects The objects used in this operation.
+ @param schema The schema to which the objects belongs.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+typedef void (^SMDataStoreBulkFailureBlock)(NSError *error, NSArray* objects, NSString *schema);
 
 /** 
  The block parameters expected for a failure response from a call to the Datastore which returns the error, full object and schema.
