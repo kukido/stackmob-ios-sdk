@@ -240,6 +240,7 @@
 		DEC6353017A1ECF500EC678D /* SMPushClientIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9ED78164B1D43006B7326 /* SMPushClientIntegrationSpec.m */; };
 		DEC6353117A1ECF800EC678D /* SMNetworkReachabilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9EEBE164B4F24006B7326 /* SMNetworkReachabilitySpec.m */; };
 		DEC6353217A1ECFB00EC678D /* URLRedirectSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB05FE017A0791600781763 /* URLRedirectSpec.m */; };
+		DEC6353317A333F400EC678D /* SMHTTPRequestOperation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEC6351517A1CBCB00EC678D /* SMHTTPRequestOperation.h */; };
 		DED7D2A81655749900FBAF06 /* SMNetworkReachability.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DE079B9A16499B0900C8AAA0 /* SMNetworkReachability.h */; };
 		DED7D2A91655749900FBAF06 /* SystemInformation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEA9ED94164B2BAB006B7326 /* SystemInformation.h */; };
 		DEDD40451629224E00F5C8E0 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE64D61B1623BAE800237570 /* Security.framework */; };
@@ -303,6 +304,7 @@
 			dstPath = "~/Desktop/Headers";
 			dstSubfolderSpec = 0;
 			files = (
+				DEC6353317A333F400EC678D /* SMHTTPRequestOperation.h in Copy Headers */,
 				DE227A39175D5B14009365C1 /* AFHTTPRequestOperation+RemoveContentType.h in Copy Headers */,
 				DE9613AC173DC992004F9C32 /* FileManagement.h in Copy Headers */,
 				DE9613AD173DC992004F9C32 /* SMSyncedObject.h in Copy Headers */,
@@ -1741,7 +1743,7 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDK_VERSION = 2.0.0;
+				SDK_VERSION = 2.1.0;
 				STRIP_INSTALLED_PRODUCT = YES;
 			};
 			name = Debug;
@@ -1752,7 +1754,7 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDK_VERSION = 2.0.0;
+				SDK_VERSION = 2.1.0;
 				STRIP_INSTALLED_PRODUCT = YES;
 			};
 			name = Release;

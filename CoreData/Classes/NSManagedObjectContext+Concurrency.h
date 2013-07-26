@@ -85,8 +85,8 @@
  
  A callback based save method which pushes changes to private parent context and saves in the background, off of the main thread.
  
- @param successCallbackQueue Upon successful save, the queue to perform the success block on.
- @param failureCallbackQueue Upon unsuccessful save, the queue to perform the failure block on.
+ @param successCallbackQueue Upon successful save, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful save, the queue to perform the failure block on. Pass nil for the main thread.
  @param successBlock <i>typedef void (^SMSuccessBlock)())</i> A block object to call on the <i>successCallbackQueue</i> upon successful save of the managed object context.
  @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the <i>failureCallbackQueue</i> upon unsuccessful save.
  
@@ -101,8 +101,8 @@
  
  For more information on per request options, see the <a href="#pr_options">Per Request Options</a> section above.
  
- @param successCallbackQueue Upon successful save, the queue to perform the success block on.
- @param failureCallbackQueue Upon unsuccessful save, the queue to perform the failure block on.
+ @param successCallbackQueue Upon successful save, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful save, the queue to perform the failure block on. Pass nil for the main thread.
  @param options Request options.
  @param successBlock <i>typedef void (^SMSuccessBlock)())</i> A block object to call on the <i>successCallbackQueue</i> upon successful save of the managed object context.
  @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the <i>failureCallbackQueue</i> upon unsuccessful save.
@@ -186,8 +186,8 @@
  
  @param request The fetch request to perform against the database.
  @param returnIDs Whether or not results should contain instances of `NSManagedObject` or `NSManagedObjectID`.
- @param successCallbackQueue Upon successful fetch, the queue to perform the success block on.
- @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on.
+ @param successCallbackQueue Upon successful fetch, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on. Pass nil for the main thread.
  @param successBlock <i>typedef void (^SMResultsSuccessBlock)(NSArray *results)</i> A block object to call on the <i>successCallbackQueue</i> upon successful fetch.
  @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the <i>failureCallbackQueue</i> upon unsuccessful fetch.
  
@@ -204,8 +204,8 @@
  
  @param request The fetch request to perform against the database.
  @param returnIDs Whether or not results should contain instances of `NSManagedObject` or `NSManagedObjectID`.
- @param successCallbackQueue Upon successful fetch, the queue to perform the success block on.
- @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on.
+ @param successCallbackQueue Upon successful fetch, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on. Pass nil for the main thread.
  @param options Request options.
  @param successBlock <i>typedef void (^SMResultsSuccessBlock)(NSArray *results)</i> A block object to call on the main thread upon successful fetch.
  @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the main thread upon unsuccessful fetch.
@@ -237,8 +237,8 @@
  A callback based count for fetch request method which executes on a background private context, off of the main thread.
   
  @param request The fetch request to perform the count on.
- @param successCallbackQueue Upon successful fetch, the queue to perform the success block on.
- @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on.
+ @param successCallbackQueue Upon successful fetch, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on. Pass nil for the main thread.
  @param successBlock <i>void (^)(NSUInteger count)</i> A block object to call on the <i>successCallbackQueue</i> upon successful count, containing the number of objects a given fetch request would have returned if it had been passed to <i>executeFetchRequest:error:</i>.
  @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the <i>failureCallbackQueue</i> upon unsuccessful count.
  
@@ -254,8 +254,8 @@
  For more information on per request options, see the <a href="#pr_options">Per Request Options</a> section above.
  
  @param request The fetch request to perform the count on.
- @param successCallbackQueue Upon successful fetch, the queue to perform the success block on.
- @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on.
+ @param successCallbackQueue Upon successful fetch, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on. Pass nil for the main thread.
  @param options Request options.
  @param successBlock <i>void (^)(NSUInteger count)</i> A block object to call on the <i>successCallbackQueue</i> upon successful count, containing the number of objects a given fetch request would have returned if it had been passed to <i>executeFetchRequest:error:</i>.
  @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the <i>failureCallbackQueue</i> upon unsuccessful count.

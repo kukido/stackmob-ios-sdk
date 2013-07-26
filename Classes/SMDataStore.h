@@ -147,6 +147,10 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
            onSuccess:(SMDataStoreSuccessBlock)successBlock
            onFailure:(SMDataStoreFailureBlock)failureBlock;
 
+#pragma mark - Create Objects
+///-------------------------------
+/// @name Create Objects
+///-------------------------------
 
 /**
  Creates a set of new objects in your StackMob Datastore.

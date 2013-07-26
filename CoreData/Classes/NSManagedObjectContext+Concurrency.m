@@ -73,6 +73,13 @@
 
 - (void)saveWithSuccessCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue options:(SMRequestOptions *)options onSuccess:(SMSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock
 {
+    if (!successCallbackQueue) {
+        successCallbackQueue = dispatch_get_main_queue();
+    }
+    if (!failureCallbackQueue) {
+        failureCallbackQueue = dispatch_get_main_queue();
+    }
+    
     NSManagedObjectContext *mainContext = nil;
     NSManagedObjectContext *temporaryContext = nil;
     if ([self concurrencyType] == NSMainQueueConcurrencyType) {
@@ -160,7 +167,7 @@
                                 
                             } else {
                                 
-                                // Dispatch success block to main thread
+                                // Dispatch success block
                                 if (successBlock) {
                                     dispatch_async(successCallbackQueue, ^{
                                         successBlock();
@@ -274,6 +281,13 @@
 
 - (void)executeFetchRequest:(NSFetchRequest *)request returnManagedObjectIDs:(BOOL)returnIDs successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue options:(SMRequestOptions *)options onSuccess:(SMResultsSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock
 {
+    if (!successCallbackQueue) {
+        successCallbackQueue = dispatch_get_main_queue();
+    }
+    if (!failureCallbackQueue) {
+        failureCallbackQueue = dispatch_get_main_queue();
+    }
+    
     __block NSManagedObjectContext *mainContext = [self concurrencyType] == NSMainQueueConcurrencyType ? self : self.parentContext;
     
     // Error checks
@@ -349,8 +363,15 @@
     [self countForFetchRequest:request successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue options:[SMRequestOptions options] onSuccess:successBlock onFailure:failureBlock];
 }
 
-- (void)countForFetchRequest:(NSFetchRequest *)request successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue options:(SMRequestOptions *)options  onSuccess:(void (^)(NSUInteger))successBlock onFailure:(SMFailureBlock)failureBlock
+- (void)countForFetchRequest:(NSFetchRequest *)request successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue options:(SMRequestOptions *)options onSuccess:(void (^)(NSUInteger))successBlock onFailure:(SMFailureBlock)failureBlock
 {
+    if (!successCallbackQueue) {
+        successCallbackQueue = dispatch_get_main_queue();
+    }
+    if (!failureCallbackQueue) {
+        failureCallbackQueue = dispatch_get_main_queue();
+    }
+    
     __block NSManagedObjectContext *mainContext = [self concurrencyType] == NSMainQueueConcurrencyType ? self : self.parentContext;
     
     // Error checks
