@@ -1,5 +1,29 @@
 <h2>StackMob iOS SDK Change Log</h2>
 
+<h3>v2.1.0 - July 30, 2013</h3>
+
+**Features**
+
+* Per request cache policy.
+* Per request option to cache or not cache the results of fetch.
+* Async/Sync methods for Core Data <code>countForFetchRequest:error:</code> method. See <code>NSManagedObjectContext+Concurrency</code> category.
+* New <code>createObjects</code> method for bulk object creation. (issue #22)
+* New datastore relationship/array field type methods: createAndAppendRelatedObjects:, appendExistingObjects:, and deleteObjects:. See Relationships section of iOS Developer Guide.
+* Support for upsert i.e. creating/updating objects while creating/updating nested objects all in one call. See Relationships section of iOS Developer Guide.
+* Automatic host redirect for private clusters.
+
+**Fixes**
+
+* Sync success callback return all inserted/updated/deleted objects.
+* Dates before 1970 are properly converted.
+* Add parsing of compound predicates. (issue #46)
+* Add empty array checks for IN/NIN.
+* Fetch offset and limit translate properly to request header.
+* Fix <code>primaryKeyField</code> method memory leak.
+* Fields are properly sent in request when set to nil.
+* Background created managed objects are not assigned primary keys.
+
+
 <h3>v2.0.0 - June 6, 2013</h3>
 
 **Features**

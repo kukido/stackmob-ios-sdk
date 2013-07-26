@@ -556,8 +556,6 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
  @param field The name of the primary object's related field.
  @param cascadeDelete Whether or not to delete the objects themselves after removing the references in the relationship value.
  @param options An options object contains headers and other configuration for this request.
- @param successCallbackQueue The dispatch queue used to execute the success block. If nil is passed, the main queue is used.
- @param failureCallbackQueue The dispatch queue used to execute the failure block. If nil is passed, the main queue is used.
  @param successBlock <i>typedef void (^SMSuccessBlock)()</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed objects in two separate arrays.
  @param failureBlock <i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError *error, NSString *objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to delete the specified objects. Passed the error returned by StackMob, the primary key, the objects to be deleted, and the schema in which the object was to be updated.
  

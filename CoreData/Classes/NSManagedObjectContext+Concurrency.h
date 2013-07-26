@@ -214,6 +214,10 @@
  */
 - (void)executeFetchRequest:(NSFetchRequest *)request returnManagedObjectIDs:(BOOL)returnIDs successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue options:(SMRequestOptions *)options onSuccess:(SMResultsSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock;
 
+///-------------------------------
+/// @name Asynchronous Count
+///-------------------------------
+
 /**
  Asynchronous count for fetch request method.
  
@@ -310,6 +314,12 @@
  @since Available in iOS SDK 1.2.0 and later.
  */
 - (NSArray *)executeFetchRequestAndWait:(NSFetchRequest *)request returnManagedObjectIDs:(BOOL)returnIDs options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error;
+
+
+///-------------------------------
+/// @name Synchronous Count
+///-------------------------------
+
 
 /**
  Synchronous count for fetch request method.
