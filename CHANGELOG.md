@@ -7,8 +7,8 @@
 * Per request cache policy. See the <a href="https://developer.stackmob.com/ios-sdk/offline-sync-guide#PerRequestCachePolicy" target="_blank">Per Request Cache Policy</a> section of the Offline Sync Guide.
 * Per request option to cache or not cache the results of fetch. See the <a href="https://developer.stackmob.com/ios-sdk/offline-sync-guide#OtherUtilityPropertiesMethods" target="_blank">Other Utility Properties/Methods</a> section of the Offline Sync Guide.
 * Async/Sync methods for Core Data <code>countForFetchRequest:error:</code> method. See <a href="http://stackmob.github.io/stackmob-ios-sdk/Categories/NSManagedObjectContext+Concurrency.html" target="_blank">NSManagedObjectContext+Concurrency category</a>.
-* New <code>createObjects</code> method for bulk object creation. (issue #22)
-* New datastore relationship/array field type methods: createAndAppendRelatedObjects:, appendExistingObjects:, and deleteObjects:. See Datastore Relationships API section of iOS Developer Guide.
+* New <code>createObjects:...</code> method for bulk object creation. (issue #22)
+* New datastore methods for relationships and array field types: <code>createAndAppendRelatedObjects:...</code>, <code>appendExistingObjects:...</code>, and <code>deleteObjects:...</code>. See Datastore Relationships API section of iOS Developer Guide.
 * Support for upsert i.e. creating/updating objects while creating/updating nested objects all in one call. See Datastore Relationships API section of iOS Developer Guide.
 * Automatic host redirect for private clusters.
 
