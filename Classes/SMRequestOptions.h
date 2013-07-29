@@ -99,6 +99,15 @@
  */
 @property (nonatomic) BOOL cacheResults;
 
+/**
+ Whether or not the cache policy property has been set.
+ 
+ Default is NO. Used internally.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+@property (nonatomic, readonly) BOOL cachePolicySet;
+
 ///-------------------------------
 /// @name Initialize
 ///-------------------------------
