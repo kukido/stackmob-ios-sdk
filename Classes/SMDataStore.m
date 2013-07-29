@@ -354,6 +354,8 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
         
         if (cascadeDelete) {
             [options setValue:@"true" forHeaderKey:@"X-StackMob-CascadeDelete"];
+        } else {
+            [options setValue:@"false" forHeaderKey:@"X-StackMob-CascadeDelete"];
         }
         
         SMFullResponseSuccessBlock urlSuccessBlock = [self SMFullResponseSuccessBlockForSuccessBlock:successBlock];
