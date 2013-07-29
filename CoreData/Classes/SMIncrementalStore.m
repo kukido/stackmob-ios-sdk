@@ -4097,6 +4097,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                         NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value];
                         [serializedDictionary setObject:data forKey:attributeName];
                     }
+                } else if (value == nil) {
+                    [serializedDictionary setValue:value forKey:attributeName];
                 } else {
                     [serializedDictionary setObject:value forKey:attributeName];
                 }
