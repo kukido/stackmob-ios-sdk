@@ -4,13 +4,13 @@
 
 **Features**
 
-* Per request cache policy. See the <a href="https://developer.stackmob.com/ios-sdk/offline-sync-guide#PerRequestCachePolicy" target="_blank">Per Request Cache Policy</a> section of the Offline Sync Guide.
+* Per request cache policy. Suppose you generally fetch from the cache, but occasionally you want to update your cache with the latest objects from the server. Rather then needing to change the cache policy before a specific request, and then change it back afterwards, you can pass in a option to define a cache policy just for the duration of one fetch request. See the <a href="https://developer.stackmob.com/ios-sdk/offline-sync-guide#PerRequestCachePolicy" target="_blank">Per Request Cache Policy</a> section of the Offline Sync Guide.
 * Per request option to cache or not cache the results of fetch. See the <a href="https://developer.stackmob.com/ios-sdk/offline-sync-guide#OtherUtilityPropertiesMethods" target="_blank">Other Utility Properties/Methods</a> section of the Offline Sync Guide.
 * Async/Sync methods for Core Data <code>countForFetchRequest:error:</code> method. See <a href="http://stackmob.github.io/stackmob-ios-sdk/Categories/NSManagedObjectContext+Concurrency.html" target="_blank">NSManagedObjectContext+Concurrency category</a>.
-* New <code>createObjects:...</code> method for bulk object creation. (issue #22)
-* New datastore methods for relationships and array field types: <code>createAndAppendRelatedObjects:...</code>, <code>appendExistingObjects:...</code>, and <code>deleteObjects:...</code>. See Datastore Relationships API section of iOS Developer Guide.
-* Support for upsert i.e. creating/updating objects while creating/updating nested objects all in one call. See Datastore Relationships API section of iOS Developer Guide.
-* Automatic host redirect for private clusters.
+* New datastore <code>createObjects:...</code> method for bulk object creation. See <a href="https://developer.stackmob.com/ios-sdk/datastore-api-guide#CreatingObjectsinBulk" target="_blank">Creating Objects in Bulk</a>. (issue #22)
+* New datastore methods for working with relationships and array field types: <code>createAndAppendRelatedObjects:...</code>, <code>appendExistingObjects:...</code>, and <code>deleteObjects:...</code>. See <a href="https://developer.stackmob.com/ios-sdk/datastore-api-guide#Relationships" target="_blank">Datastore Relationships API</a>.
+* Support for upsert. With upsert you can create or update objects as well create or update nested related objects, all in one call. See <a href="https://developer.stackmob.com/ios-sdk/datastore-api-guide#UpsertwithNestedObjects" target="_blank">Upsert with Nested Objects</a>.
+* Automatic host redirect for dedicated datastores. When your production apps use v2.1.0+ of the iOS SDK and you switch to one of the <a href="https://www.stackmob.com/product/pricing/" target="_blank">pro or enterprise solutions</a>, the SDK will automatically update the domain for all requests. This way your production apps can start talking to your dedicated datastore without the need to roll out an immediate update for your app. 
 
 **Fixes**
 
