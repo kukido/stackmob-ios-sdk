@@ -10,7 +10,8 @@
 * New datastore <code>createObjects:...</code> method for bulk object creation. See <a href="https://developer.stackmob.com/ios-sdk/datastore-api-guide#CreatingObjectsinBulk" target="_blank">Creating Objects in Bulk</a>. (issue #22)
 * New datastore methods for working with relationships and array field types: <code>createAndAppendRelatedObjects:...</code>, <code>appendExistingObjects:...</code>, and <code>deleteObjects:...</code>. See <a href="https://developer.stackmob.com/ios-sdk/datastore-api-guide#Relationships" target="_blank">Datastore Relationships API</a>.
 * Support for upsert. With upsert you can create or update objects as well create or update nested related objects, all in one call. See <a href="https://developer.stackmob.com/ios-sdk/datastore-api-guide#UpsertwithNestedObjects" target="_blank">Upsert with Nested Objects</a>.
-* Automatic host redirect for dedicated datastores. When your production apps use v2.1.0+ of the iOS SDK and you switch to one of the <a href="https://www.stackmob.com/product/pricing/" target="_blank">pro or enterprise solutions</a>, the SDK will automatically update the domain for all requests. This way your production apps can start talking to your dedicated datastore without the need to roll out an immediate update for your app. 
+* Automatic host redirect for dedicated datastores. When your production apps use v2.1.0+ of the iOS SDK and you switch to one of the <a href="https://www.stackmob.com/product/pricing/" target="_blank">pro or enterprise solutions</a>, the SDK will automatically update the domain for all requests. This way your production apps can start talking to your dedicated datastore without the need to roll out an immediate update for your app.
+* Xcode 5 and iOS 7 compatibility. Compiled and tested in sample app using Xcode 5 Developer Preview 4.
 
 **Fixes**
 

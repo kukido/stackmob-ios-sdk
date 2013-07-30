@@ -1598,7 +1598,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C66BB747CC543ECA80B6D69 /* Pods.xcconfig */;
 			buildSettings = {
-				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_EMPTY_BODY = NO;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DSTROOT = /tmp/stackmob_ios_sdk.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1609,7 +1609,7 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1624,7 +1624,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C66BB747CC543ECA80B6D69 /* Pods.xcconfig */;
 			buildSettings = {
-				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_EMPTY_BODY = NO;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = /tmp/stackmob_ios_sdk.dst;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
@@ -1636,6 +1636,7 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
