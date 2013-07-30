@@ -85,10 +85,10 @@
  
  A callback based save method which pushes changes to private parent context and saves in the background, off of the main thread.
  
- @param successCallbackQueue Upon successful save, the queue to perform the success block on.
- @param failureCallbackQueue Upon unsuccessful save, the queue to perform the failure block on.
- @param successBlock <i>typedef void (^SMSuccessBlock)())</i> A block object to call on the main thread upon successful save of the managed object context.
- @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the main thread upon unsuccessful save.
+ @param successCallbackQueue Upon successful save, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful save, the queue to perform the failure block on. Pass nil for the main thread.
+ @param successBlock <i>typedef void (^SMSuccessBlock)())</i> A block object to call on the <i>successCallbackQueue</i> upon successful save of the managed object context.
+ @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the <i>failureCallbackQueue</i> upon unsuccessful save.
  
  @since Available in iOS SDK 1.2.0 and later.
  */
@@ -101,11 +101,11 @@
  
  For more information on per request options, see the <a href="#pr_options">Per Request Options</a> section above.
  
- @param successCallbackQueue Upon successful save, the queue to perform the success block on.
- @param failureCallbackQueue Upon unsuccessful save, the queue to perform the failure block on.
+ @param successCallbackQueue Upon successful save, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful save, the queue to perform the failure block on. Pass nil for the main thread.
  @param options Request options.
- @param successBlock <i>typedef void (^SMSuccessBlock)())</i> A block object to call on the main thread upon successful save of the managed object context.
- @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the main thread upon unsuccessful save.
+ @param successBlock <i>typedef void (^SMSuccessBlock)())</i> A block object to call on the <i>successCallbackQueue</i> upon successful save of the managed object context.
+ @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the <i>failureCallbackQueue</i> upon unsuccessful save.
  
  @since Available in iOS SDK 1.2.0 and later.
  */
@@ -118,7 +118,7 @@
 /**
  Synchronous save method.
  
- This method works like the NSManagedObjectContext <i>save:</i> method, but pushes changes to private parent context which in turns saves to the persistent store.
+ This method works like the `NSManagedObjectContext` <i>save:</i> method, but pushes changes to private parent context which in turns saves to the persistent store.
  
  @param error Points to the error object if the save is unsuccessful.
  
@@ -131,7 +131,7 @@
 /**
  Synchronous save method with parameter for request options.
  
- This method works like the NSManagedObjectContext <i>save:</i> method, but pushes changes to private parent context which in turns saves to the persistent store.
+ This method works like the `NSManagedObjectContext` <i>save:</i> method, but pushes changes to private parent context which in turns saves to the persistent store.
  
  For more information on per request options, see the <a href="#pr_options">Per Request Options</a> section above.
  
@@ -151,12 +151,12 @@
 /**
  Asynchronous fetch method.
  
- A callback based fetch method which executes fetch on a background context, off of the main thread.  Managed object IDs that are returned are converted to instances of NSManagedObject by the calling context.
+ A callback based fetch method which executes fetch on a background context, off of the main thread.  Managed object IDs that are returned are converted to instances of `NSManagedObject` by the calling context.
  
  Callbacks are performed on the main thread.  Use <executeFetchRequest:returnManagedObjectIDs:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:> to specify queues to perform callbacks on.
  
  @param request The fetch request to perform against the database.
- @param successBlock <i>typedef void (^SMResultsSuccessBlock)(NSArray *results)</i> A block object to call on the main thread upon successful save of the managed object context, containing an array of results as instances of NSManagedObject.
+ @param successBlock <i>typedef void (^SMResultsSuccessBlock)(NSArray *results)</i> A block object to call on the main thread upon successful fetch, containing an array of results as instances of `NSManagedObject`.
  @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the main thread upon unsuccessful save.
  
  @since Available in iOS SDK 1.2.0 and later.
@@ -164,55 +164,105 @@
 - (void)executeFetchRequest:(NSFetchRequest *)request onSuccess:(SMResultsSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock;
 
 /**
- Asynchronous fetch method with the option of returning instances of NSManagedObjectID.
+ Asynchronous fetch method with the option of returning instances of `NSManagedObjectID`.
  
- A callback based fetch method which executes fetch on a background context, off of the main thread.  If returnIDs is YES, managed object IDs that are returned by the fetch are converted to instances of NSManagedObject by the calling context.
+ A callback based fetch method which executes fetch on a background context, off of the main thread.  If returnIDs is YES, managed object IDs that are returned by the fetch are converted to instances of `NSManagedObject` by the calling context.
  
  Callbacks are performed on the main thread.  Use <executeFetchRequest:returnManagedObjectIDs:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:> to specify queues to perform callbacks on.
  
  @param request The fetch request to perform against the database.
- @param returnIDs Whether or not results should contain instances of NSManagedObject or NSManagedObjectID.
- @param successBlock <i>typedef void (^SMResultsSuccessBlock)(NSArray *results)</i> A block object to call on the main thread upon successful save of the managed object context.
- @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the main thread upon unsuccessful save.
+ @param returnIDs Whether or not results should contain instances of `NSManagedObject` or `NSManagedObjectID`.
+ @param successBlock <i>typedef void (^SMResultsSuccessBlock)(NSArray *results)</i> A block object to call on the main thread upon successful fetch.
+ @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the main thread upon unsuccessful fetch.
  
  @since Available in iOS SDK 1.2.0 and later.
  */
 - (void)executeFetchRequest:(NSFetchRequest *)request returnManagedObjectIDs:(BOOL)returnIDs onSuccess:(SMResultsSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock;
 
 /**
- Asynchronous fetch method with the option of returning instances of NSManagedObjectID as well as specifying callback queues.
+ Asynchronous fetch method with the option of returning instances of `NSManagedObjectID` as well as specifying callback queues.
  
- A callback based fetch method which executes fetch on a background context, off of the main thread.  If returnIDs is YES, managed object IDs that are returned by the fetch are converted to instances of NSManagedObject by the calling context.
+ A callback based fetch method which executes fetch on a background context, off of the main thread.  If returnIDs is YES, managed object IDs that are returned by the fetch are converted to instances of `NSManagedObject` by the calling context.
  
  @param request The fetch request to perform against the database.
- @param returnIDs Whether or not results should contain instances of NSManagedObject or NSManagedObjectID.
- @param successCallbackQueue Upon successful fetch, the queue to perform the success block on.
- @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on.
- @param successBlock <i>typedef void (^SMResultsSuccessBlock)(NSArray *results)</i> A block object to call on the main thread upon successful save of the managed object context.
- @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the main thread upon unsuccessful save.
+ @param returnIDs Whether or not results should contain instances of `NSManagedObject` or `NSManagedObjectID`.
+ @param successCallbackQueue Upon successful fetch, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on. Pass nil for the main thread.
+ @param successBlock <i>typedef void (^SMResultsSuccessBlock)(NSArray *results)</i> A block object to call on the <i>successCallbackQueue</i> upon successful fetch.
+ @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the <i>failureCallbackQueue</i> upon unsuccessful fetch.
  
  @since Available in iOS SDK 1.2.0 and later.
  */
 - (void)executeFetchRequest:(NSFetchRequest *)request returnManagedObjectIDs:(BOOL)returnIDs successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMResultsSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock;
 
 /**
- Asynchronous fetch method with the option of returning instances of NSManagedObjectID as well as specifying callback queues and providing request options.
+ Asynchronous fetch method with the option of returning instances of `NSManagedObjectID` as well as specifying callback queues and providing request options.
  
- A callback based fetch method which executes fetch on a background context, off of the main thread.  If returnIDs is YES, managed object IDs that are returned by the fetch are converted to instances of NSManagedObject by the calling context.
+ A callback based fetch method which executes fetch on a background context, off of the main thread.  If returnIDs is YES, managed object IDs that are returned by the fetch are converted to instances of `NSManagedObject` by the calling context.
  
  For more information on per request options, see the <a href="#pr_options">Per Request Options</a> section above.
  
  @param request The fetch request to perform against the database.
- @param returnIDs Whether or not results should contain instances of NSManagedObject or NSManagedObjectID.
- @param successCallbackQueue Upon successful fetch, the queue to perform the success block on.
- @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on.
+ @param returnIDs Whether or not results should contain instances of `NSManagedObject` or `NSManagedObjectID`.
+ @param successCallbackQueue Upon successful fetch, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on. Pass nil for the main thread.
  @param options Request options.
- @param successBlock <i>typedef void (^SMResultsSuccessBlock)(NSArray *results)</i> A block object to call on the main thread upon successful save of the managed object context.
- @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the main thread upon unsuccessful save.
+ @param successBlock <i>typedef void (^SMResultsSuccessBlock)(NSArray *results)</i> A block object to call on the main thread upon successful fetch.
+ @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the main thread upon unsuccessful fetch.
  
  @since Available in iOS SDK 1.2.0 and later.
  */
 - (void)executeFetchRequest:(NSFetchRequest *)request returnManagedObjectIDs:(BOOL)returnIDs successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue options:(SMRequestOptions *)options onSuccess:(SMResultsSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock;
+
+///-------------------------------
+/// @name Asynchronous Count
+///-------------------------------
+
+/**
+ Asynchronous count for fetch request method.
+ 
+ A callback based count for fetch request method which executes on a background private context, off of the main thread.
+ 
+ @param request The fetch request to perform the count on.
+ @param successBlock <i>void (^)(NSUInteger count)</i> A block object to call on the main thread upon successful count, containing the number of objects a given fetch request would have returned if it had been passed to <i>executeFetchRequest:error:</i>.
+ @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the main thread upon unsuccessful count.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+- (void)countForFetchRequest:(NSFetchRequest *)request onSuccess:(void (^)(NSUInteger count))successBlock onFailure:(SMFailureBlock)failureBlock;
+
+/**
+ Asynchronous count for fetch request method with parameters for specifying callback queues.
+ 
+ A callback based count for fetch request method which executes on a background private context, off of the main thread.
+  
+ @param request The fetch request to perform the count on.
+ @param successCallbackQueue Upon successful fetch, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on. Pass nil for the main thread.
+ @param successBlock <i>void (^)(NSUInteger count)</i> A block object to call on the <i>successCallbackQueue</i> upon successful count, containing the number of objects a given fetch request would have returned if it had been passed to <i>executeFetchRequest:error:</i>.
+ @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the <i>failureCallbackQueue</i> upon unsuccessful count.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+- (void)countForFetchRequest:(NSFetchRequest *)request successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(void (^)(NSUInteger count))successBlock onFailure:(SMFailureBlock)failureBlock;
+
+/**
+ Asynchronous count for fetch request method with parameters for specifying callback queues and providing request options.
+ 
+ A callback based count for fetch request method which executes on a background private context, off of the main thread.
+ 
+ For more information on per request options, see the <a href="#pr_options">Per Request Options</a> section above.
+ 
+ @param request The fetch request to perform the count on.
+ @param successCallbackQueue Upon successful fetch, the queue to perform the success block on. Pass nil for the main thread.
+ @param failureCallbackQueue Upon unsuccessful fetch, the queue to perform the failure block on. Pass nil for the main thread.
+ @param options Request options.
+ @param successBlock <i>void (^)(NSUInteger count)</i> A block object to call on the <i>successCallbackQueue</i> upon successful count, containing the number of objects a given fetch request would have returned if it had been passed to <i>executeFetchRequest:error:</i>.
+ @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i> A block object to call on the <i>failureCallbackQueue</i> upon unsuccessful count.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+- (void)countForFetchRequest:(NSFetchRequest *)request successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue options:(SMRequestOptions *)options onSuccess:(void (^)(NSUInteger count))successBlock onFailure:(SMFailureBlock)failureBlock;
 
 ///-------------------------------
 /// @name Synchronous Fetch
@@ -221,58 +271,95 @@
 /**
  Synchronous fetch method.
  
- This method works like the NSManagedObjectContext <i>executeFetchRequest:error:</i> method, but executes fetch request on background context.  Managed object IDs that are returned are converted to managed objects on the calling context.
+ This method works like the `NSManagedObjectContext` <i>executeFetchRequest:error:</i> method, but executes the fetch request on a background private context.  Managed object IDs that are returned are converted to managed objects on the calling context.
  
  @param request The fetch to perform on the database.
  @param error Points to the error object if the fetch is unsuccessful.
  
- @return An array of NSManagedObject instances matching the request, nil if there was an error.
+ @return An array of `NSManagedObject` instances matching the request, nil if there was an error.
  
  @since Available in iOS SDK 1.2.0 and later.
  */
 - (NSArray *)executeFetchRequestAndWait:(NSFetchRequest *)request error:(NSError *__autoreleasing *)error;
 
 /**
- Synchronous fetch method with the option to return results as instances of NSManagedObjectID.
+ Synchronous fetch method with the option to return results as instances of `NSManagedObjectID`.
  
- This method works like the NSManagedObjectContext <i>executeFetchRequest:error:</i> method, but executes fetch request on background context.  Managed object IDs that are returned are converted to managed objects on the calling context.
+ This method works like the `NSManagedObjectContext` <i>executeFetchRequest:error:</i> method, but executes the fetch request on a background private context. Managed object IDs that are returned are converted to managed objects on the calling context.
  
  @param request The fetch to perform on the database.
- @param returnIDs Whether or not results should contain instances of NSManagedObject or NSManagedObjectID.
+ @param returnIDs Whether or not results should contain instances of `NSManagedObject` or `NSManagedObjectID`.
  @param error Points to the error object if the fetch is unsuccessful.
  
- @return An array of NSManagedObject or NSManagedObjectID instances matching the request, nil if there was an error.
+ @return An array of `NSManagedObject` or `NSManagedObjectID` instances matching the request, nil if there was an error.
  
  @since Available in iOS SDK 1.2.0 and later.
  */
 - (NSArray *)executeFetchRequestAndWait:(NSFetchRequest *)request returnManagedObjectIDs:(BOOL)returnIDs error:(NSError *__autoreleasing *)error;
 
 /**
- Synchronous fetch method with the option to return results as instances of NSManagedObjectID as well as provide request options.
+ Synchronous fetch method with the option to return results as instances of `NSManagedObjectID` as well as provide request options.
  
- This method works like the NSManagedObjectContext <i>executeFetchRequest:error:</i> method, but executes fetch request on background context.  Managed object IDs that are returned are converted to managed objects on the calling context.
+ This method works like the `NSManagedObjectContext` <i>executeFetchRequest:error:</i> method, but executes the fetch request on a background private context. Managed object IDs that are returned are converted to managed objects on the calling context.
  
  For more information on per request options, see the <a href="#pr_options">Per Request Options</a> section above.
  
  @param request The fetch to perform on the database.
- @param returnIDs Whether or not results should contain instances of NSManagedObject or NSManagedObjectID.
+ @param returnIDs Whether or not results should contain instances of `NSManagedObject` or `NSManagedObjectID`.
  @param options Request options.
  @param error Points to the error object if the fetch is unsuccessful.
  
- @return An array of NSManagedObject or NSManagedObjectID instances matching the request, nil if there was an error.
+ @return An array of `NSManagedObject` or `NSManagedObjectID` instances matching the request, nil if there was an error.
  
  @since Available in iOS SDK 1.2.0 and later.
  */
 - (NSArray *)executeFetchRequestAndWait:(NSFetchRequest *)request returnManagedObjectIDs:(BOOL)returnIDs options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error;
+
+
+///-------------------------------
+/// @name Synchronous Count
+///-------------------------------
+
+
+/**
+ Synchronous count for fetch request method.
+ 
+ This method works like the `NSManagedObjectContext` <i>countForFetchRequest:error:</i> method, but executes the request on a background private context.
+ 
+ @param request The fetch request to perform the count on.
+ @param error Points to the error object if the fetch is unsuccessful.
+ 
+ @return The number of objects a given fetch request would have returned if it had been passed to <i>executeFetchRequest:error:</i>, or `NSNotFound` if an error occurs.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+- (NSUInteger)countForFetchRequestAndWait:(NSFetchRequest *)request error:(NSError *__autoreleasing *)error;
+
+/**
+ Synchronous count for fetch request method.
+ 
+ This method works like the `NSManagedObjectContext` <i>countForFetchRequest:error:</i> method, but executes the request on a background private context.
+ 
+ For more information on per request options, see the <a href="#pr_options">Per Request Options</a> section above.
+ 
+ @param request The fetch request to perform the count on.
+ @param options Request options.
+ @param error Points to the error object if the fetch is unsuccessful.
+ 
+ @return The number of objects a given fetch request would have returned if it had been passed to <i>executeFetchRequest:error:</i>, or `NSNotFound` if an error occurs.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+- (NSUInteger)countForFetchRequestAndWait:(NSFetchRequest *)request options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error;
 
 ///-------------------------------
 /// @name Observing Contexts
 ///-------------------------------
 
 /**
- Allows context to be notified when contextToObserve posts the NSManagedObjectContextDidSaveNotification notification.
+ Allows context to be notified when contextToObserve posts the `NSManagedObjectContextDidSaveNotification` notification.
  
- When notification arrives, mergeChangesFromContextDidSaveNotification: is called.
+ When notification arrives, <i>mergeChangesFromContextDidSaveNotification:</i> is called.
  
  @param contextToObserve The object to observe for notification posts.
  
@@ -281,7 +368,7 @@
 - (void)observeContext:(NSManagedObjectContext *)contextToObserve;
 
 /**
- Removes context from observing NSManagedObjectContextDidSaveNotification notifications from contextToStopObserving.
+ Removes context from observing `NSManagedObjectContextDidSaveNotification` notifications from <i>contextToStopObserving</i>.
  
  @param contextToStopObserving The object to stop observing for notification posts.
  
@@ -290,11 +377,11 @@
 - (void)stopObservingContext:(NSManagedObjectContext *)contextToStopObserving;
 
 /**
- Adds/Removes observer for NSManagedObjectContextWillSaveNotification notification.
+ Adds/Removes observer for `NSManagedObjectContextWillSaveNotification` notification.
  
- When using the child / parent context pattern, child contexts should obtain permanent IDs for newly inserted objects before pushing save requests to parent contexts.  This method is automatically set to YES for mainThreadContext as well as private queue contexts that are created by contextForCurrentThread.
+ When using the child / parent context pattern, child contexts should obtain permanent IDs for newly inserted objects before pushing save requests to parent contexts.  This method is automatically set to YES for <i>mainThreadContext</i> as well as private queue contexts that are created by <i>contextForCurrentThread</i>.
  
- @param value If YES, adds an observer for NSManagedObjectContextWillSaveNotification, which upon receiving a notification calls obtainPermanentIDsForObjects:, passing the context's inserted objects. 
+ @param value If YES, adds an observer for `NSManagedObjectContextWillSaveNotification`, which upon receiving a notification calls <i>obtainPermanentIDsForObjects:</i>, passing the context's inserted objects. 
  
  @since Available in iOS SDK 1.2.0 and later.
  */

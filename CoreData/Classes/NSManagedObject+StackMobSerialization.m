@@ -56,11 +56,15 @@
         return objectIdField;
     }
     
+    objectIdField = nil;
+    
     // Search for schemaname_id
     objectIdField = [[self SMSchema] stringByAppendingFormat:@"_id"];
     if ([[[self entity] propertiesByName] objectForKey:objectIdField] != nil) {
         return objectIdField;
     }
+    
+    objectIdField = nil;
     
     // Raise an exception and return nil
     [NSException raise:SMExceptionIncompatibleObject format:@"No Attribute found for entity %@ which maps to the primary key on StackMob. The Attribute name should match one of the following formats: lowercasedEntityNameId or lowercasedEntityName_id.  If the managed object subclass for %@ inherits from SMUserManagedObject, meaning it is intended to define user objects, you may return either of the above formats or whatever lowercase string with optional underscores matches the primary key field on StackMob.", [[self entity] name], [[self entity] name]];
@@ -112,12 +116,14 @@
         if ([property isKindOfClass:[NSAttributeDescription class]]) {
             NSAttributeDescription *attributeDescription = (NSAttributeDescription *)property;
             NSString *fieldName = [selfEntity SMFieldNameForProperty:property];
-            if (attributeDescription.attributeType != NSUndefinedAttributeType && propertyValue != nil && propertyValue != [NSNull null]) {
-                if (attributeDescription.attributeType == NSDateAttributeType) {
+            if (attributeDescription.attributeType != NSUndefinedAttributeType) {
+                if (propertyValue == nil || propertyValue == [NSNull null]) {
+                    [objectDictionary setObject:[NSNull null] forKey:fieldName];
+                } else if (attributeDescription.attributeType == NSDateAttributeType) {
                     
                     NSDate *dateValue = propertyValue;
                     long double convertedDate = (long double)[dateValue timeIntervalSince1970] * 1000.0000;
-                    NSNumber *numberToSet = [NSNumber numberWithUnsignedLongLong:convertedDate];
+                    NSNumber *numberToSet = [NSNumber numberWithLongLong:convertedDate];
                     [objectDictionary setObject:numberToSet forKey:fieldName];
                     
                 } else if (attributeDescription.attributeType == NSBooleanAttributeType) {

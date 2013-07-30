@@ -19,6 +19,7 @@
 NSString *const SMErrorDomain = @"SMError";
 NSString *const HTTPErrorDomain = @"HTTP";
 NSString *const SMExceptionIncompatibleObject = @"SMExceptionIncompatibleObject";
+NSString *const SMExceptionInvalidArugments = @"SMExceptionInvalidArugments";
 NSString *const SMExceptionUnknownSchema = @"SMExceptionUnknownSchema";
 NSString *const SMExceptionAddPersistentStore = @"SMExceptionAddPersistentStore";
 NSString *const SMExceptionCannotFillRelationshipFault = @"SMExceptionCannotFillRelationshipFault";

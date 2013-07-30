@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-#define SDK_VERSION @"2.1.0"
+#import "AFHTTPRequestOperation.h"
+
+@interface SMHTTPRequestOperation : AFHTTPRequestOperation
+
++ (instancetype)SMHTTPRequestOperationWithRequest:(NSURLRequest *)urlRequest
+                                          success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
+                                          failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
+
+@end

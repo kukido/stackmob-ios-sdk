@@ -16,6 +16,12 @@
 
 #import "SMRequestOptions.h"
 
+@interface SMRequestOptions ()
+
+@property (nonatomic, readwrite) BOOL cachePolicySet;
+
+@end
+
 @implementation SMRequestOptions
 
 @synthesize headers = _SM_headers;
@@ -23,6 +29,9 @@
 @synthesize tryRefreshToken = _SM_tryRefreshToken;
 @synthesize numberOfRetries = _SM_numberOfRetries;
 @synthesize retryBlock = _SM_retryBlock;
+@synthesize cachePolicy = _cachePolicy;
+@synthesize cacheResults = _cacheResults;
+@synthesize cachePolicySet = _cachePolicySet;
 
 
 + (SMRequestOptions *)options
@@ -33,6 +42,9 @@
     opts.tryRefreshToken = YES;
     opts.numberOfRetries = 3;
     opts.retryBlock = nil;
+    opts.cachePolicy = SMCachePolicyTryNetworkOnly;
+    opts.cachePolicySet = NO;
+    opts.cacheResults = YES;
     return opts;
 }
 
@@ -65,6 +77,28 @@
     return opt;
 }
 
++ (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy
+{
+    SMRequestOptions *opt = [SMRequestOptions options];
+    opt.cachePolicy = cachePolicy;
+    return opt;
+}
+
++ (SMRequestOptions *)optionsWithCacheResults:(BOOL)cacheResults
+{
+    SMRequestOptions *opt = [SMRequestOptions options];
+    opt.cacheResults = cacheResults;
+    return opt;
+}
+
+- (void)setCachePolicy:(SMCachePolicy)cachePolicy
+{
+    if (_cachePolicy != cachePolicy) {
+        _cachePolicy = cachePolicy;
+        self.cachePolicySet = YES;
+    }
+}
+
 - (void)setExpandDepth:(NSUInteger)depth
 {
     if (!self.headers) {
@@ -88,6 +122,31 @@
 - (void)addSMErrorServiceUnavailableRetryBlock:(SMFailureRetryBlock)retryBlock
 {
     self.retryBlock = retryBlock;
+}
+
+- (void)associateKey:(NSString *)key withSchema:(NSString *)schema
+{
+    if (!self.headers) {
+        self.headers = [NSDictionary dictionary];
+    }
+    NSMutableDictionary *tempHeadersDict = [self.headers mutableCopy];
+    if ([tempHeadersDict objectForKey:@"X-StackMob-Relations"]) {
+        NSString *newRelationsHeader = [NSString stringWithFormat:@"%@&%@=%@", [tempHeadersDict objectForKey:@"X-StackMob-Relations" ], key, schema];
+        [tempHeadersDict setValue:newRelationsHeader forKey:@"X-StackMob-Relations"];
+    } else {
+        [tempHeadersDict setValue:[NSString stringWithFormat:@"%@=%@", key, schema] forKey:@"X-StackMob-Relations"];
+    }
+    self.headers = tempHeadersDict;
+}
+
+- (void)setValue:(NSString *)value forHeaderKey:(NSString *)key
+{
+    if (!self.headers) {
+        self.headers = [NSDictionary dictionary];
+    }
+    NSMutableDictionary *tempHeadersDict = [self.headers mutableCopy];
+    [tempHeadersDict setObject:value forKey:key];
+    self.headers = tempHeadersDict;
 }
 
 @end

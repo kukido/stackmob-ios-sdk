@@ -18,6 +18,8 @@
 #import "SMDataStore.h"
 #import "SMCoreDataStore.h"
 #import "SMUserSession.h"
+#import "SMOAuth2Client.h"
+#import "AFHTTPClient.h"
 #import "SMDataStore+Protected.h"
 #import "SMRequestOptions.h"
 #import "SMError.h"
@@ -138,7 +140,7 @@ static SMClient *defaultClient = nil;
 
 - (void)setUserSchema:(NSString *)userSchema
 {
-    if (_SM_userSchema != userSchema) {
+    if (![_SM_userSchema isEqualToString:userSchema]) {
         _SM_userSchema = [userSchema lowercaseString];
         [self.session setUserSchema:_SM_userSchema];
     }
@@ -146,7 +148,7 @@ static SMClient *defaultClient = nil;
 
 - (void)setUserPrimaryKeyField:(NSString *)userPrimaryKeyField
 {
-    if (_userPrimaryKeyField != userPrimaryKeyField) {
+    if (![_userPrimaryKeyField isEqualToString:userPrimaryKeyField]) {
         _userPrimaryKeyField = userPrimaryKeyField;
         [self.session setUserPrimaryKeyField:userPrimaryKeyField];
     }
@@ -154,9 +156,17 @@ static SMClient *defaultClient = nil;
 
 - (void)setUserPasswordField:(NSString *)userPasswordField
 {
-    if (_SM_userPasswordField != userPasswordField) {
+    if (![_SM_userPasswordField isEqualToString:userPasswordField]) {
         _SM_userPasswordField = userPasswordField;
         [self.session setUserPasswordField:userPasswordField];
+    }
+}
+
+- (void)setApiHost:(NSString *)apiHost
+{
+    if (![_SM_APIHost isEqualToString:apiHost]) {
+        _SM_APIHost = apiHost;
+        [self.session setNewAPIHost:apiHost];
     }
 }
 
@@ -256,13 +266,13 @@ static SMClient *defaultClient = nil;
                          onSuccess:(SMResultSuccessBlock)successBlock
                          onFailure:(SMFailureBlock)failureBlock
 {
-    [self.dataStore readObjectWithId:@"loggedInUser" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+    [self.dataStore readObjectWithId:@"loggedInUser" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *object, NSString *schema) {
         if (successBlock) {
-            successBlock(theObject);
+            successBlock(object);
         }
-    } onFailure:^(NSError *theError, NSString *theObject, NSString *schema) {
+    } onFailure:^(NSError *error, NSString *object, NSString *schema) {
         if (failureBlock) {
-            failureBlock(theError);
+            failureBlock(error);
         }
     }];
 }
@@ -289,13 +299,13 @@ static SMClient *defaultClient = nil;
         }
     } else {
         NSDictionary *args = [NSDictionary dictionaryWithObject:username forKey:DEFAULT_PRIMARY_KEY_FIELD_NAME];
-        [self.dataStore createObject:args inSchema:[self.userSchema stringByAppendingPathComponent:@"forgotPassword"] onSuccess:^(NSDictionary *theObject, NSString *schema) {
+        [self.dataStore createObject:args inSchema:[self.userSchema stringByAppendingPathComponent:@"forgotPassword"] onSuccess:^(NSDictionary *object, NSString *schema) {
             if (successBlock) {
-                successBlock(theObject);
+                successBlock(object);
             }
-        } onFailure:^(NSError *theError, NSDictionary *theObject, NSString *schema) {
+        } onFailure:^(NSError *error, NSDictionary *object, NSString *schema) {
             if (failureBlock) {
-                failureBlock(theError);
+                failureBlock(error);
             }
         }];
     }
@@ -317,13 +327,13 @@ static SMClient *defaultClient = nil;
         NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:old, @"old", new, @"new", nil];
         SMRequestOptions *options = [SMRequestOptions options];
         options.isSecure = YES;
-        [self.dataStore createObject:args inSchema:[self.userSchema stringByAppendingPathComponent:@"resetPassword"] options:options onSuccess:^(NSDictionary *theObject, NSString *schema) {
+        [self.dataStore createObject:args inSchema:[self.userSchema stringByAppendingPathComponent:@"resetPassword"] options:options onSuccess:^(NSDictionary *object, NSString *schema) {
             if (successBlock) {
-                successBlock(theObject);
+                successBlock(object);
             }
-        } onFailure:^(NSError *theError, NSDictionary *theObject, NSString *schema) {
+        } onFailure:^(NSError *error, NSDictionary *object, NSString *schema) {
             if (failureBlock) {
-                failureBlock(theError);
+                failureBlock(error);
             }
         }];
     }
@@ -348,14 +358,14 @@ static SMClient *defaultClient = nil;
                 onSuccess:(SMResultSuccessBlock)successBlock
                 onFailure:(SMFailureBlock)failureBlock
 {
-    [self.dataStore readObjectWithId:@"logout" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+    [self.dataStore readObjectWithId:@"logout" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *object, NSString *schema) {
         [[self session] clearSessionInfo];
         if (successBlock) {
-            successBlock(theObject);
+            successBlock(object);
         }
-    } onFailure:^(NSError *theError, NSString *theObject, NSString *schema) {
+    } onFailure:^(NSError *error, NSString *object, NSString *schema) {
         if (failureBlock) {
-            failureBlock(theError);
+            failureBlock(error);
         }
     }];
 }
@@ -410,13 +420,13 @@ static SMClient *defaultClient = nil;
         if (username != nil) {
             [args setValue:username forKey:self.userPrimaryKeyField];
         }
-        [self.dataStore createObject:args inSchema:[NSString stringWithFormat:@"%@/createUserWithFacebook", self.userSchema] options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+        [self.dataStore createObject:args inSchema:[NSString stringWithFormat:@"%@/createUserWithFacebook", self.userSchema] options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *object, NSString *schema) {
             if (successBlock) {
-                successBlock(theObject);
+                successBlock(object);
             }
-        } onFailure:^(NSError *theError, NSDictionary *theObject, NSString *schema) {
+        } onFailure:^(NSError *error, NSDictionary *object, NSString *schema) {
             if (failureBlock) {
-                failureBlock(theError);
+                failureBlock(error);
             }
         }];
     }
@@ -437,13 +447,13 @@ static SMClient *defaultClient = nil;
                                 onFailure:(SMFailureBlock)failureBlock
 {
     NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:fbToken, FB_TOKEN_KEY, nil];
-    [self.dataStore readObjectWithId:@"linkUserWithFacebook" inSchema:self.userSchema parameters:args options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+    [self.dataStore readObjectWithId:@"linkUserWithFacebook" inSchema:self.userSchema parameters:args options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *object, NSString *schema) {
         if (successBlock) {
-            successBlock(theObject);
+            successBlock(object);
         }
-    } onFailure:^(NSError *theError, NSString *theObjectId, NSString *schema) {
+    } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
         if (failureBlock) {
-            failureBlock(theError);
+            failureBlock(error);
         }
     }];
 }
@@ -459,13 +469,13 @@ static SMClient *defaultClient = nil;
                                         onSuccess:(SMSuccessBlock)successBlock
                                         onFailure:(SMFailureBlock)failureBlock
 {
-    [self.dataStore deleteObjectId:@"unlinkUserFromFacebook" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSString *theObjectId, NSString *schema) {
+    [self.dataStore deleteObjectId:@"unlinkUserFromFacebook" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSString *objectId, NSString *schema) {
         if (successBlock) {
             successBlock();
         }
-    } onFailure:^(NSError *theError, NSString *theObjectId, NSString *schema) {
+    } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
         if (failureBlock) {
-            failureBlock(theError);
+            failureBlock(error);
         }
     }];
 }
@@ -540,13 +550,13 @@ static SMClient *defaultClient = nil;
     } else {
         NSDictionary *args = [NSDictionary dictionaryWithObject:message forKey:@"message"];
         
-        [self.dataStore readObjectWithId:@"postFacebookMessage" inSchema:self.userSchema parameters:args options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+        [self.dataStore readObjectWithId:@"postFacebookMessage" inSchema:self.userSchema parameters:args options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *object, NSString *schema) {
             if (successBlock) {
-                successBlock(theObject);
+                successBlock(object);
             }
-        } onFailure:^(NSError *theError, NSString *theObjectId, NSString *schema) {
+        } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
             if (failureBlock) {
-                failureBlock(theError);
+                failureBlock(error);
             }
         }];
     }
@@ -564,13 +574,13 @@ static SMClient *defaultClient = nil;
                                      onSuccess:(SMResultSuccessBlock)successBlock
                                      onFailure:(SMFailureBlock)failureBlock
 {
-    [self.dataStore readObjectWithId:@"getFacebookUserInfo" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+    [self.dataStore readObjectWithId:@"getFacebookUserInfo" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *object, NSString *schema) {
         if (successBlock) {
-            successBlock(theObject);
+            successBlock(object);
         }
-    } onFailure:^(NSError *theError, NSString *theObjectId, NSString *schema) {
+    } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
         if (failureBlock) {
-            failureBlock(theError);
+            failureBlock(error);
         }
     }];
 }
@@ -614,13 +624,13 @@ static SMClient *defaultClient = nil;
         if (username != nil) {
             [args setValue:username forKey:self.userPrimaryKeyField];
         }
-        [self.dataStore readObjectWithId:@"createUserWithTwitter" inSchema:self.userSchema parameters:args options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+        [self.dataStore readObjectWithId:@"createUserWithTwitter" inSchema:self.userSchema parameters:args options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *object, NSString *schema) {
             if (successBlock) {
-                successBlock(theObject);
+                successBlock(object);
             }
-        } onFailure:^(NSError *theError, NSString *theObjectId, NSString *schema) {
+        } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
             if (failureBlock) {
-                failureBlock(theError);
+                failureBlock(error);
             }
         }];
     }
@@ -643,13 +653,13 @@ static SMClient *defaultClient = nil;
                                onFailure:(SMFailureBlock)failureBlock
 {
     NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:twitterToken, TW_TOKEN_KEY, twitterSecret, TW_SECRET_KEY, nil];
-    [self.dataStore readObjectWithId:@"linkUserWithTwitter" inSchema:self.userSchema parameters:args options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+    [self.dataStore readObjectWithId:@"linkUserWithTwitter" inSchema:self.userSchema parameters:args options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *object, NSString *schema) {
         if (successBlock) {
-            successBlock(theObject);
+            successBlock(object);
         }
-    } onFailure:^(NSError *theError, NSString *theObjectId, NSString *schema) {
+    } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
         if (failureBlock) {
-            failureBlock(theError);
+            failureBlock(error);
         }
     }];
 }
@@ -665,13 +675,13 @@ static SMClient *defaultClient = nil;
                                         onSuccess:(SMSuccessBlock)successBlock
                                         onFailure:(SMFailureBlock)failureBlock
 {
-    [self.dataStore deleteObjectId:@"unlinkUserFromTwitter" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSString *theObjectId, NSString *schema) {
+    [self.dataStore deleteObjectId:@"unlinkUserFromTwitter" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSString *objectId, NSString *schema) {
         if (successBlock) {
             successBlock();
         }
-    } onFailure:^(NSError *theError, NSString *theObjectId, NSString *schema) {
+    } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
         if (failureBlock) {
-            failureBlock(theError);
+            failureBlock(error);
         }
     }];
 }
@@ -754,13 +764,13 @@ static SMClient *defaultClient = nil;
     } else {
         NSDictionary *args = [NSDictionary dictionaryWithObject:message forKey:@"tw_st"];
         
-        [self.dataStore readObjectWithId:@"twitterStatusUpdate" inSchema:self.userSchema parameters:args options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+        [self.dataStore readObjectWithId:@"twitterStatusUpdate" inSchema:self.userSchema parameters:args options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *object, NSString *schema) {
             if (successBlock) {
-                successBlock(theObject);
+                successBlock(object);
             }
-        } onFailure:^(NSError *theError, NSString *theObjectId, NSString *schema) {
+        } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
             if (failureBlock) {
-                failureBlock(theError);
+                failureBlock(error);
             }
         }];
     }
@@ -778,13 +788,13 @@ static SMClient *defaultClient = nil;
                                     onSuccess:(SMResultSuccessBlock)successBlock
                                     onFailure:(SMFailureBlock)failureBlock
 {
-    [self.dataStore readObjectWithId:@"getTwitterUserInfo" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+    [self.dataStore readObjectWithId:@"getTwitterUserInfo" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *object, NSString *schema) {
         if (successBlock) {
-            successBlock(theObject);
+            successBlock(object);
         }
-    } onFailure:^(NSError *theError, NSString *theObjectId, NSString *schema) {
+    } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
         if (failureBlock) {
-            failureBlock(theError);
+            failureBlock(error);
         }
     }];
 }
@@ -809,13 +819,13 @@ static SMClient *defaultClient = nil;
 - (void)linkLoggedInUserWithGigyaUID:(NSString *)uid uidSignature:(NSString *)uidSignature signatureTimestamp:(NSString *)signatureTimestamp options:(SMRequestOptions *)options successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMResultSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock
 {
     NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:uid, @"gigya_uid", uidSignature, @"gigya_sig", signatureTimestamp, @"gigya_ts", nil];
-    [self.dataStore createObject:args inSchema:[NSString stringWithFormat:@"%@/linkUserWithGigya", self.userSchema] options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *theObject, NSString *schema) {
+    [self.dataStore createObject:args inSchema:[NSString stringWithFormat:@"%@/linkUserWithGigya", self.userSchema] options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSDictionary *object, NSString *schema) {
         if (successBlock) {
-            successBlock(theObject);
+            successBlock(object);
         }
-    } onFailure:^(NSError *theError, NSDictionary *theObject, NSString *schema) {
+    } onFailure:^(NSError *error, NSDictionary *object, NSString *schema) {
         if (failureBlock) {
-            failureBlock(theError);
+            failureBlock(error);
         }
     }];
 }
@@ -828,13 +838,13 @@ static SMClient *defaultClient = nil;
 
 - (void)unlinkLoggedInUserFromGigyaWithOptions:(SMRequestOptions *)options successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock
 {
-    [self.dataStore deleteObjectId:@"unlinkUserFromGigya" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSString *theObjectId, NSString *schema) {
+    [self.dataStore deleteObjectId:@"unlinkUserFromGigya" inSchema:self.userSchema options:options successCallbackQueue:successCallbackQueue failureCallbackQueue:failureCallbackQueue onSuccess:^(NSString *objectId, NSString *schema) {
         if (successBlock) {
             successBlock();
         }
-    } onFailure:^(NSError *theError, NSString *theObjectId, NSString *schema) {
+    } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
         if (failureBlock) {
-            failureBlock(theError);
+            failureBlock(error);
         }
     }];
 }

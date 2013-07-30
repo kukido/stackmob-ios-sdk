@@ -15,6 +15,7 @@
  */
 
 #import "SMResponseBlocks.h"
+#import "SMCoreDataStore.h"
 
 /**
  `SMRequestOptions` is a class designed to supply various choices to requests, including:
@@ -69,9 +70,43 @@
     typedef void (^SMFailureRetryBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON, SMRequestOptions *options, SMFullResponseSuccessBlock successBlock, SMFullResponseFailureBlock failureBlock);
  
  @since Available in iOS SDK 1.0.0 and later.
- 
  */
 @property (nonatomic, strong) SMFailureRetryBlock retryBlock;
+
+/**
+ A cache policy for the request these options are passed to.
+ 
+ Use to override the current default cache policy exclusively for one request.
+ 
+ @note This option is only used for Core Data fetch requests.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+@property (nonatomic) SMCachePolicy cachePolicy;
+
+/**
+ Whether or not any fetched or saved objects should be cached.
+ 
+ Default is `YES`. You should only need to set this option if you do not want objects to be cached for a particular request.
+ 
+ Applied to saves, fetches, and any objects that need to be retrieved, such as related objects, during the process of either of these operations.
+ 
+ Pass the options to one of the save or fetch methods in the `NSManagedObjectContext+Concurrency` category.
+ 
+ @note This option is only used for Core Data requests.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+@property (nonatomic) BOOL cacheResults;
+
+/**
+ Whether or not the cache policy property has been set.
+ 
+ Default is NO. Used internally.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+@property (nonatomic, readonly) BOOL cachePolicySet;
 
 ///-------------------------------
 /// @name Initialize
@@ -127,6 +162,81 @@
  @since Available in iOS SDK 1.1.2 and later.
  */
 + (SMRequestOptions *)optionsWithReturnedFieldsRestrictedTo:(NSArray *)fields;
+
+#pragma mark - Adding Headers
+///-------------------------------
+/// @name Adding Headers
+///-------------------------------
+
+/**
+ Adds a new request header.
+ 
+ @param value The value of the header.
+ @param key The header key.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+- (void)setValue:(NSString *)value forHeaderKey:(NSString *)key;
+
+#pragma mark - Associating Keys With Schemas
+///-------------------------------
+/// @name Associating Keys With Schemas
+///-------------------------------
+
+/**
+ Associates a relationship key with its schema.
+ 
+ Used when including nested related objects as full dictionaries or arrays of dictionaries to associate the relationship key with its schema on StackMob.
+ 
+ This method should only be used when creating/updating objects using the datastore API.
+ 
+ @param key The name of the relationship key.
+ @param schema The name of the related schema.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+- (void)associateKey:(NSString *)key withSchema:(NSString *)schema;
+
+#pragma mark - Cache Options
+///-------------------------------
+/// @name Cache Options
+///-------------------------------
+
+/**
+ Options that will define a cache policy for the request it is passed to.
+ 
+ Use to override the current default cache policy for a particular request.
+ 
+ Pass the options to one of the fetch methods in the `NSManagedObjectContext+Concurrency` category.
+ 
+ @note This option is only used for Core Data fetch requests.
+ 
+ @param cachePolicy The cache policy.
+ 
+ @return An `SMRequestOptions` object with a cache policy set.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
++ (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy;
+
+/**
+ Options that will define whether or not any fetched or saved objects should be cached.
+ 
+ Default is `YES`. You should only need to set this option if you do not want objects to be cached for a particular request.
+ 
+ Applied to saves, fetches, and any objects that need to be retrieved, such as related objects, during the process of either of these operations.
+ 
+ Pass the options to one of the save or fetch methods in the `NSManagedObjectContext+Concurrency` category.
+ 
+ @note This option is only used for Core Data requests.
+ 
+ @param cacheResults Whether or not to cache the results. Default is `YES`.
+ 
+ @return An `SMRequestOptions` object set to cache or not cache results.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
++ (SMRequestOptions *)optionsWithCacheResults:(BOOL)cacheResults;
 
 #pragma mark - Expanding relationships
 ///-------------------------------
