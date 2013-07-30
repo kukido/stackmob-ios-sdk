@@ -147,6 +147,10 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
            onSuccess:(SMDataStoreSuccessBlock)successBlock
            onFailure:(SMDataStoreFailureBlock)failureBlock;
 
+#pragma mark - Create Objects
+///-------------------------------
+/// @name Create Objects
+///-------------------------------
 
 /**
  Creates a set of new objects in your StackMob Datastore.
@@ -393,6 +397,64 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
                         onSuccess:(SMDataStoreSuccessBlock)successBlock
                         onFailure:(SMDataStoreFailureBlock)failureBlock;
 
+#pragma mark - Delete an Object
+///-------------------------------
+/// @name Delete an Object
+///-------------------------------
+
+/** 
+ Delete an existing object from your StackMob Datastore.
+ 
+ @param objectId The object id (the value of the primary key field) for the object to delete.
+ @param schema The StackMob schema containing this object.
+ @param successBlock <i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString* objectId, NSString *schema)</i>. A block object to invoke on the main thread after the object is successfully deleted. Passed the object id of the deleted object and the object's schema.
+ @param failureBlock <i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError *error, NSString* objectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.
+ 
+ @since Available in iOS SDK 1.0.0 and later.
+ */
+- (void)deleteObjectId:(NSString *)objectId
+              inSchema:(NSString *)schema
+             onSuccess:(SMDataStoreObjectIdSuccessBlock)successBlock
+             onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
+
+/** 
+ Delete an existing object from your StackMob Datastore (with request options).
+ 
+ @param objectId The object id (the value of the primary key field) for the object to delete.
+ @param schema The StackMob schema containing this object.
+ @param options An options object contains headers and other configuration for this request.
+ @param successBlock <i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString* objectId, NSString *schema)</i>. A block object to invoke on the main thread after the object is successfully deleted. Passed the object id of the deleted object and the object's schema.
+ @param failureBlock <i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError *error, NSString* objectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.
+ 
+ @since Available in iOS SDK 1.0.0 and later.
+ */
+- (void)deleteObjectId:(NSString *)objectId
+              inSchema:(NSString *)schema
+           options:(SMRequestOptions *)options
+             onSuccess:(SMDataStoreObjectIdSuccessBlock)successBlock
+             onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
+
+/**
+ Delete an existing object from your StackMob Datastore (with request options).
+ 
+ @param objectId The object id (the value of the primary key field) for the object to delete.
+ @param schema The StackMob schema containing this object.
+ @param options An options object contains headers and other configuration for this request.
+ @param successCallbackQueue The dispatch queue used to execute the success block. If nil is passed, the main queue is used.
+ @param failureCallbackQueue The dispatch queue used to execute the failure block. If nil is passed, the main queue is used.
+ @param successBlock <i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString* objectId, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully deleted. Passed the object id of the deleted object and the object's schema.
+ @param failureBlock <i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError *error, NSString* objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.
+ 
+ @since Available in iOS SDK 1.2.0 and later.
+ */
+- (void)deleteObjectId:(NSString *)objectId
+              inSchema:(NSString *)schema
+               options:(SMRequestOptions *)options
+  successCallbackQueue:(dispatch_queue_t)successCallbackQueue
+  failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
+             onSuccess:(SMDataStoreObjectIdSuccessBlock)successBlock
+             onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
+
 #pragma mark - Create and Append Related Objects
 ///-------------------------------
 /// @name Create and Append Related Objects
@@ -529,7 +591,7 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
 /**
  Delete objects or relationship references from an array without needing to update the entire object at once.
  
- Includes the option of deleting the objects themselves in the same call (for relationship fields only). If you are deleting from a field of `Array` type, pass `NO` to the `cascadeDelete` parameter, as this option is only applicable to relationship fields. 
+ Includes the option of deleting the objects themselves in the same call (for relationship fields only). If you are deleting from a field of `Array` type, pass `NO` to the `cascadeDelete` parameter, as this option is only applicable to relationship fields.
  
  @param objects An array of IDs to delete.
  @param objectId The primary key of the object with the relationship being edited.
@@ -556,8 +618,6 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
  @param field The name of the primary object's related field.
  @param cascadeDelete Whether or not to delete the objects themselves after removing the references in the relationship value.
  @param options An options object contains headers and other configuration for this request.
- @param successCallbackQueue The dispatch queue used to execute the success block. If nil is passed, the main queue is used.
- @param failureCallbackQueue The dispatch queue used to execute the failure block. If nil is passed, the main queue is used.
  @param successBlock <i>typedef void (^SMSuccessBlock)()</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed objects in two separate arrays.
  @param failureBlock <i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError *error, NSString *objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to delete the specified objects. Passed the error returned by StackMob, the primary key, the objects to be deleted, and the schema in which the object was to be updated.
  
@@ -586,65 +646,6 @@ failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
  @since Available in iOS SDK 2.1.0 and later.
  */
 - (void)deleteObjects:(NSArray *)objects fromObjectWithId:(NSString *)objectId inSchema:(NSString *)schema field:(NSString *)field cascadeDelete:(BOOL)cascadeDelete options:(SMRequestOptions *)options successCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(SMSuccessBlock)successBlock onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
-
-
-#pragma mark - Delete an Object
-///-------------------------------
-/// @name Delete an Object
-///-------------------------------
-
-/** 
- Delete an existing object from your StackMob Datastore.
- 
- @param objectId The object id (the value of the primary key field) for the object to delete.
- @param schema The StackMob schema containing this object.
- @param successBlock <i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString* objectId, NSString *schema)</i>. A block object to invoke on the main thread after the object is successfully deleted. Passed the object id of the deleted object and the object's schema.
- @param failureBlock <i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError *error, NSString* objectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.
- 
- @since Available in iOS SDK 1.0.0 and later.
- */
-- (void)deleteObjectId:(NSString *)objectId
-              inSchema:(NSString *)schema
-             onSuccess:(SMDataStoreObjectIdSuccessBlock)successBlock
-             onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
-
-/** 
- Delete an existing object from your StackMob Datastore (with request options).
- 
- @param objectId The object id (the value of the primary key field) for the object to delete.
- @param schema The StackMob schema containing this object.
- @param options An options object contains headers and other configuration for this request.
- @param successBlock <i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString* objectId, NSString *schema)</i>. A block object to invoke on the main thread after the object is successfully deleted. Passed the object id of the deleted object and the object's schema.
- @param failureBlock <i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError *error, NSString* objectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.
- 
- @since Available in iOS SDK 1.0.0 and later.
- */
-- (void)deleteObjectId:(NSString *)objectId
-              inSchema:(NSString *)schema
-           options:(SMRequestOptions *)options
-             onSuccess:(SMDataStoreObjectIdSuccessBlock)successBlock
-             onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
-
-/**
- Delete an existing object from your StackMob Datastore (with request options).
- 
- @param objectId The object id (the value of the primary key field) for the object to delete.
- @param schema The StackMob schema containing this object.
- @param options An options object contains headers and other configuration for this request.
- @param successCallbackQueue The dispatch queue used to execute the success block. If nil is passed, the main queue is used.
- @param failureCallbackQueue The dispatch queue used to execute the failure block. If nil is passed, the main queue is used.
- @param successBlock <i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString* objectId, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully deleted. Passed the object id of the deleted object and the object's schema.
- @param failureBlock <i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError *error, NSString* objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.
- 
- @since Available in iOS SDK 1.2.0 and later.
- */
-- (void)deleteObjectId:(NSString *)objectId
-              inSchema:(NSString *)schema
-               options:(SMRequestOptions *)options
-  successCallbackQueue:(dispatch_queue_t)successCallbackQueue
-  failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
-             onSuccess:(SMDataStoreObjectIdSuccessBlock)successBlock
-             onFailure:(SMDataStoreObjectIdFailureBlock)failureBlock;
 
 
 #pragma mark - Queries

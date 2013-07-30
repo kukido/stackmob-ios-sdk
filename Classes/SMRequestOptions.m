@@ -16,6 +16,12 @@
 
 #import "SMRequestOptions.h"
 
+@interface SMRequestOptions ()
+
+@property (nonatomic, readwrite) BOOL cachePolicySet;
+
+@end
+
 @implementation SMRequestOptions
 
 @synthesize headers = _SM_headers;
@@ -25,6 +31,7 @@
 @synthesize retryBlock = _SM_retryBlock;
 @synthesize cachePolicy = _cachePolicy;
 @synthesize cacheResults = _cacheResults;
+@synthesize cachePolicySet = _cachePolicySet;
 
 
 + (SMRequestOptions *)options
@@ -35,7 +42,8 @@
     opts.tryRefreshToken = YES;
     opts.numberOfRetries = 3;
     opts.retryBlock = nil;
-    opts.cachePolicy = -1;
+    opts.cachePolicy = SMCachePolicyTryNetworkOnly;
+    opts.cachePolicySet = NO;
     opts.cacheResults = YES;
     return opts;
 }
@@ -81,6 +89,14 @@
     SMRequestOptions *opt = [SMRequestOptions options];
     opt.cacheResults = cacheResults;
     return opt;
+}
+
+- (void)setCachePolicy:(SMCachePolicy)cachePolicy
+{
+    if (_cachePolicy != cachePolicy) {
+        _cachePolicy = cachePolicy;
+        self.cachePolicySet = YES;
+    }
 }
 
 - (void)setExpandDepth:(NSUInteger)depth

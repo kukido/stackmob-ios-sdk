@@ -1,5 +1,30 @@
 <h2>StackMob iOS SDK Change Log</h2>
 
+<h3>v2.1.0 - July 30, 2013</h3>
+
+**Features**
+
+* Per request cache policy. Suppose you generally fetch from the cache, but occasionally you want to update your cache with the latest objects from the server. Rather then needing to change the cache policy before a specific request, and then change it back afterwards, you can pass in a option to define a cache policy just for the duration of one fetch request. See the <a href="https://developer.stackmob.com/ios-sdk/offline-sync-guide#PerRequestCachePolicy" target="_blank">Per Request Cache Policy</a> section of the Offline Sync Guide.
+* Per request option to cache or not cache the results of fetch. See the <a href="https://developer.stackmob.com/ios-sdk/offline-sync-guide#OtherUtilityPropertiesMethods" target="_blank">Other Utility Properties/Methods</a> section of the Offline Sync Guide.
+* Async/Sync methods for Core Data <code>countForFetchRequest:error:</code> method. See <a href="http://stackmob.github.io/stackmob-ios-sdk/Categories/NSManagedObjectContext+Concurrency.html" target="_blank">NSManagedObjectContext+Concurrency category</a>.
+* New datastore <code>createObjects:...</code> method for bulk object creation. See <a href="https://developer.stackmob.com/ios-sdk/datastore-api-guide#CreatingObjectsinBulk" target="_blank">Creating Objects in Bulk</a>. (issue #22)
+* New datastore methods for working with relationships and array field types: <code>createAndAppendRelatedObjects:...</code>, <code>appendExistingObjects:...</code>, and <code>deleteObjects:...</code>. See <a href="https://developer.stackmob.com/ios-sdk/datastore-api-guide#Relationships" target="_blank">Datastore Relationships API</a>.
+* Support for upsert. With upsert you can create or update objects as well create or update nested related objects, all in one call. See <a href="https://developer.stackmob.com/ios-sdk/datastore-api-guide#UpsertwithNestedObjects" target="_blank">Upsert with Nested Objects</a>.
+* Automatic host redirect for dedicated datastores. When your production apps use v2.1.0+ of the iOS SDK and you switch to one of the <a href="https://www.stackmob.com/product/pricing/" target="_blank">pro or enterprise solutions</a>, the SDK will automatically update the domain for all requests. This way your production apps can start talking to your dedicated datastore without the need to roll out an immediate update for your app.
+* Xcode 5 and iOS 7 compatibility. Compiled and tested in sample app using Xcode 5 Developer Preview 4.
+
+**Fixes**
+
+* Sync success callback return all inserted/updated/deleted objects.
+* Dates before 1970 are properly converted.
+* Add parsing of compound predicates. (issue #46)
+* Add empty array checks for IN/NIN.
+* Fetch offset and limit translate properly to request header.
+* Fix <code>primaryKeyField</code> method memory leak.
+* Fields are properly sent in request when set to nil.
+* Background created managed objects are not assigned primary keys.
+
+
 <h3>v2.0.0 - June 6, 2013</h3>
 
 **Features**

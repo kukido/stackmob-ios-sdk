@@ -466,6 +466,78 @@ describe(@"Upsert", ^{
             [[theValue(timeout) should] beNo];
         }
     });
+    it(@"Update existing todo and update existing category", ^{
+        __block NSString *todoId = nil;
+        __block NSString *catId = nil;
+        
+        // Create category object. We can specify a manual primary key if we wish, otherwise one will be automatically assigned when it's created.
+        NSDictionary *categoryObject = [NSDictionary dictionaryWithObjectsAndKeys:@"Home Projects", @"name", nil];
+        
+        NSDictionary *todoObject = [NSDictionary dictionaryWithObjectsAndKeys:@"new todo", @"title", categoryObject, @"category", nil];
+        
+        // Correlate the key "category" to the StackMob "category" schema
+        SMRequestOptions *options = [SMRequestOptions options];
+        [options associateKey:@"category" withSchema:@"category"];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        __block BOOL success = NO;
+        __block BOOL timeout = YES;
+        
+        dispatch_group_enter(group);
+        // Execute request
+        [dataStore createObject:todoObject inSchema:@"todo" options:options successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            // Result will contain the entire todo object, as well as the entire nested category object.
+            todoId = [object objectForKey:@"todo_id"];
+            catId = [[object objectForKey:@"category"] objectForKey:@"category_id"];
+            success = YES;
+            timeout = NO;
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error, NSDictionary *object, NSString *schema) {
+            // Handle error
+            [error shouldBeNil];
+            timeout = NO;
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 45);
+        dispatch_group_wait(group, time);
+        
+        [[theValue(success) should] beYes];
+        [[theValue(timeout) should] beNo];
+        
+        if (success) {
+            NSDictionary *categoryUpdate = [NSDictionary dictionaryWithObjectsAndKeys:catId, @"category_id", @"updated name", @"name", nil];
+            NSDictionary *todoUpdate = [NSDictionary dictionaryWithObjectsAndKeys:todoId, @"todo_id", @"updated title", @"title", categoryUpdate, @"category", nil];
+            
+            success = NO;
+            timeout = YES;
+            
+            SMRequestOptions *options2 = [SMRequestOptions options];
+            [options2 associateKey:@"category" withSchema:@"category"];
+            
+            dispatch_group_enter(group);
+            // Execute request
+            [dataStore createObject:todoUpdate inSchema:@"todo" options:options2 successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+                // Result will contain the entire todo object, as well as the entire nested category object.
+                [[[object objectForKey:@"title"] should] equal:@"updated title"];
+                [[[[object objectForKey:@"category"] objectForKey:@"name"] should] equal:@"updated name"];
+                success = YES;
+                timeout = NO; 
+                dispatch_group_leave(group);
+            } onFailure:^(NSError *error, NSDictionary *object, NSString *schema) {
+                // Handle error
+                [error shouldBeNil];
+                timeout = NO;
+                dispatch_group_leave(group);
+            }];
+            
+            dispatch_group_wait(group, time);
+            
+            [[theValue(success) should] beYes];
+            [[theValue(timeout) should] beNo];
+        }
+    });
   
 });
 
