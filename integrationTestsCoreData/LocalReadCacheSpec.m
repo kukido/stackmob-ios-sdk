@@ -91,6 +91,7 @@ describe(@"Cache Results option", ^{
             [todo setValue:[todo assignObjectId] forKey:[todo primaryKeyField]];
         }
         SMRequestOptions *options = [SMRequestOptions optionsWithCacheResults:NO];
+        [[theValue(options.cachePolicySet) should] beNo];
         NSError *error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error options:options];
         [[theValue(success) should] beYes];
@@ -158,6 +159,7 @@ describe(@"Cache Results option", ^{
         NSFetchRequest *request1 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         SMRequestOptions *fetchOptions = [SMRequestOptions optionsWithCacheResults:NO];
+        [[theValue(fetchOptions.cachePolicySet) should] beNo];
         NSError *error = nil;
         NSArray *array = [testProperties.moc executeFetchRequestAndWait:request1 returnManagedObjectIDs:YES options:fetchOptions error:&error];
         
@@ -230,6 +232,7 @@ describe(@"Per Request Cache Policy", ^{
         
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         SMRequestOptions *options = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly];
+        [[theValue(options.cachePolicySet) should] beYes];
         NSError *error = nil;
         NSArray *array = [testProperties.moc executeFetchRequestAndWait:request returnManagedObjectIDs:YES options:options error:&error];
         
@@ -268,7 +271,9 @@ describe(@"Per Request Cache Policy", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
-        SMRequestOptions *options = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly];
+        SMRequestOptions *options = [SMRequestOptions options];
+        options.cachePolicy = SMCachePolicyTryCacheOnly;
+        [[theValue(options.cachePolicySet) should] beYes];
         
         dispatch_group_enter(group);
         [testProperties.moc executeFetchRequest:request returnManagedObjectIDs:YES successCallbackQueue:queue failureCallbackQueue:queue options:options onSuccess:^(NSArray *results) {

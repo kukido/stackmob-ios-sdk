@@ -1316,7 +1316,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     if (SM_CACHE_ENABLED) {
         id resultsToReturn = nil;
         NSError *tempError = nil;
-        SMCachePolicy policyToUse = (options.cachePolicy != -1) ? options.cachePolicy : [self.coreDataStore cachePolicy];
+        SMCachePolicy policyToUse = options.cachePolicySet ? options.cachePolicy : [self.coreDataStore cachePolicy];
         switch (policyToUse) {
             case SMCachePolicyTryNetworkOnly:
                 if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
@@ -4097,6 +4097,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                         NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value];
                         [serializedDictionary setObject:data forKey:attributeName];
                     }
+                } else if (value == nil) {
+                    [serializedDictionary setValue:value forKey:attributeName];
                 } else {
                     [serializedDictionary setObject:value forKey:attributeName];
                 }
