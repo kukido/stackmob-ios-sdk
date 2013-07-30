@@ -95,6 +95,8 @@
 	
 	<option value="//api/name/saveAccessTokenInfo:">&nbsp;&nbsp;&nbsp;&nbsp;- saveAccessTokenInfo:</option>
 	
+	<option value="//api/name/setNewAPIHost:">&nbsp;&nbsp;&nbsp;&nbsp;- setNewAPIHost:</option>
+	
 	<option value="//api/name/setTokenRefreshFailureBlock:">&nbsp;&nbsp;&nbsp;&nbsp;- setTokenRefreshFailureBlock:</option>
 	
 	<option value="//api/name/signRequest:">&nbsp;&nbsp;&nbsp;&nbsp;- signRequest:</option>
@@ -184,6 +186,8 @@
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/refreshTokenWithSuccessCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">refreshTokenWithSuccessCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/saveAccessTokenInfo:">saveAccessTokenInfo:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setNewAPIHost:">setNewAPIHost:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setTokenRefreshFailureBlock:">setTokenRefreshFailureBlock:</a></span></li>
 	
@@ -452,6 +456,13 @@
 	<span class="tooltip">
 		<code><a href="#//api/name/accessTokenHasExpired">&ndash;&nbsp;accessTokenHasExpired</a></code>
 		<span class="tooltip"><p>Internal method used by <code>SMUserSession</code> to check if the expiration date on the current access token has expired.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/setNewAPIHost:">&ndash;&nbsp;setNewAPIHost:</a></code>
+		<span class="tooltip"><p>Internal method used for changing API hosts, triggered by <code>SMClient</code>.</p></span>
 	</span>
 	
 	
@@ -1151,7 +1162,7 @@
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)doTokenRequestWithEndpoint:(NSString *)<em>endpoint</em> credentials:(NSDictionary *)<em>credentials</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(void ( ^ ) ( NSDictionary *userObject ))<em>successBlock</em> onFailure:(void ( ^ ) ( NSError *theError ))<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)doTokenRequestWithEndpoint:(NSString *)<em>endpoint</em> credentials:(NSDictionary *)<em>credentials</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(void ( ^ ) ( NSDictionary *userObject ))<em>successBlock</em> onFailure:(void ( ^ ) ( NSError *error ))<em>failureBlock</em></code></div>
 
     
 	
@@ -1481,7 +1492,7 @@
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)refreshTokenOnSuccess:(void ( ^ ) ( NSDictionary *userObject ))<em>successBlock</em> onFailure:(void ( ^ ) ( NSError *theError ))<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)refreshTokenOnSuccess:(void ( ^ ) ( NSDictionary *userObject ))<em>successBlock</em> onFailure:(void ( ^ ) ( NSError *error ))<em>failureBlock</em></code></div>
 
     
 	
@@ -1542,7 +1553,7 @@
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)refreshTokenWithSuccessCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(void ( ^ ) ( NSDictionary *userObject ))<em>successBlock</em> onFailure:(void ( ^ ) ( NSError *theError ))<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)refreshTokenWithSuccessCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(void ( ^ ) ( NSDictionary *userObject ))<em>successBlock</em> onFailure:(void ( ^ ) ( NSError *error ))<em>failureBlock</em></code></div>
 
     
 	
@@ -1618,6 +1629,57 @@
 		<dl class="argument-def parameter-def">
 			<dt><em>result</em></dt>
 			<dd><p>The response to save.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 1.0.0 and later.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMUserSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/setNewAPIHost:" title="setNewAPIHost:"></a>
+	<h3 class="subsubtitle method-title">setNewAPIHost:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Internal method used for changing API hosts, triggered by <code>SMClient</code>.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)setNewAPIHost:(NSString *)<em>apiHost</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>apiHost</em></dt>
+			<dd><p>The new host.</p></dd>
 		</dl>
 		
 	</div>
@@ -1809,7 +1871,7 @@ NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Todo
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2013 StackMob. All rights reserved. (Last updated: 2013-06-06)</span><br />
+						<p><span class="copyright">&copy; 2013 StackMob. All rights reserved. (Last updated: 2013-07-30)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						

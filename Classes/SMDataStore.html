@@ -51,17 +51,41 @@
 	
 	<option value="instance_methods">Instance Methods</option>
 	
+	<option value="//api/name/appendObjects:toObjectWithId:inSchema:field:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- appendObjects:toObjectWithId:inSchema:field:onSuccess:onFailure:</option>
+	
+	<option value="//api/name/appendObjects:toObjectWithId:inSchema:field:options:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- appendObjects:toObjectWithId:inSchema:field:options:onSuccess:onFailure:</option>
+	
+	<option value="//api/name/appendObjects:toObjectWithId:inSchema:field:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- appendObjects:toObjectWithId:inSchema:field:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</option>
+	
+	<option value="//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:onSuccess:onFailure:</option>
+	
+	<option value="//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:onSuccess:onFailure:</option>
+	
+	<option value="//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</option>
+	
 	<option value="//api/name/createObject:inSchema:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- createObject:inSchema:onSuccess:onFailure:</option>
 	
 	<option value="//api/name/createObject:inSchema:options:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- createObject:inSchema:options:onSuccess:onFailure:</option>
 	
 	<option value="//api/name/createObject:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- createObject:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</option>
 	
+	<option value="//api/name/createObjects:inSchema:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- createObjects:inSchema:onSuccess:onFailure:</option>
+	
+	<option value="//api/name/createObjects:inSchema:options:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- createObjects:inSchema:options:onSuccess:onFailure:</option>
+	
+	<option value="//api/name/createObjects:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- createObjects:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</option>
+	
 	<option value="//api/name/deleteObjectId:inSchema:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- deleteObjectId:inSchema:onSuccess:onFailure:</option>
 	
 	<option value="//api/name/deleteObjectId:inSchema:options:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- deleteObjectId:inSchema:options:onSuccess:onFailure:</option>
 	
 	<option value="//api/name/deleteObjectId:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- deleteObjectId:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</option>
+	
+	<option value="//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:onSuccess:onFailure:</option>
+	
+	<option value="//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:onSuccess:onFailure:</option>
+	
+	<option value="//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</option>
 	
 	<option value="//api/name/initWithAPIVersion:session:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithAPIVersion:session:</option>
 	
@@ -127,11 +151,19 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Create an Object">Create an Object</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Create Objects">Create Objects</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Read an Object">Read an Object</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Update an Object">Update an Object</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Delete an Object">Delete an Object</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Create and Append Related Objects">Create and Append Related Objects</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Append Existing Objects">Append Existing Objects</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Delete Existing Objects">Delete Existing Objects</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Performing Queries">Performing Queries</a></span></li>
 	
@@ -159,17 +191,41 @@
 
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#instance_methods">Instance Methods</a></span><ul>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/appendObjects:toObjectWithId:inSchema:field:onSuccess:onFailure:">appendObjects:toObjectWithId:inSchema:field:onSuccess:onFailure:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/appendObjects:toObjectWithId:inSchema:field:options:onSuccess:onFailure:">appendObjects:toObjectWithId:inSchema:field:options:onSuccess:onFailure:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/appendObjects:toObjectWithId:inSchema:field:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">appendObjects:toObjectWithId:inSchema:field:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:onSuccess:onFailure:">createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:onSuccess:onFailure:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:onSuccess:onFailure:">createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:onSuccess:onFailure:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/createObject:inSchema:onSuccess:onFailure:">createObject:inSchema:onSuccess:onFailure:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/createObject:inSchema:options:onSuccess:onFailure:">createObject:inSchema:options:onSuccess:onFailure:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/createObject:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">createObject:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/createObjects:inSchema:onSuccess:onFailure:">createObjects:inSchema:onSuccess:onFailure:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/createObjects:inSchema:options:onSuccess:onFailure:">createObjects:inSchema:options:onSuccess:onFailure:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/createObjects:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">createObjects:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/deleteObjectId:inSchema:onSuccess:onFailure:">deleteObjectId:inSchema:onSuccess:onFailure:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/deleteObjectId:inSchema:options:onSuccess:onFailure:">deleteObjectId:inSchema:options:onSuccess:onFailure:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/deleteObjectId:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">deleteObjectId:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:onSuccess:onFailure:">deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:onSuccess:onFailure:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:onSuccess:onFailure:">deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:onSuccess:onFailure:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithAPIVersion:session:">initWithAPIVersion:session:</a></span></li>
 	
@@ -352,6 +408,35 @@ SMDataStore *dataStore = [[self client] dataStore];
 						</ul>
 						
 						
+						<a title="Create Objects" name="task_Create Objects"></a>
+						<h3 class="subsubtitle task-title">Create Objects</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/createObjects:inSchema:onSuccess:onFailure:">&ndash;&nbsp;createObjects:inSchema:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Creates a set of new objects in your StackMob Datastore.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/createObjects:inSchema:options:onSuccess:onFailure:">&ndash;&nbsp;createObjects:inSchema:options:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Creates a set of new objects in your StackMob Datastore.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/createObjects:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&ndash;&nbsp;createObjects:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Creates a set of new objects in your StackMob Datastore.</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
+						
+						
 						<a title="Read an Object" name="task_Read an Object"></a>
 						<h3 class="subsubtitle task-title">Read an Object</h3>
 
@@ -453,6 +538,93 @@ SMDataStore *dataStore = [[self client] dataStore];
 	<span class="tooltip">
 		<code><a href="#//api/name/deleteObjectId:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&ndash;&nbsp;deleteObjectId:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></code>
 		<span class="tooltip"><p>Delete an existing object from your StackMob Datastore (with request options).</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
+						
+						
+						<a title="Create and Append Related Objects" name="task_Create and Append Related Objects"></a>
+						<h3 class="subsubtitle task-title">Create and Append Related Objects</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:onSuccess:onFailure:">&ndash;&nbsp;createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Create and save related objects, then subsequently save them to another object&rsquo;s relationship value, all in one call.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:onSuccess:onFailure:">&ndash;&nbsp;createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Create and save related objects, then subsequently save them to another object&rsquo;s relationship value, all in one call.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&ndash;&nbsp;createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Create and save related objects, then subsequently save them to another object&rsquo;s relationship value, all in one call.</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
+						
+						
+						<a title="Append Existing Objects" name="task_Append Existing Objects"></a>
+						<h3 class="subsubtitle task-title">Append Existing Objects</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/appendObjects:toObjectWithId:inSchema:field:onSuccess:onFailure:">&ndash;&nbsp;appendObjects:toObjectWithId:inSchema:field:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Append objects to an array without needing to update the entire object at once. This goes for fields of type <code>Array</code> as well as one-to-many relationships.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/appendObjects:toObjectWithId:inSchema:field:options:onSuccess:onFailure:">&ndash;&nbsp;appendObjects:toObjectWithId:inSchema:field:options:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Append objects to an array without needing to update the entire object at once. This goes for fields of type <code>Array</code> as well as one-to-many relationships.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/appendObjects:toObjectWithId:inSchema:field:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&ndash;&nbsp;appendObjects:toObjectWithId:inSchema:field:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Append objects to an array without needing to update the entire object at once. This goes for fields of type <code>Array</code> as well as one-to-many relationships.</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
+						
+						
+						<a title="Delete Existing Objects" name="task_Delete Existing Objects"></a>
+						<h3 class="subsubtitle task-title">Delete Existing Objects</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:onSuccess:onFailure:">&ndash;&nbsp;deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Delete objects or relationship references from an array without needing to update the entire object at once.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:onSuccess:onFailure:">&ndash;&nbsp;deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Delete objects or relationship references from an array without needing to update the entire object at once.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&ndash;&nbsp;deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Delete objects or relationship references from an array without needing to update the entire object at once.</p></span>
 	</span>
 	
 	
@@ -663,6 +835,543 @@ SMDataStore *dataStore = [[self client] dataStore];
 						<h2 class="subtitle subtitle-methods">Instance Methods</h2>
 						
 						<div class="section-method">
+	<a name="//api/name/appendObjects:toObjectWithId:inSchema:field:onSuccess:onFailure:" title="appendObjects:toObjectWithId:inSchema:field:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">appendObjects:toObjectWithId:inSchema:field:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Append objects to an array without needing to update the entire object at once. This goes for fields of type <code>Array</code> as well as one-to-many relationships.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)appendObjects:(NSArray *)<em>objects</em> toObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> field:(NSString *)<em>field</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>An array of IDs to append to the related field&rsquo;s value.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objectId</em></dt>
+			<dd><p>The primary key of the object being updated.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The primary object&rsquo;s schema.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>field</em></dt>
+			<dd><p>The name of the primary object&rsquo;s related field.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed objects in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString </em>objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the primary key, the objects to be and appended, and the schema in which the object was to be updated.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.1.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>This method also handles any concurrency issues if two users are modifying the same object at the same time by doing atomic appending.</p>
+
+<p>If the field is an array, the objects will be appended to it with no uniqueness constraint.</p>
+
+<p>If the field is a relationship, just append the object primary IDs to the array, not the objects themselves. The resulting array will be deduped so that there are no duplicate references to related object IDs.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/appendObjects:toObjectWithId:inSchema:field:options:onSuccess:onFailure:" title="appendObjects:toObjectWithId:inSchema:field:options:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">appendObjects:toObjectWithId:inSchema:field:options:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Append objects to an array without needing to update the entire object at once. This goes for fields of type <code>Array</code> as well as one-to-many relationships.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)appendObjects:(NSArray *)<em>objects</em> toObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> field:(NSString *)<em>field</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>An array of IDs to append to the related field&rsquo;s value.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objectId</em></dt>
+			<dd><p>The primary key of the object being updated.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The primary object&rsquo;s schema.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>field</em></dt>
+			<dd><p>The name of the primary object&rsquo;s related field.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>options</em></dt>
+			<dd><p>An options object contains headers and other configuration for this request.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed objects in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString </em>objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the primary key, the objects to be and appended, and the schema in which the object was to be updated.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.1.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>This method also handles any concurrency issues if two users are modifying the same object at the same time by doing atomic appending.</p>
+
+<p>If the field is an array, the objects will be appended to it with no uniqueness constraint.</p>
+
+<p>If the field is a relationship, just append the object primary IDs to the array, not the objects themselves. The resulting array will be deduped so that there are no duplicate references to related object IDs.</p>
+
+<p>Includes parameter for request options.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/appendObjects:toObjectWithId:inSchema:field:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:" title="appendObjects:toObjectWithId:inSchema:field:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">appendObjects:toObjectWithId:inSchema:field:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Append objects to an array without needing to update the entire object at once. This goes for fields of type <code>Array</code> as well as one-to-many relationships.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)appendObjects:(NSArray *)<em>objects</em> toObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> field:(NSString *)<em>field</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>An array of IDs to append to the related field&rsquo;s value.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objectId</em></dt>
+			<dd><p>The primary key of the object being updated.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The primary object&rsquo;s schema.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>field</em></dt>
+			<dd><p>The name of the primary object&rsquo;s related field.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>options</em></dt>
+			<dd><p>An options object contains headers and other configuration for this request.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successCallbackQueue</em></dt>
+			<dd><p>The dispatch queue used to execute the success block. If nil is passed, the main queue is used.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureCallbackQueue</em></dt>
+			<dd><p>The dispatch queue used to execute the failure block. If nil is passed, the main queue is used.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed objects in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString </em>objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the primary key, the objects to be and appended, and the schema in which the object was to be updated.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.1.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>This method also handles any concurrency issues if two users are modifying the same object at the same time by doing atomic appending.</p>
+
+<p>If the field is an array, the objects will be appended to it with no uniqueness constraint.</p>
+
+<p>If the field is a relationship, just append the object primary IDs to the array, not the objects themselves. The resulting array will be deduped so that there are no duplicate references to related object IDs.</p>
+
+<p>Includes parameters for request options and callback queues.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:onSuccess:onFailure:" title="createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Create and save related objects, then subsequently save them to another object&rsquo;s relationship value, all in one call.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)createAndAppendRelatedObjects:(NSArray *)<em>objects</em> toObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> relatedField:(NSString *)<em>field</em> onSuccess:(SMDataStoreBulkSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>An array of dictionary objects to create and append.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objectId</em></dt>
+			<dd><p>The primary key of the object with the relationship being edited.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The primary object&rsquo;s schema.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>field</em></dt>
+			<dd><p>The name of the primary object&rsquo;s related field.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray<em> succeeded, NSArray </em>failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreArrayFailureBlock)(NSError <em>error, NSString </em>objectId, NSArray<em> objects, NSString </em>schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the primary key, the objects to be created and appended, and the schema in which the object was to be updated.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.1.0 and later.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:onSuccess:onFailure:" title="createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Create and save related objects, then subsequently save them to another object&rsquo;s relationship value, all in one call.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)createAndAppendRelatedObjects:(NSArray *)<em>objects</em> toObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> relatedField:(NSString *)<em>field</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreBulkSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>An array of dictionary objects to create and append.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objectId</em></dt>
+			<dd><p>The primary key of the object with the relationship being edited.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The primary object&rsquo;s schema.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>field</em></dt>
+			<dd><p>The name of the primary object&rsquo;s related field.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>options</em></dt>
+			<dd><p>An options object contains headers and other configuration for this request.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray<em> succeeded, NSArray </em>failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString </em>objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the primary key, the objects to be created and appended, and the schema in which the object was to be updated.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.1.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Includes parameter for request options.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:" title="createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">createAndAppendRelatedObjects:toObjectWithId:inSchema:relatedField:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Create and save related objects, then subsequently save them to another object&rsquo;s relationship value, all in one call.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)createAndAppendRelatedObjects:(NSArray *)<em>objects</em> toObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> relatedField:(NSString *)<em>field</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreBulkSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>An array of dictionary objects to create and append.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objectId</em></dt>
+			<dd><p>The primary key of the object with the relationship being edited.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The primary object&rsquo;s schema.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>field</em></dt>
+			<dd><p>The name of the primary object&rsquo;s related field.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>options</em></dt>
+			<dd><p>An options object contains headers and other configuration for this request.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successCallbackQueue</em></dt>
+			<dd><p>The dispatch queue used to execute the success block. If nil is passed, the main queue is used.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureCallbackQueue</em></dt>
+			<dd><p>The dispatch queue used to execute the failure block. If nil is passed, the main queue is used.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray<em> succeeded, NSArray </em>failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString </em>objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the primary key, the objects to be created and appended, and the schema in which the object was to be updated.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.1.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Includes parameters for request options and callback queues.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/createObject:inSchema:onSuccess:onFailure:" title="createObject:inSchema:onSuccess:onFailure:"></a>
 	<h3 class="subsubtitle method-title">createObject:inSchema:onSuccess:onFailure:</h3>
 	
@@ -674,7 +1383,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)createObject:(NSDictionary *)<em>theObject</em> inSchema:(NSString *)<em>schema</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)createObject:(NSDictionary *)<em>object</em> inSchema:(NSString *)<em>schema</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -682,7 +1391,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObject</em></dt>
+			<dt><em>object</em></dt>
 			<dd><p>A dictionary describing the object to create on StackMob. Keys should map to valid StackMob fields. Values should be JSON serializable objects.</p></dd>
 		</dl>
 		
@@ -693,12 +1402,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully created. Passed the dictionary representation of the response from StackMob and the schema in which the new object was created.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully created. Passed the dictionary representation of the response from StackMob and the schema in which the new object was created.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>theError, NSDictionary</em> theObject, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to create the specified object. Passed the error returned by StackMob, the dictionary sent with this create request, and the schema in which the object was to be created.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>error, NSDictionary</em> object, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to create the specified object. Passed the error returned by StackMob, the dictionary sent with this create request, and the schema in which the object was to be created.</p></dd>
 		</dl>
 		
 	</div>
@@ -740,7 +1449,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)createObject:(NSDictionary *)<em>theObject</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)createObject:(NSDictionary *)<em>object</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -748,7 +1457,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObject</em></dt>
+			<dt><em>object</em></dt>
 			<dd><p>A dictionary describing the object to create on StackMob. Keys should map to valid StackMob fields. Values should be JSON serializable objects.</p></dd>
 		</dl>
 		
@@ -764,12 +1473,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully created. Passed the dictionary representation of the response from StackMob and the schema in which the new object was created.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully created. Passed the dictionary representation of the response from StackMob and the schema in which the new object was created.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>theError, NSDictionary</em> theObject, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to create the specified object. Passed the error returned by StackMob, the dictionary sent with this create request, and the schema in which the object was to be created.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>error, NSDictionary</em> object, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to create the specified object. Passed the error returned by StackMob, the dictionary sent with this create request, and the schema in which the object was to be created.</p></dd>
 		</dl>
 		
 	</div>
@@ -811,7 +1520,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)createObject:(NSDictionary *)<em>theObject</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)createObject:(NSDictionary *)<em>object</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -819,7 +1528,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObject</em></dt>
+			<dt><em>object</em></dt>
 			<dd><p>A dictionary describing the object to create on StackMob. Keys should map to valid StackMob fields. Values should be JSON serializable objects.</p></dd>
 		</dl>
 		
@@ -845,12 +1554,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully created. Passed the dictionary representation of the response from StackMob and the schema in which the new object was created.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully created. Passed the dictionary representation of the response from StackMob and the schema in which the new object was created.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>theError, NSDictionary</em> theObject, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to create the specified object. Passed the error returned by StackMob, the dictionary sent with this create request, and the schema in which the object was to be created.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>error, NSDictionary</em> object, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to create the specified object. Passed the error returned by StackMob, the dictionary sent with this create request, and the schema in which the object was to be created.</p></dd>
 		</dl>
 		
 	</div>
@@ -881,6 +1590,234 @@ SMDataStore *dataStore = [[self client] dataStore];
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/createObjects:inSchema:onSuccess:onFailure:" title="createObjects:inSchema:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">createObjects:inSchema:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Creates a set of new objects in your StackMob Datastore.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)createObjects:(NSArray *)<em>objects</em> inSchema:(NSString *)<em>schema</em> onSuccess:(SMDataStoreBulkSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreBulkFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>The objects to create as dictionary instances.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The StackMob schema in which to create the new objects.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray<em> succeeded, NSArray </em>failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreBulkFailureBlock)(NSError <em>error, NSArray </em>objects, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the objects to be created, and the schema.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Can only be used to create top level object i.e. you can not send nested dictionary objects.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/createObjects:inSchema:options:onSuccess:onFailure:" title="createObjects:inSchema:options:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">createObjects:inSchema:options:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Creates a set of new objects in your StackMob Datastore.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)createObjects:(NSArray *)<em>objects</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreBulkSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreBulkFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>The objects to create as dictionary instances.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The StackMob schema in which to create the new objects.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>options</em></dt>
+			<dd><p>An options object contains headers and other configuration for this request.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray<em> succeeded, NSArray </em>failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreBulkFailureBlock)(NSError <em>error, NSArray </em>objects, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the objects to be created, and the schema.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.1.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Can only be used to create top level object i.e. you can not send nested dictionary objects.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/createObjects:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:" title="createObjects:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">createObjects:inSchema:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Creates a set of new objects in your StackMob Datastore.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)createObjects:(NSArray *)<em>objects</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreBulkSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreBulkFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>The objects to create as dictionary instances.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The StackMob schema in which to create the new objects.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>options</em></dt>
+			<dd><p>An options object contains headers and other configuration for this request.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successCallbackQueue</em></dt>
+			<dd><p>The dispatch queue used to execute the success block. If nil is passed, the main queue is used.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureCallbackQueue</em></dt>
+			<dd><p>The dispatch queue used to execute the failure block. If nil is passed, the main queue is used.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreBulkSuccessBlock)(NSArray<em> succeeded, NSArray </em>failed, NSString *schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed object IDs in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreBulkFailureBlock)(NSError <em>error, NSArray </em>objects, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the objects to be created, and the schema.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.1.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Can only be used to create top level object i.e. you can not send nested dictionary objects.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/deleteObjectId:inSchema:onSuccess:onFailure:" title="deleteObjectId:inSchema:onSuccess:onFailure:"></a>
 	<h3 class="subsubtitle method-title">deleteObjectId:inSchema:onSuccess:onFailure:</h3>
 	
@@ -892,7 +1829,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)deleteObjectId:(NSString *)<em>theObjectId</em> inSchema:(NSString *)<em>schema</em> onSuccess:(SMDataStoreObjectIdSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)deleteObjectId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> onSuccess:(SMDataStoreObjectIdSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -900,7 +1837,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to delete.</p></dd>
 		</dl>
 		
@@ -911,12 +1848,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString<em> theObjectId, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully deleted. Passed the object id of the deleted object and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString<em> objectId, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully deleted. Passed the object id of the deleted object and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>theError, NSString</em> theObjectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString</em> objectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
 		</dl>
 		
 	</div>
@@ -958,7 +1895,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)deleteObjectId:(NSString *)<em>theObjectId</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreObjectIdSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)deleteObjectId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreObjectIdSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -966,7 +1903,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to delete.</p></dd>
 		</dl>
 		
@@ -982,12 +1919,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString<em> theObjectId, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully deleted. Passed the object id of the deleted object and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString<em> objectId, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully deleted. Passed the object id of the deleted object and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>theError, NSString</em> theObjectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString</em> objectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
 		</dl>
 		
 	</div>
@@ -1029,7 +1966,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)deleteObjectId:(NSString *)<em>theObjectId</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreObjectIdSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)deleteObjectId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreObjectIdSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -1037,7 +1974,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to delete.</p></dd>
 		</dl>
 		
@@ -1063,12 +2000,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString<em> theObjectId, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully deleted. Passed the object id of the deleted object and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdSuccessBlock)(NSString<em> objectId, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully deleted. Passed the object id of the deleted object and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>theError, NSString</em> theObjectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString</em> objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
 		</dl>
 		
 	</div>
@@ -1083,6 +2020,288 @@ SMDataStore *dataStore = [[self client] dataStore];
 	</div>
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:onSuccess:onFailure:" title="deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Delete objects or relationship references from an array without needing to update the entire object at once.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)deleteObjects:(NSArray *)<em>objects</em> fromObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> field:(NSString *)<em>field</em> cascadeDelete:(BOOL)<em>cascadeDelete</em> onSuccess:(SMSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>An array of IDs to delete.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objectId</em></dt>
+			<dd><p>The primary key of the object with the relationship being edited.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The primary object&rsquo;s schema.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>field</em></dt>
+			<dd><p>The name of the primary object&rsquo;s related field.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>cascadeDelete</em></dt>
+			<dd><p>Whether or not to delete the objects themselves after removing the references in the relationship value.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMSuccessBlock)()</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed objects in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString </em>objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to delete the specified objects. Passed the error returned by StackMob, the primary key, the objects to be deleted, and the schema in which the object was to be updated.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.1.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Includes the option of deleting the objects themselves in the same call (for relationship fields only). If you are deleting from a field of <code>Array</code> type, pass <code>NO</code> to the <code>cascadeDelete</code> parameter, as this option is only applicable to relationship fields.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:onSuccess:onFailure:" title="deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Delete objects or relationship references from an array without needing to update the entire object at once.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)deleteObjects:(NSArray *)<em>objects</em> fromObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> field:(NSString *)<em>field</em> cascadeDelete:(BOOL)<em>cascadeDelete</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>An array of IDs to delete.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objectId</em></dt>
+			<dd><p>The primary key of the object with the relationship being edited.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The primary object&rsquo;s schema.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>field</em></dt>
+			<dd><p>The name of the primary object&rsquo;s related field.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>cascadeDelete</em></dt>
+			<dd><p>Whether or not to delete the objects themselves after removing the references in the relationship value.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>options</em></dt>
+			<dd><p>An options object contains headers and other configuration for this request.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMSuccessBlock)()</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed objects in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString </em>objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to delete the specified objects. Passed the error returned by StackMob, the primary key, the objects to be deleted, and the schema in which the object was to be updated.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.1.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Includes the option of deleting the objects themselves in the same call (for relationship fields only). If you are deleting from a field of <code>Array</code> type, pass <code>NO</code> to the <code>cascadeDelete</code> parameter, as this option is only applicable to relationship fields.</p>
+
+<p>Includes parameter for request options.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMDataStore.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:" title="deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:"></a>
+	<h3 class="subsubtitle method-title">deleteObjects:fromObjectWithId:inSchema:field:cascadeDelete:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Delete objects or relationship references from an array without needing to update the entire object at once.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)deleteObjects:(NSArray *)<em>objects</em> fromObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> field:(NSString *)<em>field</em> cascadeDelete:(BOOL)<em>cascadeDelete</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objects</em></dt>
+			<dd><p>An array of IDs to delete.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>objectId</em></dt>
+			<dd><p>The primary key of the object with the relationship being edited.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>schema</em></dt>
+			<dd><p>The primary object&rsquo;s schema.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>field</em></dt>
+			<dd><p>The name of the primary object&rsquo;s related field.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>cascadeDelete</em></dt>
+			<dd><p>Whether or not to delete the objects themselves after removing the references in the relationship value.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>options</em></dt>
+			<dd><p>An options object contains headers and other configuration for this request.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successCallbackQueue</em></dt>
+			<dd><p>The dispatch queue used to execute the success block. If nil is passed, the main queue is used.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureCallbackQueue</em></dt>
+			<dd><p>The dispatch queue used to execute the failure block. If nil is passed, the main queue is used.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>successBlock</em></dt>
+			<dd><p><i>typedef void (^SMSuccessBlock)()</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the succeeded and failed objects in two separate arrays.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>failureBlock</em></dt>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString </em>objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to delete the specified objects. Passed the error returned by StackMob, the primary key, the objects to be deleted, and the schema in which the object was to be updated.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.1.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Includes the option of deleting the objects themselves in the same call (for relationship fields only). If you are deleting from a field of <code>Array</code> type, pass <code>NO</code> to the <code>cascadeDelete</code> parameter, as this option is only applicable to relationship fields.</p>
+
+<p>Includes parameters for request options and callback queues.</p>
+	</div>
 	
 	
 	
@@ -1822,7 +3041,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)readObjectWithId:(NSString *)<em>theObjectId</em> inSchema:(NSString *)<em>schema</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)readObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -1830,7 +3049,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to read.</p></dd>
 		</dl>
 		
@@ -1841,12 +3060,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully read. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully read. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>theError, NSString</em> theObjectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString</em> objectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
 		</dl>
 		
 	</div>
@@ -1888,7 +3107,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)readObjectWithId:(NSString *)<em>theObjectId</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)readObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -1896,7 +3115,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to read.</p></dd>
 		</dl>
 		
@@ -1912,12 +3131,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully read. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully read. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>theError, NSString</em> theObjectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString</em> objectId, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
 		</dl>
 		
 	</div>
@@ -1959,7 +3178,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)readObjectWithId:(NSString *)<em>theObjectId</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)readObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreObjectIdFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -1967,7 +3186,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to read.</p></dd>
 		</dl>
 		
@@ -1993,12 +3212,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully read. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully read. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>theError, NSString</em> theObjectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreObjectIdFailureBlock)(NSError <em>error, NSString</em> objectId, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to read the specified object. Passed the error returned by StackMob, the object id sent with this request, and the schema in which the object was to be found.</p></dd>
 		</dl>
 		
 	</div>
@@ -2192,7 +3411,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)updateAtomicCounterWithId:(NSString *)<em>theObjectId</em> field:(NSString *)<em>field</em> inSchema:(NSString *)<em>schema</em> by:(int)<em>increment</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)updateAtomicCounterWithId:(NSString *)<em>objectId</em> field:(NSString *)<em>field</em> inSchema:(NSString *)<em>schema</em> by:(int)<em>increment</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -2200,7 +3419,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to update.</p></dd>
 		</dl>
 		
@@ -2221,12 +3440,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>theError, NSDictionary</em> theObject, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>error, NSDictionary</em> object, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to update the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be updated.</p></dd>
 		</dl>
 		
 	</div>
@@ -2268,7 +3487,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)updateAtomicCounterWithId:(NSString *)<em>theObjectId</em> field:(NSString *)<em>field</em> inSchema:(NSString *)<em>schema</em> by:(int)<em>increment</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)updateAtomicCounterWithId:(NSString *)<em>objectId</em> field:(NSString *)<em>field</em> inSchema:(NSString *)<em>schema</em> by:(int)<em>increment</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -2276,7 +3495,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to update.</p></dd>
 		</dl>
 		
@@ -2302,12 +3521,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>theError, NSDictionary</em> theObject, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>error, NSDictionary</em> object, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to update the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be updated.</p></dd>
 		</dl>
 		
 	</div>
@@ -2349,7 +3568,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)updateAtomicCounterWithId:(NSString *)<em>theObjectId</em> field:(NSString *)<em>field</em> inSchema:(NSString *)<em>schema</em> by:(int)<em>increment</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)updateAtomicCounterWithId:(NSString *)<em>objectId</em> field:(NSString *)<em>field</em> inSchema:(NSString *)<em>schema</em> by:(int)<em>increment</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -2357,7 +3576,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to update.</p></dd>
 		</dl>
 		
@@ -2393,12 +3612,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>theError, NSDictionary</em> theObject, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to read the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>error, NSDictionary</em> object, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be updated.</p></dd>
 		</dl>
 		
 	</div>
@@ -2440,7 +3659,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)updateObjectWithId:(NSString *)<em>theObjectId</em> inSchema:(NSString *)<em>schema</em> update:(NSDictionary *)<em>updatedFields</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)updateObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> update:(NSDictionary *)<em>updatedFields</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -2448,7 +3667,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to update.</p></dd>
 		</dl>
 		
@@ -2464,12 +3683,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>theError, NSDictionary</em> theObject, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>error, NSDictionary</em> object, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to update the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be updated.</p></dd>
 		</dl>
 		
 	</div>
@@ -2511,7 +3730,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)updateObjectWithId:(NSString *)<em>theObjectId</em> inSchema:(NSString *)<em>schema</em> update:(NSDictionary *)<em>updatedFields</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)updateObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> update:(NSDictionary *)<em>updatedFields</em> options:(SMRequestOptions *)<em>options</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -2519,7 +3738,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to update.</p></dd>
 		</dl>
 		
@@ -2540,12 +3759,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the main thread after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>theError, NSDictionary</em> theObject, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to read the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>error, NSDictionary</em> object, NSString *schema)</i>. A block object to invoke on the main thread if the Datastore fails to update the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be updated.</p></dd>
 		</dl>
 		
 	</div>
@@ -2587,7 +3806,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)updateObjectWithId:(NSString *)<em>theObjectId</em> inSchema:(NSString *)<em>schema</em> update:(NSDictionary *)<em>updatedFields</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)updateObjectWithId:(NSString *)<em>objectId</em> inSchema:(NSString *)<em>schema</em> update:(NSDictionary *)<em>updatedFields</em> options:(SMRequestOptions *)<em>options</em> successCallbackQueue:(dispatch_queue_t)<em>successCallbackQueue</em> failureCallbackQueue:(dispatch_queue_t)<em>failureCallbackQueue</em> onSuccess:(SMDataStoreSuccessBlock)<em>successBlock</em> onFailure:(SMDataStoreFailureBlock)<em>failureBlock</em></code></div>
 
     
 	
@@ -2595,7 +3814,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 		<h4 class="method-subtitle parameter-title">Parameters</h4>
 		
 		<dl class="argument-def parameter-def">
-			<dt><em>theObjectId</em></dt>
+			<dt><em>objectId</em></dt>
 			<dd><p>The object id (the value of the primary key field) for the object to update.</p></dd>
 		</dl>
 		
@@ -2626,12 +3845,12 @@ SMDataStore *dataStore = [[self client] dataStore];
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>successBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> theObject, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreSuccessBlock)(NSDictionary<em> object, NSString </em>schema)</i>. A block object to invoke on the successCallbackQueue after the object is successfully updated. Passed the dictionary representation of the response from StackMob and the object&rsquo;s schema.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>failureBlock</em></dt>
-			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>theError, NSDictionary</em> theObject, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to read the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be found.</p></dd>
+			<dd><p><i>typedef void (^SMDataStoreFailureBlock)(NSError <em>error, NSDictionary</em> object, NSString *schema)</i>. A block object to invoke on the failureCallbackQueue if the Datastore fails to update the specified object. Passed the error returned by StackMob, the dictionary sent with this request, and the schema in which the object was to be updated.</p></dd>
 		</dl>
 		
 	</div>
@@ -2674,7 +3893,7 @@ SMDataStore *dataStore = [[self client] dataStore];
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2013 StackMob. All rights reserved. (Last updated: 2013-06-06)</span><br />
+						<p><span class="copyright">&copy; 2013 StackMob. All rights reserved. (Last updated: 2013-07-30)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						
