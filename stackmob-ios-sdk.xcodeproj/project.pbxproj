@@ -239,7 +239,6 @@
 		DEC6352F17A1ECF200EC678D /* SMCusCodeReqIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB16BCB15DC606300893EE5 /* SMCusCodeReqIntegrationSpec.m */; };
 		DEC6353017A1ECF500EC678D /* SMPushClientIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9ED78164B1D43006B7326 /* SMPushClientIntegrationSpec.m */; };
 		DEC6353117A1ECF800EC678D /* SMNetworkReachabilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9EEBE164B4F24006B7326 /* SMNetworkReachabilitySpec.m */; };
-		DEC6353217A1ECFB00EC678D /* URLRedirectSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB05FE017A0791600781763 /* URLRedirectSpec.m */; };
 		DEC6353317A333F400EC678D /* SMHTTPRequestOperation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEC6351517A1CBCB00EC678D /* SMHTTPRequestOperation.h */; };
 		DED7D2A81655749900FBAF06 /* SMNetworkReachability.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DE079B9A16499B0900C8AAA0 /* SMNetworkReachability.h */; };
 		DED7D2A91655749900FBAF06 /* SystemInformation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEA9ED94164B2BAB006B7326 /* SystemInformation.h */; };
@@ -1348,7 +1347,6 @@
 				DEC6352F17A1ECF200EC678D /* SMCusCodeReqIntegrationSpec.m in Sources */,
 				DEC6353017A1ECF500EC678D /* SMPushClientIntegrationSpec.m in Sources */,
 				DEC6353117A1ECF800EC678D /* SMNetworkReachabilitySpec.m in Sources */,
-				DEC6353217A1ECFB00EC678D /* URLRedirectSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
