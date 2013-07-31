@@ -21,6 +21,53 @@
 
 SPEC_BEGIN(SMCoreDataStoreTest)
 
+describe(@"setREturnsObjectsAsFaults", ^{
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        testProperties = [[SMTestProperties alloc] init];
+        // Create todo
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        [todoObject setValue:@"title" forKey:@"title"];
+        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+    });
+    afterEach(^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"does not return the objects as faults, network", ^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        [fetch setReturnsObjectsAsFaults:NO];
+        
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            if ([obj isFault]) {
+                NSLog(@"fault");
+            }
+        }];
+        
+    });
+});
+
+/*
 describe(@"can set a field to nil, string", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -196,7 +243,7 @@ describe(@"can set a field to nil, int", ^{
         [[[results objectAtIndex:0] valueForKey:@"yearBorn"] shouldBeNil];
     });
 });
-
+*/
 /*
 describe(@"can set a field to nil, binary", ^{
     __block SMTestProperties *testProperties = nil;
@@ -325,7 +372,7 @@ describe(@"can set a field to nil, geopoint", ^{
     });
 });
 */
-
+/*
 describe(@"create an instance of SMCoreDataStore from SMClient", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -1237,5 +1284,5 @@ describe(@"inserting to a schema with permission Allow any logged in user when w
         [[theValue(saveSuccess) should] beNo];
     });
 });
-
+*/
 SPEC_END

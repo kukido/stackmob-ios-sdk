@@ -1539,8 +1539,10 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             
             // If the object is not marked faulted, it exists in memory and its values should be replaced with up-to-date fetched values.
             if (![sm_managedObject isFault]) {
-                [self SM_populateManagedObject:sm_managedObject withDictionary:serializedObjectDict entity:[sm_managedObject entity]];
+                [self SM_populateManagedObject:sm_managedObject withDictionary:serializedObjectDict entity:[sm_managedObject entity]setValues:NO];
             }
+            
+            
             
             // Obtain cache object representation, or create if needed
             __block NSManagedObject *cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:remoteID entityName:[[sm_managedObject entity] name] createIfNeeded:YES serverLastModDate:[serializedObjectDict objectForKey:SMLastModDateKey]]];
@@ -1585,8 +1587,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             NSDictionary *serializedObjectDict = [self SM_responseSerializationForDictionary:item schemaEntityDescription:fetchRequest.entity managedObjectContext:context includeRelationships:YES];
             
             // If the object is not marked faulted, it exists in memory and its values should be replaced with up-to-date fetched values.
-            if (![sm_managedObject isFault]) {
-                [self SM_populateManagedObject:sm_managedObject withDictionary:serializedObjectDict entity:[sm_managedObject entity]];
+            if (![sm_managedObject isFault] || ![fetchRequest returnsObjectsAsFaults]) {
+                [self SM_populateManagedObject:sm_managedObject withDictionary:serializedObjectDict entity:[sm_managedObject entity] setValues:![fetchRequest returnsObjectsAsFaults]];
             }
             
             return sm_managedObject;
@@ -2708,7 +2710,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:serializedObjectDict entity:entity];
 }
 
-- (void)SM_populateManagedObject:(NSManagedObject *)object withDictionary:(NSDictionary *)dictionary entity:(NSEntityDescription *)entity
+- (void)SM_populateManagedObject:(NSManagedObject *)object withDictionary:(NSDictionary *)dictionary entity:(NSEntityDescription *)entity setValues:(BOOL)setValues
 {
     if (SM_CORE_DATA_DEBUG) {DLog()}
     
@@ -2717,6 +2719,9 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         NSPropertyDescription *propertyDescription = [[entity propertiesByName] objectForKey:propertyName];
         if ([propertyDescription isKindOfClass:[NSAttributeDescription class]]) {
             [object setPrimitiveValue:dictionary[propertyName] forKey:propertyName];
+            if (setValues) {
+                [object setValue:dictionary[propertyName] forKey:propertyName];
+            }
         } else if (![object hasFaultForRelationshipNamed:propertyName]) {
             NSRelationshipDescription *relationshipDescription = (NSRelationshipDescription *)propertyDescription;
             if ([relationshipDescription isToMany]) {
@@ -2728,17 +2733,28 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                         [relatedObjects addObject:[[object managedObjectContext] objectWithID:managedObjectID]];
                     }];
                     [object setPrimitiveValue:relatedObjects forKey:propertyName];
+                    if (setValues) {
+                        [object setValue:relatedObjects forKey:propertyName];
+                    }
                 }
             } else {
                 if (dictionary[propertyName] == [NSNull null]) {
                     [object setPrimitiveValue:nil forKey:propertyName];
+                    if (setValues) {
+                        [object setValue:nil forKey:propertyName];
+                    }
                 } else {
                     NSManagedObject *toOneObject = [[object managedObjectContext] objectWithID:dictionary[propertyName]];
                     [object setPrimitiveValue:toOneObject forKey:propertyName];
+                    if (setValues) {
+                        [object setValue:toOneObject forKey:propertyName];
+                    }
                 }
             }
         }
     }];
+    
+    NSLog(@"object is %@", object);
     
 }
 

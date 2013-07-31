@@ -435,7 +435,12 @@
     
     NSManagedObjectContext *backgroundContext = mainContext.parentContext;
     NSFetchRequest *fetchCopy = [request copy];
-    [fetchCopy setResultType:NSManagedObjectIDResultType];
+    
+    if (!returnIDs && ![request returnsObjectsAsFaults]) {
+        [fetchCopy setResultType:[request resultType]];
+    } else {
+        [fetchCopy setResultType:NSManagedObjectIDResultType];
+    }
     
     if ([request fetchBatchSize] > 0) {
         [fetchCopy setFetchBatchSize:[request fetchBatchSize]];
@@ -465,7 +470,13 @@
         return resultsOfFetch;
     } else {
         return [resultsOfFetch map:^id(id item) {
-            NSManagedObject *objectFromCurrentContext = [self objectWithID:item];
+            NSManagedObject *objectFromCurrentContext = nil;
+            if ([item isKindOfClass:[NSManagedObjectID class]]) {
+                objectFromCurrentContext = [self objectWithID:item];
+            } else {
+                objectFromCurrentContext = [self objectWithID:[item objectID]];
+            }
+            
             [self refreshObject:objectFromCurrentContext mergeChanges:YES];
             return objectFromCurrentContext;
         }];
