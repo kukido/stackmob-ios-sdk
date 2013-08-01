@@ -127,6 +127,8 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
         self.sendLocalTimestamps = NO;
         self.currentDirtyQueue = nil;
         
+        self.customObject = nil;
+        
         /// Add observer for set cache policy
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(SM_didReceiveSetCachePolicyNotification:) name:SMSetCachePolicyNotification object:self.session.networkMonitor];
         
@@ -226,15 +228,6 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
 		return threadContext;
 	}
 }
-
-/*
-- (void)setCachePolicy:(SMCachePolicy)cachePolicy
-{
-    if (self.cachePolicy != cachePolicy) {
-        
-    }
-}
- */
 
 - (void)setDefaultMergePolicy:(id)mergePolicy applyToMainThreadContextAndParent:(BOOL)apply
 {

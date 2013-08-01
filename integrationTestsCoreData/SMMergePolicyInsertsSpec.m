@@ -24,7 +24,7 @@ SPEC_BEGIN(SMMergePolicyInsertsSpec)
 //////////////////////////////
 /////////INSERTS///////////
 //////////////////////////////
-
+/*
 describe(@"Insert 1 Offline, should send as an insert no merge, NO CONFLICT", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -106,8 +106,8 @@ describe(@"Insert 1 Offline, should send as an insert no merge, NO CONFLICT", ^{
     });
     
 });
-
-describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
+*/
+describe(@"Insert 1 Offline at T1, Insert 1 Online at T2", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
@@ -127,6 +127,85 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         
     });
     
+    it(@"Custom Merge, should send object as an update and cache", ^{
+        
+        // Insert 1 offline
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        [todo setValue:@"1234" forKey:[todo primaryKeyField]];
+        [todo setValue:@"offline client insert" forKey:@"title"];
+        
+        NSError *saveError = nil;
+        [testProperties.moc saveAndWait:&saveError];
+        [saveError shouldBeNil];
+        
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        [[theValue([testProperties.cds isDirtyObject:[todo objectID]]) should] beYes];
+        
+        // Insert 1 online
+        //sleep(3);
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        dispatch_group_enter(group);
+        [testProperties.cds createObject:[NSDictionary dictionaryWithObjectsAndKeys:@"online server insert", @"title", @"1234", @"todo_id", nil] inSchema:@"todo" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *error, NSDictionary *object, NSString *schema) {
+            [error shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        // Sync
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        __block SMCoreDataStore *blockCDS = testProperties.cds;
+        [testProperties.cds setDefaultSMMergePolicy:^(NSDictionary *clientObject, NSDictionary *serverObject, NSDate *serverBaseLastModDate){
+            
+            NSMutableDictionary *dict = [clientObject mutableCopy];
+            [dict setObject:@"custom object" forKey:@"title"];
+            blockCDS.customObject = [NSDictionary dictionaryWithDictionary:dict];
+            return SMCustomObject;
+            
+        }];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            [[objects should] haveCountOf:1];
+            if ([objects count] == 1) {
+                [[theValue([[objects objectAtIndex:0] actionTaken]) should] equal:theValue(SMSyncActionUpdatedOnServer)];
+            }
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        // Check cache
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        saveError = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
+        [[results should] haveCountOf:1];
+        [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"offline client insert"];
+        
+        // Check server
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        saveError = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
+        [[results should] haveCountOf:1];
+        [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"offline client insert"];
+        
+        [[theValue([testProperties.cds isDirtyObject:[[results objectAtIndex:0] objectID]]) should] beNo];
+    });
+    /*
     it(@"Client Wins MP, Should send object as an update", ^{
         
         // Insert 1 offline
@@ -342,10 +421,10 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         [[theValue([testProperties.cds isDirtyObject:[[results objectAtIndex:0] objectID]]) should] beNo];
         
     });
-    
+    */
     
 });
-
+/*
 describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -584,5 +663,5 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
     
     
 });
-
+*/
 SPEC_END

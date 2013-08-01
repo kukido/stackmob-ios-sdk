@@ -3221,6 +3221,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         
         __block NSMutableSet *objectsToMergeWithServerAsInserts = [NSMutableSet set];
         __block NSMutableSet *objectsToMergeWithServerAsUpdates = [NSMutableSet set];
+        __block NSMutableSet *dictionariesToMergeWithServerAsUpdates = [NSMutableSet set];
         __block NSMutableArray *objectsToMergeWithCache = [NSMutableArray array];
         __block NSMutableArray *entriesToPurgeFromDirtyQueue = [NSMutableArray array];
         
@@ -3290,6 +3291,23 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                         [successfulObjects addObject:[[SMSyncedObject alloc] initWithObjectID:objectID actionTaken:SMSyncActionUpdatedCache]];
                     }
                         break;
+                    case SMCustomObject: {
+                        if (!self.coreDataStore.customObject) {
+                            // Error
+                        } else {
+                            // Create object info objectID, values, entity
+                            NSArray *customObjectInfo = [NSArray arrayWithObjects:objectPrimaryKey, [self.coreDataStore.customObject copy], entityDesc, nil];
+                            
+                            [dictionariesToMergeWithServerAsUpdates addObject:customObjectInfo];
+                            // Add object info for purge
+                            NSArray *serverObjectInfoForPurge = [NSArray arrayWithObjects:objectPrimaryKey, objectEntityName, nil];
+                            [entriesToPurgeFromDirtyQueue addObject:serverObjectInfoForPurge];
+                            
+                            // nil out custom object
+                            self.coreDataStore.customObject = nil;
+                        }
+                    }
+                        break;
                     default:
                         [NSException raise:SMExceptionCacheError format:@"Case %d for merge policy object winner not supported.", objectToUse];
                         break;
@@ -3346,6 +3364,20 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 [failedObjects addObjectsFromArray:failedUpdates];
             }
             
+        }
+        
+        if ([dictionariesToMergeWithServerAsUpdates count] > 0) {
+            NSError *saveError = nil;
+            BOOL success = [self SM_mergeUpdatedObjectsWithServer:dictionariesToMergeWithServerAsUpdates inContext:self.localManagedObjectContext successBlockAddition:^(NSString *primaryKey, NSString *entityName, NSManagedObjectID *objectID) {
+                [entriesToPurgeFromDirtyQueue addObject:[NSArray arrayWithObjects:primaryKey, entityName, nil]];
+                [successfulObjects addObject:[[SMSyncedObject alloc] initWithObjectID:objectID actionTaken:SMSyncActionUpdatedOnServer]];
+            } options:options error:&saveError];
+            
+            if (!success) {
+                // move failed objects from saveError to syncFailures
+                NSArray *failedUpdates = [[saveError userInfo] objectForKey:SMUpdatedObjectFailures];
+                [failedObjects addObjectsFromArray:failedUpdates];
+            }
         }
         
         if ([objectsToMergeWithCache count] > 0) {
@@ -3687,6 +3719,112 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     }
 }
 
+- (BOOL)SM_mergeUpdatedObjectsWithServer:(NSSet *)updatedObjects inContext:(NSManagedObjectContext *)context successBlockAddition:(void (^)(NSString *primaryKey, NSString *entityName, NSManagedObjectID *objectID))successBlockAddition options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error {
+    
+    if (SM_CORE_DATA_DEBUG) { DLog() }
+    if (SM_CORE_DATA_DEBUG) { DLog(@"objects to be updated are %@", truncateOutputIfExceedsMaxLogLength(updatedObjects)) }
+    __block BOOL success = YES;
+    
+    // create a group dispatch and queue
+    dispatch_queue_t queue = dispatch_queue_create("com.stackmob.updatedObjectsQueue", NULL);
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_group_t callbackGroup = dispatch_group_create();
+    
+    __block NSMutableArray *secureOperations = [NSMutableArray array];
+    __block NSMutableArray *regularOperations = [NSMutableArray array];
+    __block NSMutableArray *failedRequests = [NSMutableArray array];
+    __block NSMutableArray *failedRequestsWithUnauthorizedResponse = [NSMutableArray array];
+    __block NSMutableArray *objectsToBeCached = [NSMutableArray array];
+    
+    [updatedObjects enumerateObjectsUsingBlock:^(NSArray *objectInfo, BOOL *stop) {
+        
+        __block NSEntityDescription *entityDesc = objectInfo[2];
+        
+        // Create operation for updated object
+        
+        NSDictionary *serializedObjDict = [self SM_removeNullFields:objectInfo[1]];
+        NSString *schemaName = [entityDesc SMSchema];
+        __block NSString *updatedObjectID = objectInfo[0];
+        
+        if (SM_CORE_DATA_DEBUG) { DLog(@"Serialized object dictionary: %@", truncateOutputIfExceedsMaxLogLength(serializedObjDict)) }
+        
+        dispatch_group_enter(callbackGroup);
+        
+        // Create success/failure blocks
+        SMResultSuccessBlock operationSuccesBlock = ^(NSDictionary *theObject){
+            if (SM_CORE_DATA_DEBUG) { DLog(@"SMIncrementalStore updated object %@ on schema %@", truncateOutputIfExceedsMaxLogLength(theObject) , schemaName) }
+            
+            // Add object to list of objects to be cached [primaryKey, dictionary of object, entity desc, context]
+            NSArray *objectReadyForCache = [NSArray arrayWithObjects:updatedObjectID, theObject, entityDesc, context, nil];
+            [objectsToBeCached addObject:objectReadyForCache];
+            
+            if (successBlockAddition) {
+                successBlockAddition(updatedObjectID, [entityDesc name], [self newObjectIDForEntity:entityDesc referenceObject:updatedObjectID]);
+            }
+            
+            dispatch_group_leave(callbackGroup);
+            
+        };
+        
+        SMCoreDataSaveFailureBlock operationFailureBlock = ^(NSURLRequest *theRequest, NSError *theError, NSDictionary *theObject, SMRequestOptions *theOptions, SMResultSuccessBlock originalSuccessBlock){
+            
+            if (SM_CORE_DATA_DEBUG) { DLog(@"SMIncrementalStore failed to update object %@ on schema %@", truncateOutputIfExceedsMaxLogLength(theObject), schemaName) }
+            if (SM_CORE_DATA_DEBUG) { DLog(@"the error userInfo is %@", [theError userInfo]) }
+            
+            NSDictionary *failedRequestDict = [NSDictionary dictionaryWithObjectsAndKeys:theRequest, SMFailedRequest, theError, SMFailedRequestError, updatedObjectID, SMFailedRequestObjectPrimaryKey, entityDesc, SMFailedRequestObjectEntity, theOptions, SMFailedRequestOptions, originalSuccessBlock, SMFailedRequestOriginalSuccessBlock, nil];
+            
+            // Add failed request to correct array
+            if ([theError code] == SMErrorUnauthorized) {
+                [failedRequestsWithUnauthorizedResponse addObject:failedRequestDict];
+            } else {
+                [failedRequests addObject:failedRequestDict];
+            }
+            
+            dispatch_group_leave(callbackGroup);
+            
+        };
+        
+        // if there are relationships present in the update send as a POST
+        AFJSONRequestOperation *op = nil;
+        if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
+            
+            // Add relationship headers if needed
+            NSMutableDictionary *headerDict = [NSMutableDictionary dictionary];
+            if ([serializedObjDict objectForKey:StackMobRelationsKey]) {
+                [headerDict setObject:[serializedObjDict objectForKey:StackMobRelationsKey] forKey:StackMobRelationsKey];
+                [options setHeaders:headerDict];
+            }
+            
+            op = [[self coreDataStore] postOperationForObject:[serializedObjDict objectForKey:SerializedDictKey] inSchema:schemaName options:options successCallbackQueue:queue failureCallbackQueue:queue onSuccess:operationSuccesBlock onFailure:operationFailureBlock];
+            
+            
+        } else {
+            
+            op = [[self coreDataStore] putOperationForObjectID:updatedObjectID inSchema:schemaName update:[serializedObjDict objectForKey:SerializedDictKey] options:options successCallbackQueue:queue failureCallbackQueue:queue onSuccess:operationSuccesBlock onFailure:operationFailureBlock];
+            
+        }
+        
+        options.isSecure ? [secureOperations addObject:op] : [regularOperations addObject:op];
+        
+    }];
+    
+    success = [self SM_enqueueRegularOperations:regularOperations secureOperations:secureOperations withGroup:group callbackGroup:callbackGroup queue:queue options:options refreshAndRetryUnauthorizedRequests:failedRequestsWithUnauthorizedResponse failedRequests:failedRequests errorListName:SMUpdatedObjectFailures error:error];
+    
+    dispatch_group_wait(callbackGroup, DISPATCH_TIME_FOREVER);
+    
+    if (options.cacheResults) {
+        [self SM_serializeAndCacheObjects:objectsToBeCached];
+    }
+    
+#if !OS_OBJECT_USE_OBJC
+    dispatch_release(group);
+    dispatch_release(callbackGroup);
+    dispatch_release(queue);
+#endif
+    return success;
+    
+}
+
 - (BOOL)SM_mergeDeletedObjectsWithServer:(NSSet *)deletedObjects inContext:(NSManagedObjectContext *)context successBlockAddition:(void (^)(NSString *primaryKey, NSString *entityName, NSDate *deletedDate))successBlockAddition options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error {
     
     if (SM_CORE_DATA_DEBUG) { DLog() }
@@ -3761,6 +3899,18 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
 #endif
     return success;
     
+}
+
+- (NSDictionary *)SM_removeNullFields:(NSDictionary *)object
+{
+    NSMutableDictionary *returnDict = [NSMutableDictionary dictionary];
+    [object enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        if (obj != [NSNull null]) {
+            [returnDict setObject:obj forKey:key];
+        }
+    }];
+    
+    return [NSDictionary dictionaryWithDictionary:returnDict];
 }
 
 #pragma mark - Purging the Cache

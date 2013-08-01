@@ -32,9 +32,10 @@ typedef NS_ENUM(NSInteger, SMCachePolicy) {
 typedef NS_ENUM(NSInteger, SMMergeObjectKey) {
     SMClientObject = 0,
     SMServerObject = 1,
+    SMCustomObject = 2
 };
 
-typedef int (^SMMergePolicy)(NSDictionary *clientObject, NSDictionary *serverObject, NSDate *serverBaseLastModDate);
+typedef SMMergeObjectKey (^SMMergePolicy)(NSDictionary *clientObject, NSDictionary *serverObject, NSDate *serverBaseLastModDate);
 typedef void (^SMSyncCallback)(NSArray *objects);
 
 extern SMMergePolicy const SMMergePolicyClientWins;
@@ -217,6 +218,8 @@ extern SMMergePolicy const SMMergePolicyServerModifiedWins;
  @since Available in iOS SDK 1.3.0 and later.
  */
 @property (nonatomic, strong) SMRequestOptions *globalRequestOptions;
+
+@property (nonatomic, strong) NSDictionary *customObject;
 
 
 ///-------------------------------
