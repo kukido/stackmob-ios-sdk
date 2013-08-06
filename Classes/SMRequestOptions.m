@@ -95,8 +95,8 @@
 {
     if (_cachePolicy != cachePolicy) {
         _cachePolicy = cachePolicy;
-        self.cachePolicySet = YES;
     }
+    self.cachePolicySet = YES;
 }
 
 - (void)setExpandDepth:(NSUInteger)depth
