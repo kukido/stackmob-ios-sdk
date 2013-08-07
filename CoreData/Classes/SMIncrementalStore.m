@@ -1545,7 +1545,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             // Obtain cache object representation, or create if needed
             __block NSManagedObject *cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:remoteID entityName:[[sm_managedObject entity] name] createIfNeeded:YES serverLastModDate:[serializedObjectDict objectForKey:SMLastModDateKey]]];
         
-            [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:serializedObjectDict entity:fetchRequest.entity];
+            [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:serializedObjectDict entity:fetchRequest.entity saveCache:NO];
             if (SM_CORE_DATA_DEBUG) { DLog(@"Cache mananged object after population:\n%@", cacheManagedObject) }
             return sm_managedObject;
             
@@ -2451,7 +2451,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             NSManagedObject *cacheManagedObject = offline ? [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES]] : [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES serverLastModDate:[values objectForKey:SMLastModDateKey]]];
             
             // Populate cached object
-            [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:values entity:entity];
+            [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:values entity:entity saveCache:YES];
             
         }];
     }
@@ -2705,7 +2705,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     NSDictionary *serializedObjectDict = [self SM_responseSerializationForDictionary:values schemaEntityDescription:entity managedObjectContext:context includeRelationships:YES];
     
     // Populate cached object
-    [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:serializedObjectDict entity:entity];
+    [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:serializedObjectDict entity:entity saveCache:YES];
 }
 
 - (void)SM_populateManagedObject:(NSManagedObject *)object withDictionary:(NSDictionary *)dictionary entity:(NSEntityDescription *)entity
@@ -2742,7 +2742,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
 }
 
-- (void)SM_populateCacheManagedObject:(NSManagedObject *)object withDictionary:(NSDictionary *)dictionary entity:(NSEntityDescription *)entity
+- (void)SM_populateCacheManagedObject:(NSManagedObject *)object withDictionary:(NSDictionary *)dictionary entity:(NSEntityDescription *)entity saveCache:(BOOL)saveCache
 {
     if (SM_CORE_DATA_DEBUG) {DLog()}
     
@@ -2860,10 +2860,12 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         
     }];
     
-    NSError *saveError = nil;
-    BOOL saveSuccess = [self SM_saveCache:&saveError];
-    if (!saveSuccess) {
-        if (SM_CORE_DATA_DEBUG) { DLog(@"Did Not Save Cache") }
+    if (saveCache) {
+        NSError *saveError = nil;
+        BOOL saveSuccess = [self SM_saveCache:&saveError];
+        if (!saveSuccess) {
+            if (SM_CORE_DATA_DEBUG) { DLog(@"Did Not Save Cache") }
+        }
     }
 }
 
