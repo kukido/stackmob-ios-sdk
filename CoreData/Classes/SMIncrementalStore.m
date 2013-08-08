@@ -18,6 +18,8 @@
  NOTE: Most of the comments on this page reference Apple's NSIncrementalStore Class Reference.
  */
 
+#import <sqlite3.h>
+
 #import "SMIncrementalStore.h"
 #import "StackMob.h"
 #import "KeychainWrapper.h"
@@ -220,6 +222,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         }
         
         if (SM_CORE_DATA_DEBUG) {DLog(@"STACKMOB SYSTEM UPDATE: Incremental Store initialized and ready to go.")}
+        
     }
     return self;
 }
@@ -1525,8 +1528,9 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         }
         
         // For each result of the fetch
-        NSArray *results = [resultsWithoutOID map:^(id item) {
+        NSMutableArray *results = [NSMutableArray array];
             
+        for (id item in resultsWithoutOID) {
             id remoteID = [item objectForKey:primaryKeyField];
             
             if (!remoteID) {
@@ -1544,12 +1548,11 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             
             // Obtain cache object representation, or create if needed
             __block NSManagedObject *cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:remoteID entityName:[[sm_managedObject entity] name] createIfNeeded:YES serverLastModDate:[serializedObjectDict objectForKey:SMLastModDateKey]]];
-        
+            
             [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:serializedObjectDict entity:fetchRequest.entity saveCache:NO];
             if (SM_CORE_DATA_DEBUG) { DLog(@"Cache mananged object after population:\n%@", cacheManagedObject) }
-            return sm_managedObject;
-            
-        }];
+            [results addObject:sm_managedObject];
+        }
         
         NSError *cacheSaveError = nil;
         [self SM_saveCache:&cacheSaveError];
@@ -1572,8 +1575,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         }
         
         // For each result of the fetch
-        NSArray *results = [resultsWithoutOID map:^(id item) {
-            
+        NSMutableArray *results = [NSMutableArray array];
+        for (id item in resultsWithoutOID) {
             id remoteID = [item objectForKey:primaryKeyField];
             
             if (!remoteID) {
@@ -1589,9 +1592,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 [self SM_populateManagedObject:sm_managedObject withDictionary:serializedObjectDict entity:[sm_managedObject entity]];
             }
             
-            return sm_managedObject;
-            
-        }];
+            [results addObject:sm_managedObject];
+        }
         
         return results;
 
@@ -2304,9 +2306,26 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                     [NSException raise:SMExceptionAddPersistentStore format:@"Error creating sqlite persistent store: %@", error];
                 }
                 
+                
             } else {
                 [NSException raise:SMExceptionAddPersistentStore format:@"Error creating sqlite persistent store: %@", error];
             }
+        }
+        
+        sqlite3 *database;
+        NSString *sqLiteDb = @"/Users/mattvaz/Library/Application Support/iPhone Simulator/6.1/Applications/3B176A8A-1FF7-4728-B8AA-6286919E14C0/Library/Application Support/coredataperformance/coredataperformance-983d8eea-7cb9-42e0-86cf-aec71b2aade4-CoreDataStore.sqlite";
+        
+        if (sqlite3_open([sqLiteDb UTF8String], &database) != SQLITE_OK) {
+            NSLog(@"Failed to open database!");
+        } else {
+            char *errMsg;
+            const char *sql_stmt = "CREATE INDEX ZPERFORMANCEIDINDEX ON ZPERFORMANCE (ZPERFORMANCEID)";
+            if (sqlite3_exec(database, sql_stmt, NULL, NULL, &errMsg) != SQLITE_OK) {
+                NSLog(@"Failed to create index");
+            } else {
+                NSLog(@"created index");
+            }
+            sqlite3_close(database);
         }
         
     }
@@ -2885,13 +2904,20 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         primaryKeyField = [desc primaryKeyField];
     }
     
+    
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K == %@", primaryKeyField, remoteID];
     NSPredicate *nilReferencePredicate = [NSPredicate predicateWithFormat:@"%K == %@", primaryKeyField, [NSString stringWithFormat:@"%@:nil", remoteID]];
     NSArray *predicates = [NSArray arrayWithObjects:predicate, nilReferencePredicate, nil];
     NSPredicate *compoundPredicate = [NSCompoundPredicate orPredicateWithSubpredicates:predicates];
     [fetchRequest setPredicate:compoundPredicate];
+     
+    /*
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K IN %@", primaryKeyField, [NSArray arrayWithObjects:remoteID, [NSString stringWithFormat:@"%@:nil", remoteID], nil]];
+    [fetchRequest setPredicate:predicate];
+    */
     
     NSError *fetchError = nil;
+    
     __block NSArray *results = [self.localManagedObjectContext executeFetchRequest:fetchRequest error:&fetchError];
     if (fetchError || [results count] > 1) {
         // TODO handle error
@@ -2902,6 +2928,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         // Create new cache object
         cacheObject = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:self.localManagedObjectContext];
         NSError *permanentIdError = nil;
+        
         [self.localManagedObjectContext obtainPermanentIDsForObjects:[NSArray arrayWithObject:cacheObject] error:&permanentIdError];
         // Sanity check
         if (permanentIdError) {
