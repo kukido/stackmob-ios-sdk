@@ -21,6 +21,99 @@
 
 SPEC_BEGIN(SMMergePolicyMiscSpec)
 
+describe(@"to-many relationships being serialized correctly on sync", ^{
+    
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        
+    });
+    afterEach(^{
+        NSError *error = nil;
+        NSFetchRequest *fetchForPerson = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetchForPerson error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        NSFetchRequest *fetchForFavorite = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
+        results = [testProperties.moc executeFetchRequestAndWait:fetchForFavorite error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"serialized the to-many relationships to their correct IDs when syncing", ^{
+        
+        // Create Person with 1-N on Superpower, Online
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [person assignObjectId];
+        
+        NSError *error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Create Superpower, Offline
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        NSManagedObject *favorite = [NSEntityDescription insertNewObjectForEntityForName:@"Favorite" inManagedObjectContext:testProperties.moc];
+        [favorite assignObjectId];
+        [favorite setValue:[NSSet setWithObject:person] forKey:@"persons"];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Sync
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            dispatch_group_leave(group);
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
+            NSLog(@"here");
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
+            NSLog(@"here");
+        }];
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        // Relationships should be all good
+        NSLog(@"Here");
+        
+        
+    
+    });
+    
+    
+});
+
+/*
 describe(@"Sync Errors, Inserting offline to a forbidden schema with POST perms", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -1594,6 +1687,6 @@ describe(@"syncInProgress", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"offline insert"];
     });
 });
-
+*/
 
 SPEC_END

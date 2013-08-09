@@ -160,6 +160,8 @@
                 [(NSSet *)propertyValue enumerateObjectsUsingBlock:^(id child, BOOL *stopRelEnum) {
                     NSManagedObjectID *childManagedObjectID = [child objectID];
                     NSString *entityName = [[child entity] name];
+                    
+                    
                     NSArray *components = [[[childManagedObjectID URIRepresentation] absoluteString] componentsSeparatedByString:[NSString stringWithFormat:@"%@/p", entityName]];
                     NSString *childObjectID = [components objectAtIndex:1];
                     
