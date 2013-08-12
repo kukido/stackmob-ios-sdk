@@ -17,7 +17,9 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="Interest" syncable="YES">
+        <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="interest_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="years_involved" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <relationship name="person" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Person" inverseName="interests" inverseEntity="Person" syncable="YES"/>
@@ -73,6 +75,8 @@
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
     </entity>
     <entity name="Superpower" representedClassName="Superpower" syncable="YES">
+        <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="level" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="pic" optional="YES" attributeType="String" syncable="YES"/>
@@ -99,7 +103,7 @@
         <element name="Category" positionX="0" positionY="0" width="128" height="90"/>
         <element name="Favorite" positionX="45" positionY="-99" width="128" height="120"/>
         <element name="Getpermission" positionX="160" positionY="192" width="128" height="75"/>
-        <element name="Interest" positionX="18" positionY="135" width="128" height="105"/>
+        <element name="Interest" positionX="18" positionY="135" width="128" height="135"/>
         <element name="Oauth2test" positionX="-135" positionY="-27" width="128" height="75"/>
         <element name="Offlinepermsdelete" positionX="160" positionY="192" width="128" height="105"/>
         <element name="Offlinepermsget" positionX="160" positionY="192" width="128" height="105"/>
@@ -108,7 +112,7 @@
         <element name="Person" positionX="-468" positionY="-129" width="128" height="210"/>
         <element name="Random" positionX="187" positionY="-108" width="128" height="150"/>
         <element name="StackMob" positionX="160" positionY="192" width="128" height="75"/>
-        <element name="Superpower" positionX="-171" positionY="123" width="128" height="120"/>
+        <element name="Superpower" positionX="-171" positionY="123" width="128" height="150"/>
         <element name="Todo" positionX="-218" positionY="396" width="128" height="120"/>
         <element name="User3" positionX="-477" positionY="135" width="128" height="90"/>
         <element name="User4" positionX="-108" positionY="-135" width="128" height="75"/>

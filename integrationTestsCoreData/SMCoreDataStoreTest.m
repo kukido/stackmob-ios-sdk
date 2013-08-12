@@ -197,7 +197,7 @@ describe(@"can set a field to nil, int", ^{
     });
 });
 
-/*
+
 describe(@"can set a field to nil, binary", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -243,7 +243,7 @@ describe(@"can set a field to nil, binary", ^{
         [[[results objectAtIndex:0] valueForKey:@"pic"] shouldNotBeNil];
         
         // Set to nil
-        [[results objectAtIndex:0] setValue:nil forKey:@"pic"];
+        [[results objectAtIndex:0] setValue:@"" forKey:@"pic"];
         
         error = nil;
         [testProperties.moc saveAndWait:&error];
@@ -260,7 +260,133 @@ describe(@"can set a field to nil, binary", ^{
         [[[results objectAtIndex:0] valueForKey:@"pic"] shouldBeNil];
     });
 });
-*/
+
+describe(@"using the cache, binary field set to empty string propoates, binary", ^{
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        testProperties = [[SMTestProperties alloc] init];
+        // Create todo
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
+        NSError *error = nil;
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        NSString* pathToImageFile = [bundle pathForResource:@"goatPic" ofType:@"jpeg"];
+        NSData *theData = [NSData dataWithContentsOfFile:pathToImageFile options:NSDataReadingMappedIfSafe error:&error];
+        [error shouldBeNil];
+        NSString *dataString = [SMBinaryDataConversion stringForBinaryData:theData name:@"whatever" contentType:@"image/jpeg"];
+        [todoObject setValue:dataString forKey:@"pic"];
+        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        
+        error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+    });
+    afterEach(^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"sets field to nil correctly", ^{
+        // Read Todo
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldNotBeNil];
+        
+        // Set to nil
+        [[results objectAtIndex:0] setValue:@"" forKey:@"pic"];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read todo
+        NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:fetch2 error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        
+        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldBeNil];
+    });
+});
+
+describe(@"using the cache, binary field not sent, doesn't propogate", ^{
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        testProperties = [[SMTestProperties alloc] init];
+        // Create todo
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
+        NSError *error = nil;
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        NSString* pathToImageFile = [bundle pathForResource:@"goatPic" ofType:@"jpeg"];
+        NSData *theData = [NSData dataWithContentsOfFile:pathToImageFile options:NSDataReadingMappedIfSafe error:&error];
+        [error shouldBeNil];
+        NSString *dataString = [SMBinaryDataConversion stringForBinaryData:theData name:@"whatever" contentType:@"image/jpeg"];
+        [todoObject setValue:dataString forKey:@"pic"];
+        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        
+        error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+    });
+    afterEach(^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"sets field to nil correctly", ^{
+        // Read Todo
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldNotBeNil];
+        
+        // Set to nil
+        [[results objectAtIndex:0] setValue:@"" forKey:@"pic"];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read todo
+        NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:fetch2 error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        
+        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldBeNil];
+    });
+});
+
 /*
 describe(@"can set a field to nil, geopoint", ^{
     __block SMTestProperties *testProperties = nil;
@@ -326,6 +452,7 @@ describe(@"can set a field to nil, geopoint", ^{
 });
 */
 
+/*
 describe(@"create an instance of SMCoreDataStore from SMClient", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -1237,5 +1364,6 @@ describe(@"inserting to a schema with permission Allow any logged in user when w
         [[theValue(saveSuccess) should] beNo];
     });
 });
+*/
 
 SPEC_END

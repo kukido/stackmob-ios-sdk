@@ -4224,8 +4224,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         if (attributeDescription.attributeType != NSUndefinedAttributeType) {
             if ([[theObject allKeys] indexOfObject:[entityDescription SMFieldNameForProperty:attributeDescription]] != NSNotFound) {
                 id value = [theObject valueForKey:[entityDescription SMFieldNameForProperty:attributeDescription]];
-                if (value == [NSNull null]) {
-                    [serializedDictionary setObject:value forKey:attributeName];
+                if (value == nil || value == [NSNull null]) {
+                    [serializedDictionary setValue:nil forKey:attributeName];
                 } else if (value && attributeDescription.attributeType == NSDateAttributeType) {
                     long double convertedValue = [value doubleValue] / 1000.0000;
                     NSDate *convertedDate = [NSDate dateWithTimeIntervalSince1970:convertedValue];
@@ -4236,8 +4236,6 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                         NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value];
                         [serializedDictionary setObject:data forKey:attributeName];
                     }
-                } else if (value == nil) {
-                    [serializedDictionary setValue:value forKey:attributeName];
                 } else {
                     [serializedDictionary setObject:value forKey:attributeName];
                 }
