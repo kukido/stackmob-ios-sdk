@@ -53,6 +53,9 @@ describe(@"to-many relationships being serialized correctly on sync", ^{
     });
     it(@"serialized the to-many relationships to their correct IDs when syncing", ^{
         
+        NSString *personID = nil;
+        NSString *favID = nil;
+        
         // Create Person with 1-N on Superpower, Online
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
@@ -60,6 +63,7 @@ describe(@"to-many relationships being serialized correctly on sync", ^{
         
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person assignObjectId];
+        personID = [person valueForKey:[person primaryKeyField]];
         
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
@@ -73,10 +77,30 @@ describe(@"to-many relationships being serialized correctly on sync", ^{
         [favorite assignObjectId];
         [favorite setValue:[NSSet setWithObject:person] forKey:@"persons"];
         
+        favID = [favorite valueForKey:[favorite primaryKeyField]];
+        
         error = nil;
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        // Read from and check the cache
+        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *favRelation = [[[results objectAtIndex:0] valueForKey:@"favorites"] anyObject];
+        [favRelation shouldNotBeNil];
+        
+        
+        NSFetchRequest *favFetch = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:favFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation = [[[results objectAtIndex:0] valueForKey:@"persons"] anyObject];
+        [personRelation shouldNotBeNil];
         
         // Sync
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
@@ -104,9 +128,16 @@ describe(@"to-many relationships being serialized correctly on sync", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Relationships should be all good
-        NSLog(@"Here");
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:personID inSchema:@"person" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSDictionary *dict = [object objectForKey:@"favorites"];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
         
-        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     
     });
     

@@ -581,7 +581,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                         cacheID = [components lastObject];
                     }
                     */
-                    NSDictionary *cacheMapEntry = [self.cacheMappingTable objectForKey:[[relationshipDesc entity] name]];
+                    NSDictionary *cacheMapEntry = [self.cacheMappingTable objectForKey:[[relationshipDesc destinationEntity] name]];
                     if (!cacheMapEntry) {
                         // Handle Error
                     }
@@ -1620,10 +1620,13 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             
         }];
         
-        NSError *cacheSaveError = nil;
-        [self SM_saveCache:&cacheSaveError];
-        if (cacheSaveError) {
-            if (SM_CORE_DATA_DEBUG) { DLog(@"Cache save unsuccessful, %@", cacheSaveError) }
+        if ([self.localManagedObjectContext hasChanges]) {
+            NSError *cacheSaveError = nil;
+            [self SM_saveCache:&cacheSaveError];
+            if (cacheSaveError) {
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Cache save unsuccessful, %@", cacheSaveError) }
+            }
+            [self SM_saveCacheMap];
         }
         
         return results;
@@ -2524,7 +2527,16 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             // TODO NEED THIS TO GET SAVED - CACHE MAP AND CACHE NEED TO GET SAVED!!!
             [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:values entity:entity];
             
+            NSError *saveError = nil;
+            BOOL saveSuccess = [self SM_saveCache:&saveError];
+            if (!saveSuccess) {
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Did Not Save Cache") }
+            }
+            [self SM_saveCacheMap];
+            
         }];
+        
+        
     }
 }
 
@@ -2541,7 +2553,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
     if (cacheResult) {
         [self SM_serializeAndCacheObjectWithID:objectID values:objectFromServer entity:entity context:context];
-        [self SM_saveCache:NULL];
+        //[self SM_saveCache:NULL];
     }
     
     serializedObjectDictionary = [self SM_responseSerializationForDictionary:objectFromServer schemaEntityDescription:entity managedObjectContext:context includeRelationships:includeRelationships];
@@ -2711,13 +2723,19 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 }
             }];
             
-            [self SM_saveCache:error];
+            if ([self.localManagedObjectContext hasChanges]) {
+                [self SM_saveCache:error];
+                [self SM_saveCacheMap];
+            }
             
             return arrayToReturn;
             
         } else {
             // Save empty array
-            [self SM_saveCache:error];
+            if ([self.localManagedObjectContext hasChanges]) {
+                [self SM_saveCache:error];
+                [self SM_saveCacheMap];
+            }
             return [NSArray array];
         }
     } else {
@@ -2748,12 +2766,19 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             NSManagedObject *newlyCachedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:relatedObjectPrimaryKey entityName:[[relationship destinationEntity] name] createIfNeeded:NO]];
             [cacheParentObject setValue:newlyCachedObject forKey:[relationship name]];
             // Save Cache if has changes
-            [self SM_saveCache:error];
+            if ([self.localManagedObjectContext hasChanges]) {
+                [self SM_saveCache:error];
+                [self SM_saveCacheMap];
+            }
+            
             
             return relationshipObjectID;
         } else {
             // Save Cache if has changes
-            [self SM_saveCache:error];
+            if ([self.localManagedObjectContext hasChanges]) {
+                [self SM_saveCache:error];
+                [self SM_saveCacheMap];
+            }
             return [NSNull null];
         }
     }
@@ -2777,6 +2802,15 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
     // Populate cached object
     [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:serializedObjectDict entity:entity];
+    
+    if ([self.localManagedObjectContext hasChanges]) {
+        NSError *error = nil;
+        [self SM_saveCache:&error];
+        if (error) {
+            // Handle error
+        }
+        [self SM_saveCacheMap];
+    }
 }
 
 - (void)SM_populateManagedObject:(NSManagedObject *)object withDictionary:(NSDictionary *)dictionary entity:(NSEntityDescription *)entity
@@ -2934,12 +2968,6 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         }
         
     }];
-    
-    NSError *saveError = nil;
-    BOOL saveSuccess = [self SM_saveCache:&saveError];
-    if (!saveSuccess) {
-        if (SM_CORE_DATA_DEBUG) { DLog(@"Did Not Save Cache") }
-    }
 }
 
 - (NSManagedObjectID *)SM_retrieveCacheObjectForRemoteID:(NSString *)remoteID entityName:(NSString *)entityName createIfNeeded:(BOOL)createIfNeeded {
