@@ -20,7 +20,7 @@
 #import "SMTestProperties.h"
 
 SPEC_BEGIN(SMCoreDataStoreTest)
-/*
+
 describe(@"can set a field to nil, string", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -196,13 +196,11 @@ describe(@"can set a field to nil, int", ^{
         [[[results objectAtIndex:0] valueForKey:@"yearBorn"] shouldBeNil];
     });
 });
-*/
 
 describe(@"can set a field to nil, binary", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.client setApiHost:@"api.staging.stackmob.com"];
         // Create todo
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
         NSError *error = nil;
@@ -267,10 +265,10 @@ describe(@"using the cache, binary field set to nil propogates, binary", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.client setApiHost:@"api.staging.stackmob.com"];
         
         // Create todo
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
+        [todoObject assignObjectId];
         NSError *error = nil;
         NSBundle *bundle = [NSBundle bundleForClass:[self class]];
         NSString* pathToImageFile = [bundle pathForResource:@"goatPic" ofType:@"jpeg"];
@@ -278,7 +276,6 @@ describe(@"using the cache, binary field set to nil propogates, binary", ^{
         [error shouldBeNil];
         NSString *dataString = [SMBinaryDataConversion stringForBinaryData:theData name:@"whatever" contentType:@"image/jpeg"];
         [todoObject setValue:dataString forKey:@"pic"];
-        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
         
         error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error];
@@ -366,7 +363,6 @@ describe(@"using the cache, binary field not set, doesn't propogates", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.client setApiHost:@"api.staging.stackmob.com"];
         
         // Create todo
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
@@ -460,7 +456,6 @@ describe(@"can set a field to nil, geopoint", ^{
     __block SMGeoPoint *geo = nil;
     beforeEach(^{
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.client setApiHost:@"api.staging.stackmob.com"];
         // Create todo
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:testProperties.moc];
         geo = [SMGeoPoint geoPointWithLatitude:[NSNumber numberWithDouble:30.5] longitude:[NSNumber numberWithDouble:30.5]];
@@ -519,7 +514,7 @@ describe(@"can set a field to nil, geopoint", ^{
     });
 });
 
-/*
+
 describe(@"create an instance of SMCoreDataStore from SMClient", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -1431,6 +1426,6 @@ describe(@"inserting to a schema with permission Allow any logged in user when w
         [[theValue(saveSuccess) should] beNo];
     });
 });
-*/
+
 
 SPEC_END

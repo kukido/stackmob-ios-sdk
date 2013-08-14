@@ -21,7 +21,7 @@
 
 SPEC_BEGIN(SMMergePolicyMiscSpec)
 
-/*
+
 describe(@"many-to-many relationships being serialized correctly on sync", ^{
     
     __block SMTestProperties *testProperties = nil;
@@ -480,8 +480,8 @@ describe(@"one-to-one relationships being serialized correctly on sync", ^{
     
     
 });
-*/
-/*
+
+
 describe(@"With User Object: many-to-many relationships being serialized correctly on sync", ^{
     
     __block SMTestProperties *testProperties = nil;
@@ -636,8 +636,7 @@ describe(@"With User Object: many-to-many relationships being serialized correct
     
     
 });
- */
-/*
+
 describe(@"With User Object: many-to-one relationships being serialized correctly on sync", ^{
     
     __block SMTestProperties *testProperties = nil;
@@ -648,7 +647,7 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
     });
     afterEach(^{
         NSError *error = nil;
-        NSFetchRequest *fetchForPerson = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        NSFetchRequest *fetchForPerson = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetchForPerson error:&error];
         [error shouldBeNil];
         [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -678,9 +677,10 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
         
-        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
-        [person assignObjectId];
-        personID = [person valueForKey:[person primaryKeyField]];
+        User3 *person = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        personID = [NSString stringWithFormat:@"bob%d", arc4random() / 100000];
+        [person setUsername:personID];
+        [person setPassword:@"1234"];
         
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
@@ -692,7 +692,7 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         
         NSManagedObject *interest = [NSEntityDescription insertNewObjectForEntityForName:@"Interest" inManagedObjectContext:testProperties.moc];
         [interest assignObjectId];
-        [interest setValue:person forKey:@"person"];
+        [interest setValue:person forKey:@"user3"];
         
         interestID = [interest valueForKey:[interest primaryKeyField]];
         
@@ -702,7 +702,7 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         [error shouldBeNil];
         
         // Read from and check the cache
-        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         error = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
@@ -716,7 +716,7 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         results = [testProperties.moc executeFetchRequestAndWait:interestFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
-        NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"person"];
+        NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"user3"];
         [personRelation shouldNotBeNil];
         
         // Sync
@@ -745,7 +745,7 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Relationships should be all good
-        NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
@@ -759,12 +759,12 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         results = [testProperties.moc executeFetchRequestAndWait:interestFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
-        NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"person"];
+        NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"user3"];
         [personRelation2 shouldNotBeNil];
         
         
         dispatch_group_enter(group);
-        [[[SMClient defaultClient] dataStore] readObjectWithId:personID inSchema:@"person" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+        [[[SMClient defaultClient] dataStore] readObjectWithId:personID inSchema:@"user3" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
             NSArray *interests = [object objectForKey:@"interests"];
             [[interests should] haveCountOf:1];
             [[[interests objectAtIndex:0] should] equal:interestID];
@@ -776,7 +776,7 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         
         dispatch_group_enter(group);
         [[[SMClient defaultClient] dataStore] readObjectWithId:interestID inSchema:@"interest" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
-            NSString *personString = [object objectForKey:@"person"];
+            NSString *personString = [object objectForKey:@"user3"];
             [[personString should] equal:personID];
             dispatch_group_leave(group);
         } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
@@ -801,7 +801,7 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
     });
     afterEach(^{
         NSError *error = nil;
-        NSFetchRequest *fetchForPerson = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        NSFetchRequest *fetchForPerson = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetchForPerson error:&error];
         [error shouldBeNil];
         [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -831,9 +831,10 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
         
-        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
-        [person assignObjectId];
-        personID = [person valueForKey:[person primaryKeyField]];
+        User3 *person = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        personID = [NSString stringWithFormat:@"bob%d", arc4random() / 100000];
+        [person setUsername:personID];
+        [person setPassword:@"1234"];
         
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
@@ -845,7 +846,7 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         
         NSManagedObject *superpower = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
         [superpower assignObjectId];
-        [superpower setValue:person forKey:@"person"];
+        [superpower setValue:person forKey:@"user3"];
         
         superpowerID = [superpower valueForKey:[superpower primaryKeyField]];
         
@@ -855,7 +856,7 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         [error shouldBeNil];
         
         // Read from and check the cache
-        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         error = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
@@ -869,7 +870,7 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
-        NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"person"];
+        NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"user3"];
         [personRelation shouldNotBeNil];
         
         // Sync
@@ -898,7 +899,7 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Relationships should be all good
-        NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
@@ -912,12 +913,12 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
-        NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"person"];
+        NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"user3"];
         [personRelation2 shouldNotBeNil];
         
         
         dispatch_group_enter(group);
-        [[[SMClient defaultClient] dataStore] readObjectWithId:personID inSchema:@"person" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+        [[[SMClient defaultClient] dataStore] readObjectWithId:personID inSchema:@"user3" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
             NSString *interestString = [object objectForKey:@"superpower"];
             [[interestString should] equal:superpowerID];
             dispatch_group_leave(group);
@@ -928,7 +929,7 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         
         dispatch_group_enter(group);
         [[[SMClient defaultClient] dataStore] readObjectWithId:superpowerID inSchema:@"superpower" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
-            NSString *personString = [object objectForKey:@"person"];
+            NSString *personString = [object objectForKey:@"user3"];
             [[personString should] equal:personID];
             dispatch_group_leave(group);
         } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
@@ -942,7 +943,6 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
     
     
 });
-*/
 
 /*
 describe(@"Sync Errors, Inserting offline to a forbidden schema with POST perms", ^{
