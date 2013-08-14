@@ -20,7 +20,7 @@
 #import "SMTestProperties.h"
 
 SPEC_BEGIN(SMCoreDataStoreTest)
-
+/*
 describe(@"can set a field to nil, string", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -196,12 +196,13 @@ describe(@"can set a field to nil, int", ^{
         [[[results objectAtIndex:0] valueForKey:@"yearBorn"] shouldBeNil];
     });
 });
-
+*/
 
 describe(@"can set a field to nil, binary", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
         testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setApiHost:@"api.staging.stackmob.com"];
         // Create todo
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
         NSError *error = nil;
@@ -243,7 +244,7 @@ describe(@"can set a field to nil, binary", ^{
         [[[results objectAtIndex:0] valueForKey:@"pic"] shouldNotBeNil];
         
         // Set to nil
-        [[results objectAtIndex:0] setValue:@"" forKey:@"pic"];
+        [[results objectAtIndex:0] setValue:nil forKey:@"pic"];
         
         error = nil;
         [testProperties.moc saveAndWait:&error];
@@ -261,10 +262,13 @@ describe(@"can set a field to nil, binary", ^{
     });
 });
 
-describe(@"using the cache, binary field set to empty string propoates, binary", ^{
+describe(@"using the cache, binary field set to nil propogates, binary", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
+        SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setApiHost:@"api.staging.stackmob.com"];
+        
         // Create todo
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
         NSError *error = nil;
@@ -295,8 +299,16 @@ describe(@"using the cache, binary field set to empty string propoates, binary",
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        SM_CACHE_ENABLED = NO;
     });
     it(@"sets field to nil correctly", ^{
+        
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        
         // Read Todo
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
         NSError *error = nil;
@@ -306,12 +318,37 @@ describe(@"using the cache, binary field set to empty string propoates, binary",
         [[[results objectAtIndex:0] valueForKey:@"pic"] shouldNotBeNil];
         
         // Set to nil
-        [[results objectAtIndex:0] setValue:@"" forKey:@"pic"];
+        [[results objectAtIndex:0] setValue:nil forKey:@"pic"];
         
         error = nil;
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        // Sync
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            dispatch_group_leave(group);
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed update"];
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+        }];
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Read todo
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
@@ -324,20 +361,18 @@ describe(@"using the cache, binary field set to empty string propoates, binary",
     });
 });
 
-describe(@"using the cache, binary field not sent, doesn't propogate", ^{
+describe(@"using the cache, binary field not set, doesn't propogates", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
+        SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setApiHost:@"api.staging.stackmob.com"];
+        
         // Create todo
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
         NSError *error = nil;
-        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-        NSString* pathToImageFile = [bundle pathForResource:@"goatPic" ofType:@"jpeg"];
-        NSData *theData = [NSData dataWithContentsOfFile:pathToImageFile options:NSDataReadingMappedIfSafe error:&error];
-        [error shouldBeNil];
-        NSString *dataString = [SMBinaryDataConversion stringForBinaryData:theData name:@"whatever" contentType:@"image/jpeg"];
-        [todoObject setValue:dataString forKey:@"pic"];
-        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        [todoObject setValue:@"cool" forKey:@"name"];
+        [todoObject assignObjectId];
         
         error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error];
@@ -358,23 +393,56 @@ describe(@"using the cache, binary field not sent, doesn't propogate", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        SM_CACHE_ENABLED = NO;
     });
     it(@"sets field to nil correctly", ^{
+        
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        
         // Read Todo
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
         NSError *error = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [error shouldBeNil];
         [[results should] haveCountOf:1];
-        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldNotBeNil];
+        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldBeNil];
         
         // Set to nil
-        [[results objectAtIndex:0] setValue:@"" forKey:@"pic"];
+        [[results objectAtIndex:0] setValue:@"invisible" forKey:@"name"];
         
         error = nil;
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        // Sync
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            dispatch_group_leave(group);
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed update"];
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+        }];
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Read todo
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
@@ -387,12 +455,12 @@ describe(@"using the cache, binary field not sent, doesn't propogate", ^{
     });
 });
 
-/*
 describe(@"can set a field to nil, geopoint", ^{
     __block SMTestProperties *testProperties = nil;
     __block SMGeoPoint *geo = nil;
     beforeEach(^{
         testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setApiHost:@"api.staging.stackmob.com"];
         // Create todo
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:testProperties.moc];
         geo = [SMGeoPoint geoPointWithLatitude:[NSNumber numberWithDouble:30.5] longitude:[NSNumber numberWithDouble:30.5]];
@@ -450,7 +518,6 @@ describe(@"can set a field to nil, geopoint", ^{
         [[[results objectAtIndex:0] valueForKey:@"geopoint"] shouldBeNil];
     });
 });
-*/
 
 /*
 describe(@"create an instance of SMCoreDataStore from SMClient", ^{

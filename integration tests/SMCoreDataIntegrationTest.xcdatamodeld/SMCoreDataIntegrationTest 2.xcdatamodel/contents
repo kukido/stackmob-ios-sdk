@@ -11,6 +11,7 @@
         <attribute name="genre" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <relationship name="persons" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Person" inverseName="favorites" inverseEntity="Person" syncable="YES"/>
+        <relationship name="user3s" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User3" inverseName="favorites" inverseEntity="User3" syncable="YES"/>
     </entity>
     <entity name="Getpermission" syncable="YES">
         <attribute name="getpermissionId" optional="YES" attributeType="String" syncable="YES"/>
@@ -23,6 +24,7 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="years_involved" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <relationship name="person" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Person" inverseName="interests" inverseEntity="Person" syncable="YES"/>
+        <relationship name="user3" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="User3" inverseName="interests" inverseEntity="User3" syncable="YES"/>
     </entity>
     <entity name="Oauth2test" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -82,6 +84,7 @@
         <attribute name="pic" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="superpower_id" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="person" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Person" inverseName="superpower" inverseEntity="Person" syncable="YES"/>
+        <relationship name="user3" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="User3" inverseName="superpower" inverseEntity="User3" syncable="YES"/>
     </entity>
     <entity name="Todo" parentEntity="StackMob" syncable="YES">
         <attribute name="title" optional="YES" attributeType="String" defaultValueString="What!" syncable="YES"/>
@@ -93,6 +96,9 @@
     <entity name="User3" representedClassName="User3" parentEntity="StackMob" syncable="YES">
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="favorites" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Favorite" inverseName="user3s" inverseEntity="Favorite" syncable="YES"/>
+        <relationship name="interests" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Interest" inverseName="user3" inverseEntity="Interest" syncable="YES"/>
+        <relationship name="superpower" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Superpower" inverseName="user3" inverseEntity="Superpower" syncable="YES"/>
         <relationship name="todos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Todo" inverseName="user3" inverseEntity="Todo" syncable="YES"/>
     </entity>
     <entity name="User4" representedClassName="User4" syncable="YES">
@@ -101,9 +107,9 @@
     </entity>
     <elements>
         <element name="Category" positionX="0" positionY="0" width="128" height="90"/>
-        <element name="Favorite" positionX="45" positionY="-99" width="128" height="120"/>
+        <element name="Favorite" positionX="45" positionY="-99" width="128" height="135"/>
         <element name="Getpermission" positionX="160" positionY="192" width="128" height="75"/>
-        <element name="Interest" positionX="18" positionY="135" width="128" height="135"/>
+        <element name="Interest" positionX="18" positionY="135" width="128" height="150"/>
         <element name="Oauth2test" positionX="-135" positionY="-27" width="128" height="75"/>
         <element name="Offlinepermsdelete" positionX="160" positionY="192" width="128" height="105"/>
         <element name="Offlinepermsget" positionX="160" positionY="192" width="128" height="105"/>
@@ -112,9 +118,9 @@
         <element name="Person" positionX="-468" positionY="-129" width="128" height="210"/>
         <element name="Random" positionX="187" positionY="-108" width="128" height="150"/>
         <element name="StackMob" positionX="160" positionY="192" width="128" height="75"/>
-        <element name="Superpower" positionX="-171" positionY="123" width="128" height="150"/>
+        <element name="Superpower" positionX="-171" positionY="123" width="128" height="165"/>
         <element name="Todo" positionX="-218" positionY="396" width="128" height="120"/>
-        <element name="User3" positionX="-477" positionY="135" width="128" height="90"/>
+        <element name="User3" positionX="-477" positionY="135" width="128" height="135"/>
         <element name="User4" positionX="-108" positionY="-135" width="128" height="75"/>
     </elements>
 </model>

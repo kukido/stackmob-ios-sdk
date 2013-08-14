@@ -555,60 +555,6 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     }
 }
 
-- (NSDictionary *)SM_translateRelationshipsFromCacheRepresentations:(NSManagedObject *)managedObject serializedDict:(NSDictionary *)serializedObjectDictionary
-{
-    NSMutableDictionary *serializedDictToReturn = [serializedObjectDictionary mutableCopy];
-    
-    [[[managedObject entity] relationshipsByName] enumerateKeysAndObjectsUsingBlock:^(id relationshipName, id relationshipDesc, BOOL *stop) {
-        
-        if ([serializedDictToReturn objectForKey:relationshipName]) {
-            
-            if ([relationshipDesc isToMany]) {
-                
-                // Enumerate through relationship
-                NSArray *rel = [serializedDictToReturn objectForKey:relationshipName];
-                NSMutableArray *newRel = [NSMutableArray array];
-                
-                [rel enumerateObjectsUsingBlock:^(id cacheStringID, NSUInteger idx, BOOL *innerStop) {
-                    
-                    /*
-                    NSArray *components = [[[[managedRelObject objectID] URIRepresentation] absoluteString] componentsSeparatedByString:[NSString stringWithFormat:@"%@/p", [relationshipDesc name]]];
-                    NSString *cacheID = nil;
-                    if ([components count] != 2) {
-                        // Throw
-                        [NSException raise:SMExceptionCacheError format:@"ID cannot be separated based on string condition. Please submit a support ticket with StackMob."];
-                    } else {
-                        cacheID = [components lastObject];
-                    }
-                    */
-                    NSDictionary *cacheMapEntry = [self.cacheMappingTable objectForKey:[[relationshipDesc destinationEntity] name]];
-                    if (!cacheMapEntry) {
-                        // Handle Error
-                    }
-                    
-                    NSUInteger indexOfObject = [[cacheMapEntry allValues] indexOfObjectPassingTest:^BOOL(id obj, NSUInteger index, BOOL *stopTest) {
-                        return [obj[0] isEqualToString:[NSString stringWithFormat:@"p%@", cacheStringID]];
-                    }];
-                    
-                    // TODO handle indexOfObject = nil, -1
-                    
-                    NSString *primaryRelationshipKey = [[cacheMapEntry allKeys] objectAtIndex:indexOfObject];
-                    [newRel addObject:primaryRelationshipKey];
-                    
-                }];
-                
-                [serializedDictToReturn setObject:newRel forKey:relationshipName];
-                
-            }
-            
-        }
-        
-    }];
-    
-    return serializedDictToReturn;
-    
-}
-
 - (BOOL)SM_handleInsertedObjectsWhenOnline:(NSSet *)insertedObjects inContext:(NSManagedObjectContext *)context serializeFullObjects:(BOOL)serializeFullObjects successBlockAddition:(void (^)(NSString *primaryKey, NSString *entityName, NSManagedObjectID *objectID))successBlockAddition options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error {
     
     if (SM_CORE_DATA_DEBUG) { DLog() }
@@ -631,14 +577,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     [insertedObjects enumerateObjectsUsingBlock:^(id managedObject, BOOL *stop) {
         
         // Create operation for inserted object
-        NSDictionary *serializedObjDict = [managedObject SMDictionarySerialization:serializeFullObjects sendLocalTimestamps:self.coreDataStore.sendLocalTimestamps];
-        
-        // If this is a sync (serializeFullObjects = YES), translate relationships from cache representations
-        if (serializeFullObjects) {
-            NSMutableDictionary *serializedObjDictCopy = [serializedObjDict mutableCopy];
-            [serializedObjDictCopy setObject:[self SM_translateRelationshipsFromCacheRepresentations:managedObject serializedDict:[serializedObjDictCopy objectForKey:SerializedDictKey]] forKey:SerializedDictKey];
-            serializedObjDict = [NSDictionary dictionaryWithDictionary:serializedObjDictCopy];
-        }
+        NSDictionary *serializedObjDict = [managedObject SMDictionarySerialization:serializeFullObjects sendLocalTimestamps:self.coreDataStore.sendLocalTimestamps cacheMap:[self.cacheMappingTable copy]];
         
         NSString *schemaName = [managedObject SMSchema];
         __block NSString *insertedObjectID = [managedObject SMObjectId];
@@ -834,14 +773,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         
         // Create operation for updated object
         
-        NSDictionary *serializedObjDict = [managedObject SMDictionarySerialization:serializeFullObjects sendLocalTimestamps:self.coreDataStore.sendLocalTimestamps];
-        
-        // If this is a sync (serializeFullObjects = YES), translate relationships from cache representations
-        if (serializeFullObjects) {
-            NSMutableDictionary *serializedObjDictCopy = [serializedObjDict mutableCopy];
-            [serializedObjDictCopy setObject:[self SM_translateRelationshipsFromCacheRepresentations:managedObject serializedDict:[serializedObjDictCopy objectForKey:SerializedDictKey]] forKey:SerializedDictKey];
-            serializedObjDict = [NSDictionary dictionaryWithDictionary:serializedObjDictCopy];
-        }
+        NSDictionary *serializedObjDict = [managedObject SMDictionarySerialization:serializeFullObjects sendLocalTimestamps:self.coreDataStore.sendLocalTimestamps cacheMap:[self.cacheMappingTable copy]];
         
         NSString *schemaName = [managedObject SMSchema];
         __block NSString *updatedObjectID = [managedObject SMObjectId];
