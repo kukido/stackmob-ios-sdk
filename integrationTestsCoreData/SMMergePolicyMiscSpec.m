@@ -944,7 +944,7 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
     
 });
 
-/*
+
 describe(@"Sync Errors, Inserting offline to a forbidden schema with POST perms", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -2518,6 +2518,6 @@ describe(@"syncInProgress", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"offline insert"];
     });
 });
-*/
+
 
 SPEC_END

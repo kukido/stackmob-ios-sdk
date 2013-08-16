@@ -2452,7 +2452,15 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             
             // Get cached managed object or create if needed
             // If we are offline, do not assign server base date
-            NSManagedObject *cacheManagedObject = offline ? [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES]] : [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES serverLastModDate:[values objectForKey:SMLastModDateKey]]];
+            NSManagedObject *cacheManagedObject = nil;
+            
+            if (offline) {
+                cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES]];
+            } else {
+                long double convertedValue = [[values objectForKey:SMLastModDateKey] doubleValue] / 1000.0000;
+                NSDate *serverLastModDate = [NSDate dateWithTimeIntervalSince1970:convertedValue];
+                cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES serverLastModDate:serverLastModDate]];
+            }
             
             // Populate cached object
             
@@ -2645,8 +2653,14 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 
                 // Cache object
                 [self SM_serializeAndCacheObjectWithID:relatedObjectPrimaryKey values:expandedObject entity:[relationship destinationEntity] context:context];
-
-                NSManagedObject *newlyCachedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:relatedObjectPrimaryKey entityName:[[relationship destinationEntity] name] createIfNeeded:YES serverLastModDate:[expandedObject objectForKey:SMLastModDateKey]]];
+                
+                NSDate *serverLastModDate = nil;
+                if ([expandedObject objectForKey:SMLastModDateKey]) {
+                    long double convertedValue = [[expandedObject objectForKey:SMLastModDateKey] doubleValue] / 1000.0000;
+                    serverLastModDate = [NSDate dateWithTimeIntervalSince1970:convertedValue];
+                }
+                
+                NSManagedObject *newlyCachedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:relatedObjectPrimaryKey entityName:[[relationship destinationEntity] name] createIfNeeded:YES serverLastModDate:serverLastModDate]];
                 
                 if ([relationship isOrdered]) {
                     [(NSMutableOrderedSet *)newRelationshipContents addObject:newlyCachedObject];
