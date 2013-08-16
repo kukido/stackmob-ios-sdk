@@ -2923,6 +2923,10 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
 - (NSManagedObjectID *)SM_retrieveCacheObjectForRemoteID:(NSString *)remoteID entityName:(NSString *)entityName createIfNeeded:(BOOL)createIfNeeded serverLastModDate:(NSDate *)serverLastModDate {
     if (SM_CORE_DATA_DEBUG) {DLog()}
     
+    if (![serverLastModDate isKindOfClass:[NSDate class]]) {
+        [NSException raise:SMExceptionIncompatibleObject format:@"Server Last Mod Date not a date type. Please submit a ticket or post with StackMob support."];
+    }
+    
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:entityName];
     NSEntityDescription *desc = [NSEntityDescription entityForName:entityName inManagedObjectContext:self.localManagedObjectContext];
     NSString *primaryKeyField = nil;
