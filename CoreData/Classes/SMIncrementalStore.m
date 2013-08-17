@@ -2457,14 +2457,16 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             if (offline) {
                 cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES]];
             } else {
-                long double convertedValue = [[values objectForKey:SMLastModDateKey] doubleValue] / 1000.0000;
-                NSDate *serverLastModDate = [NSDate dateWithTimeIntervalSince1970:convertedValue];
-                cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES serverLastModDate:serverLastModDate]];
+                if ([[values objectForKey:SMLastModDateKey] isKindOfClass:[NSDate class]]) {
+                    cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES serverLastModDate:[values objectForKey:SMLastModDateKey]]];
+                } else {
+                    long double convertedValue = [[values objectForKey:SMLastModDateKey] doubleValue] / 1000.0000;
+                    NSDate *serverLastModDate = [NSDate dateWithTimeIntervalSince1970:convertedValue];
+                    cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES serverLastModDate:serverLastModDate]];
+                }
             }
             
             // Populate cached object
-            
-            // TODO NEED THIS TO GET SAVED - CACHE MAP AND CACHE NEED TO GET SAVED!!!
             [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:values entity:entity];
             
             NSError *saveError = nil;
