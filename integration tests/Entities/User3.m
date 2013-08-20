@@ -15,12 +15,16 @@
  */
 
 #import "User3.h"
+#import "Superpower.h"
 
 
 @implementation User3
 
-@dynamic username;
 @dynamic email;
+@dynamic username;
 @dynamic todos;
+@dynamic favorites;
+@dynamic interests;
+@dynamic superpower;
 
 @end
