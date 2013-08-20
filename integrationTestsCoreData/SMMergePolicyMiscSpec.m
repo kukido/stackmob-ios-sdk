@@ -21,6 +21,930 @@
 
 SPEC_BEGIN(SMMergePolicyMiscSpec)
 
+
+describe(@"many-to-many relationships being serialized correctly on sync", ^{
+    
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        
+    });
+    afterEach(^{
+        NSError *error = nil;
+        NSFetchRequest *fetchForPerson = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetchForPerson error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        NSFetchRequest *fetchForFavorite = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
+        results = [testProperties.moc executeFetchRequestAndWait:fetchForFavorite error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"serialized the to-many relationships to their correct IDs when syncing", ^{
+        
+        __block NSString *personID = nil;
+        __block NSString *favID = nil;
+        
+        // Create Person with 1-N on Superpower, Online
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [person assignObjectId];
+        personID = [person valueForKey:[person primaryKeyField]];
+        
+        NSError *error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Create Superpower, Offline
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        NSManagedObject *favorite = [NSEntityDescription insertNewObjectForEntityForName:@"Favorite" inManagedObjectContext:testProperties.moc];
+        [favorite assignObjectId];
+        [favorite setValue:[NSSet setWithObject:person] forKey:@"persons"];
+        
+        favID = [favorite valueForKey:[favorite primaryKeyField]];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read from and check the cache
+        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *favRelation = [[[results objectAtIndex:0] valueForKey:@"favorites"] anyObject];
+        [favRelation shouldNotBeNil];
+        
+        
+        NSFetchRequest *favFetch = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:favFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation = [[[results objectAtIndex:0] valueForKey:@"persons"] anyObject];
+        [personRelation shouldNotBeNil];
+        
+        // Sync
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            dispatch_group_leave(group);
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed update"];
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+        }];
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        // Relationships should be all good
+        NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *favRelation2 = [[[results objectAtIndex:0] valueForKey:@"favorites"] anyObject];
+        [favRelation2 shouldNotBeNil];
+        
+        
+        NSFetchRequest *favFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:favFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation2 = [[[results objectAtIndex:0] valueForKey:@"persons"] anyObject];
+        [personRelation2 shouldNotBeNil];
+        
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:personID inSchema:@"person" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSArray *favorites = [object objectForKey:@"favorites"];
+            [[favorites should] haveCountOf:1];
+            [[[favorites objectAtIndex:0] should] equal:favID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:favID inSchema:@"favorite" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSArray *persons = [object objectForKey:@"persons"];
+            [[persons should] haveCountOf:1];
+            [[[persons objectAtIndex:0] should] equal:personID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    
+    });
+    
+    
+});
+
+describe(@"many-to-one relationships being serialized correctly on sync", ^{
+    
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        
+    });
+    afterEach(^{
+        NSError *error = nil;
+        NSFetchRequest *fetchForPerson = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetchForPerson error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        NSFetchRequest *fetchForInterest = [[NSFetchRequest alloc] initWithEntityName:@"Interest"];
+        results = [testProperties.moc executeFetchRequestAndWait:fetchForInterest error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"serialized the to-many and to-one relationships to their correct IDs when syncing", ^{
+        
+        __block NSString *personID = nil;
+        __block NSString *interestID = nil;
+        
+        // Create Person with 1-N on Superpower, Online
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [person assignObjectId];
+        personID = [person valueForKey:[person primaryKeyField]];
+        
+        NSError *error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Create Superpower, Offline
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        NSManagedObject *interest = [NSEntityDescription insertNewObjectForEntityForName:@"Interest" inManagedObjectContext:testProperties.moc];
+        [interest assignObjectId];
+        [interest setValue:person forKey:@"person"];
+        
+        interestID = [interest valueForKey:[interest primaryKeyField]];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read from and check the cache
+        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *interestRelation = [[[results objectAtIndex:0] valueForKey:@"interests"] anyObject];
+        [interestRelation shouldNotBeNil];
+        
+        
+        NSFetchRequest *interestFetch = [[NSFetchRequest alloc] initWithEntityName:@"Interest"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:interestFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"person"];
+        [personRelation shouldNotBeNil];
+        
+        // Sync
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            dispatch_group_leave(group);
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed update"];
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+        }];
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        // Relationships should be all good
+        NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *interestRelation2 = [[[results objectAtIndex:0] valueForKey:@"interests"] anyObject];
+        [interestRelation2 shouldNotBeNil];
+        
+        
+        NSFetchRequest *interestFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Interest"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:interestFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"person"];
+        [personRelation2 shouldNotBeNil];
+        
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:personID inSchema:@"person" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSArray *interests = [object objectForKey:@"interests"];
+            [[interests should] haveCountOf:1];
+            [[[interests objectAtIndex:0] should] equal:interestID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:interestID inSchema:@"interest" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSString *personString = [object objectForKey:@"person"];
+            [[personString should] equal:personID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+    });
+    
+    
+});
+
+describe(@"one-to-one relationships being serialized correctly on sync", ^{
+    
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        
+    });
+    afterEach(^{
+        NSError *error = nil;
+        NSFetchRequest *fetchForPerson = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetchForPerson error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        NSFetchRequest *fetchForSuperpower = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        results = [testProperties.moc executeFetchRequestAndWait:fetchForSuperpower error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"serialized the to-one relationships to their correct IDs when syncing", ^{
+        
+        __block NSString *personID = nil;
+        __block NSString *superpowerID = nil;
+        
+        // Create Person with 1-N on Superpower, Online
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [person assignObjectId];
+        personID = [person valueForKey:[person primaryKeyField]];
+        
+        NSError *error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Create Superpower, Offline
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        NSManagedObject *superpower = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
+        [superpower assignObjectId];
+        [superpower setValue:person forKey:@"person"];
+        
+        superpowerID = [superpower valueForKey:[superpower primaryKeyField]];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read from and check the cache
+        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *superpowerRelation = [[results objectAtIndex:0] valueForKey:@"superpower"];
+        [superpowerRelation shouldNotBeNil];
+        
+        
+        NSFetchRequest *superpowerFetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"person"];
+        [personRelation shouldNotBeNil];
+        
+        // Sync
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            dispatch_group_leave(group);
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed update"];
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+        }];
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        // Relationships should be all good
+        NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *superpowerRelation2 = [[results objectAtIndex:0] valueForKey:@"superpower"];
+        [superpowerRelation2 shouldNotBeNil];
+        
+        
+        NSFetchRequest *superpowerFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"person"];
+        [personRelation2 shouldNotBeNil];
+        
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:personID inSchema:@"person" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSString *interestString = [object objectForKey:@"superpower"];
+            [[interestString should] equal:superpowerID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:superpowerID inSchema:@"superpower" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSString *personString = [object objectForKey:@"person"];
+            [[personString should] equal:personID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+    });
+    
+    
+});
+
+
+describe(@"With User Object: many-to-many relationships being serialized correctly on sync", ^{
+    
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setUserSchema:@"user3"];
+    });
+    afterEach(^{
+        NSError *error = nil;
+        NSFetchRequest *fetchForPerson = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetchForPerson error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        NSFetchRequest *fetchForFavorite = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
+        results = [testProperties.moc executeFetchRequestAndWait:fetchForFavorite error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"serialized the to-many relationships to their correct IDs when syncing", ^{
+        
+        __block NSString *personID = nil;
+        __block NSString *favID = nil;
+        
+        // Create Person with 1-N on Superpower, Online
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        User3 *person = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        personID = [NSString stringWithFormat:@"bob%d", arc4random() / 100000];
+        [person setUsername:personID];
+        [person setPassword:@"1234"];
+        
+        NSError *error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Create Superpower, Offline
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        NSManagedObject *favorite = [NSEntityDescription insertNewObjectForEntityForName:@"Favorite" inManagedObjectContext:testProperties.moc];
+        [favorite assignObjectId];
+        [favorite setValue:[NSSet setWithObject:person] forKey:@"user3s"];
+        
+        favID = [favorite valueForKey:[favorite primaryKeyField]];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read from and check the cache
+        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
+        error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *favRelation = [[[results objectAtIndex:0] valueForKey:@"favorites"] anyObject];
+        [favRelation shouldNotBeNil];
+        
+        
+        NSFetchRequest *favFetch = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:favFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation = [[[results objectAtIndex:0] valueForKey:@"user3s"] anyObject];
+        [personRelation shouldNotBeNil];
+        
+        // Sync
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            dispatch_group_leave(group);
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed update"];
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+        }];
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        // Relationships should be all good
+        NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *favRelation2 = [[[results objectAtIndex:0] valueForKey:@"favorites"] anyObject];
+        [favRelation2 shouldNotBeNil];
+        
+        
+        NSFetchRequest *favFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:favFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation2 = [[[results objectAtIndex:0] valueForKey:@"user3s"] anyObject];
+        [personRelation2 shouldNotBeNil];
+        
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:personID inSchema:@"user3" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSArray *favorites = [object objectForKey:@"favorites"];
+            [[favorites should] haveCountOf:1];
+            [[[favorites objectAtIndex:0] should] equal:favID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:favID inSchema:@"favorite" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSArray *persons = [object objectForKey:@"user3s"];
+            [[persons should] haveCountOf:1];
+            [[[persons objectAtIndex:0] should] equal:personID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+    });
+    
+    
+});
+
+describe(@"With User Object: many-to-one relationships being serialized correctly on sync", ^{
+    
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setUserSchema:@"user3"];
+    });
+    afterEach(^{
+        NSError *error = nil;
+        NSFetchRequest *fetchForPerson = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetchForPerson error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        NSFetchRequest *fetchForInterest = [[NSFetchRequest alloc] initWithEntityName:@"Interest"];
+        results = [testProperties.moc executeFetchRequestAndWait:fetchForInterest error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"serialized the to-many and to-one relationships to their correct IDs when syncing", ^{
+        
+        __block NSString *personID = nil;
+        __block NSString *interestID = nil;
+        
+        // Create Person with 1-N on Superpower, Online
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        User3 *person = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        personID = [NSString stringWithFormat:@"bob%d", arc4random() / 100000];
+        [person setUsername:personID];
+        [person setPassword:@"1234"];
+        
+        NSError *error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Create Superpower, Offline
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        NSManagedObject *interest = [NSEntityDescription insertNewObjectForEntityForName:@"Interest" inManagedObjectContext:testProperties.moc];
+        [interest assignObjectId];
+        [interest setValue:person forKey:@"user3"];
+        
+        interestID = [interest valueForKey:[interest primaryKeyField]];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read from and check the cache
+        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
+        error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *interestRelation = [[[results objectAtIndex:0] valueForKey:@"interests"] anyObject];
+        [interestRelation shouldNotBeNil];
+        
+        
+        NSFetchRequest *interestFetch = [[NSFetchRequest alloc] initWithEntityName:@"Interest"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:interestFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"user3"];
+        [personRelation shouldNotBeNil];
+        
+        // Sync
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            dispatch_group_leave(group);
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed update"];
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+        }];
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        // Relationships should be all good
+        NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *interestRelation2 = [[[results objectAtIndex:0] valueForKey:@"interests"] anyObject];
+        [interestRelation2 shouldNotBeNil];
+        
+        
+        NSFetchRequest *interestFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Interest"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:interestFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"user3"];
+        [personRelation2 shouldNotBeNil];
+        
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:personID inSchema:@"user3" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSArray *interests = [object objectForKey:@"interests"];
+            [[interests should] haveCountOf:1];
+            [[[interests objectAtIndex:0] should] equal:interestID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:interestID inSchema:@"interest" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSString *personString = [object objectForKey:@"user3"];
+            [[personString should] equal:personID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+    });
+    
+    
+});
+
+describe(@"With User Object: one-to-one relationships being serialized correctly on sync", ^{
+    
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setUserSchema:@"user3"];
+    });
+    afterEach(^{
+        NSError *error = nil;
+        NSFetchRequest *fetchForPerson = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetchForPerson error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        NSFetchRequest *fetchForSuperpower = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        results = [testProperties.moc executeFetchRequestAndWait:fetchForSuperpower error:&error];
+        [error shouldBeNil];
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+    });
+    it(@"serialized the to-one relationships to their correct IDs when syncing", ^{
+        
+        __block NSString *personID = nil;
+        __block NSString *superpowerID = nil;
+        
+        // Create Person with 1-N on Superpower, Online
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        User3 *person = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        personID = [NSString stringWithFormat:@"bob%d", arc4random() / 100000];
+        [person setUsername:personID];
+        [person setPassword:@"1234"];
+        
+        NSError *error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Create Superpower, Offline
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        NSManagedObject *superpower = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
+        [superpower assignObjectId];
+        [superpower setValue:person forKey:@"user3"];
+        
+        superpowerID = [superpower valueForKey:[superpower primaryKeyField]];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Read from and check the cache
+        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
+        error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *superpowerRelation = [[results objectAtIndex:0] valueForKey:@"superpower"];
+        [superpowerRelation shouldNotBeNil];
+        
+        
+        NSFetchRequest *superpowerFetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"user3"];
+        [personRelation shouldNotBeNil];
+        
+        // Sync
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            dispatch_group_leave(group);
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed update"];
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+        }];
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        // Relationships should be all good
+        NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *superpowerRelation2 = [[results objectAtIndex:0] valueForKey:@"superpower"];
+        [superpowerRelation2 shouldNotBeNil];
+        
+        
+        NSFetchRequest *superpowerFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
+        
+        [error shouldBeNil];
+        NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"user3"];
+        [personRelation2 shouldNotBeNil];
+        
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:personID inSchema:@"user3" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSString *interestString = [object objectForKey:@"superpower"];
+            [[interestString should] equal:superpowerID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        [[[SMClient defaultClient] dataStore] readObjectWithId:superpowerID inSchema:@"superpower" options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            NSString *personString = [object objectForKey:@"user3"];
+            [[personString should] equal:personID];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theError, NSString *objectId, NSString *schema) {
+            [theError shouldBeNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+    });
+    
+    
+});
+
+
 describe(@"Sync Errors, Inserting offline to a forbidden schema with POST perms", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
