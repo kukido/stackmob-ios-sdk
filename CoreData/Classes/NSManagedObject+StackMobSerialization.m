@@ -76,10 +76,10 @@
     return [[self entity] SMFieldNameForProperty:[[[self entity] propertiesByName] objectForKey:[self primaryKeyField]]];
 }
 
-- (NSDictionary *)SMDictionarySerialization:(BOOL)serializeFullObjects sendLocalTimestamps:(BOOL)sendLocalTimestamps
+- (NSDictionary *)SMDictionarySerialization:(BOOL)serializeFullObjects sendLocalTimestamps:(BOOL)sendLocalTimestamps cacheMap:(NSDictionary *)cacheMap
 {
     NSMutableArray *arrayOfRelationshipHeaders = [NSMutableArray array];
-    NSMutableDictionary *contentsOfSerializedObject = [NSMutableDictionary dictionaryWithObject:[self SMDictionarySerializationByTraversingRelationshipsExcludingObjects:nil entities:nil relationshipHeaderValues:&arrayOfRelationshipHeaders relationshipKeyPath:nil serializeFullObjects:serializeFullObjects sendLocalTimestamps:sendLocalTimestamps] forKey:@"SerializedDict"];
+    NSMutableDictionary *contentsOfSerializedObject = [NSMutableDictionary dictionaryWithObject:[self SMDictionarySerializationByTraversingRelationshipsExcludingObjects:nil entities:nil relationshipHeaderValues:&arrayOfRelationshipHeaders relationshipKeyPath:nil serializeFullObjects:serializeFullObjects sendLocalTimestamps:sendLocalTimestamps cacheMap:cacheMap] forKey:@"SerializedDict"];
     
     if ([arrayOfRelationshipHeaders count] > 0) {
         
@@ -91,7 +91,7 @@
     
 }
 
-- (NSDictionary *)SMDictionarySerializationByTraversingRelationshipsExcludingObjects:(NSMutableSet *)processedObjects entities:(NSMutableSet *)processedEntities relationshipHeaderValues:(NSMutableArray *__autoreleasing *)values relationshipKeyPath:(NSString *)keyPath serializeFullObjects:(BOOL)serializeFullObjects sendLocalTimestamps:(BOOL)sendLocalTimestamps
+- (NSDictionary *)SMDictionarySerializationByTraversingRelationshipsExcludingObjects:(NSMutableSet *)processedObjects entities:(NSMutableSet *)processedEntities relationshipHeaderValues:(NSMutableArray *__autoreleasing *)values relationshipKeyPath:(NSString *)keyPath serializeFullObjects:(BOOL)serializeFullObjects sendLocalTimestamps:(BOOL)sendLocalTimestamps cacheMap:(NSDictionary *)cacheMap
 {
     if (processedObjects == nil) {
         processedObjects = [NSMutableSet set];
@@ -160,10 +160,33 @@
                 [(NSSet *)propertyValue enumerateObjectsUsingBlock:^(id child, BOOL *stopRelEnum) {
                     NSManagedObjectID *childManagedObjectID = [child objectID];
                     NSString *entityName = [[child entity] name];
+                    
+                    
                     NSArray *components = [[[childManagedObjectID URIRepresentation] absoluteString] componentsSeparatedByString:[NSString stringWithFormat:@"%@/p", entityName]];
                     NSString *childObjectID = [components objectAtIndex:1];
                     
-                    [relatedObjectDictionaries addObject:childObjectID];
+                    if (serializeFullObjects) {
+                        // Translate cache ID to SM ID
+                        NSDictionary *cacheMapEntry = [cacheMap objectForKey:[[childManagedObjectID entity] name]];
+                        if (!cacheMapEntry) {
+                            // Handle Error
+                        }
+                        
+                        NSUInteger indexOfObject = [[cacheMapEntry allValues] indexOfObjectPassingTest:^BOOL(id obj, NSUInteger index, BOOL *stopTest) {
+                            return [obj[0] isEqualToString:[NSString stringWithFormat:@"p%@", childObjectID]];
+                        }];
+                        
+                        if (indexOfObject == NSNotFound) {
+                            [NSException raise:SMExceptionCacheError format:@"Cache Map entry not found for cache ID %@ of entity %@", childObjectID, [[childManagedObjectID entity] name]];
+                        }
+                        
+                        NSString *primaryRelationshipKey = [[cacheMapEntry allKeys] objectAtIndex:indexOfObject];
+                        [relatedObjectDictionaries addObject:primaryRelationshipKey];
+                    } else {
+                        [relatedObjectDictionaries addObject:childObjectID];
+                    }
+                    
+                    
                 }];
                 
                 // add relationship header only if there are actual keys
@@ -203,7 +226,7 @@
                     
                     [*values addObject:[NSString stringWithFormat:@"%@=%@", relationshipKeyPath, [[relationship destinationEntity] SMSchema]]];
                     
-                    [objectDictionary setObject:[propertyValue SMDictionarySerializationByTraversingRelationshipsExcludingObjects:processedObjects entities:processedEntities relationshipHeaderValues:values relationshipKeyPath:relationshipKeyPath serializeFullObjects:serializeFullObjects sendLocalTimestamps:sendLocalTimestamps] forKey:[selfEntity SMFieldNameForProperty:property]];
+                    [objectDictionary setObject:[propertyValue SMDictionarySerializationByTraversingRelationshipsExcludingObjects:processedObjects entities:processedEntities relationshipHeaderValues:values relationshipKeyPath:relationshipKeyPath serializeFullObjects:serializeFullObjects sendLocalTimestamps:sendLocalTimestamps cacheMap:cacheMap] forKey:[selfEntity SMFieldNameForProperty:property]];
                 }
             }
         }
