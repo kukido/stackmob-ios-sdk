@@ -88,6 +88,7 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
 @synthesize defaultSMMergePolicy = _defaultSMMergePolicy;
 @synthesize cachePurgeQueue = _cachePurgeQueue;
 @synthesize cachePolicy = _cachePolicy;
+@synthesize savePolicy = _savePolicy;
 @synthesize globalRequestOptions = _globalRequestOptions;
 @synthesize insertsSMMergePolicy = _insertsSMMergePolicy;
 @synthesize updatesSMMergePolicy = _updatesSMMergePolicy;
@@ -111,6 +112,8 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
         
         /// Set default cache and merge policies
         [self setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [self setSavePolicy:SMSavePolicyNetworkThenCache];
+        
         _defaultCoreDataMergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;
         self.defaultSMMergePolicy = SMMergePolicyServerModifiedWins;
         self.insertsSMMergePolicy = nil;
@@ -226,15 +229,6 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
 		return threadContext;
 	}
 }
-
-/*
-- (void)setCachePolicy:(SMCachePolicy)cachePolicy
-{
-    if (self.cachePolicy != cachePolicy) {
-        
-    }
-}
- */
 
 - (void)setDefaultMergePolicy:(id)mergePolicy applyToMainThreadContextAndParent:(BOOL)apply
 {

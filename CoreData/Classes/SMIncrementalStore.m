@@ -519,23 +519,33 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         networkAvailable = YES;
     }
     
+    SMSavePolicy policyToUse = options.savePolicySet ? options.savePolicy : [self.coreDataStore savePolicy];
+    
+    if (!networkAvailable) {
+        policyToUse = SMSavePolicyCacheOnly;
+    } else {
+        if (policyToUse == SMSavePolicyNetworkOnly) {
+            // Modify options.cacheResults
+        }
+    }
+    
     NSSet *insertedObjects = [saveRequest insertedObjects];
     if ([insertedObjects count] > 0) {
-        BOOL insertSuccess = [self SM_handleInsertedObjects:insertedObjects inContext:context options:options error:error networkAvailable:networkAvailable];
+        BOOL insertSuccess = [self SM_handleInsertedObjects:insertedObjects inContext:context options:options savePolicy:policyToUse error:error];
         if (!insertSuccess) {
             return nil;
         }
     }
     NSSet *updatedObjects = [saveRequest updatedObjects];
     if ([updatedObjects count] > 0) {
-        BOOL updateSuccess = [self SM_handleUpdatedObjects:updatedObjects inContext:context options:options error:error networkAvailable:networkAvailable];
+        BOOL updateSuccess = [self SM_handleUpdatedObjects:updatedObjects inContext:context options:options savePolicy:policyToUse error:error];
         if (!updateSuccess) {
             return nil;
         }
     }
     NSSet *deletedObjects = [saveRequest deletedObjects];
     if ([deletedObjects count] > 0) {
-        BOOL deleteSuccess = [self SM_handleDeletedObjects:deletedObjects inContext:context options:options error:error networkAvailable:networkAvailable];
+        BOOL deleteSuccess = [self SM_handleDeletedObjects:deletedObjects inContext:context options:options savePolicy:policyToUse error:error];
         if (!deleteSuccess) {
             return nil;
         }
@@ -544,14 +554,23 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     return [NSArray array];
 }
 
-- (BOOL)SM_handleInsertedObjects:(NSSet *)insertedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error networkAvailable:(BOOL)networkAvailable
+- (BOOL)SM_handleInsertedObjects:(NSSet *)insertedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options savePolicy:(SMSavePolicy)savePolicy error:(NSError *__autoreleasing *)error
 {
     if (SM_CORE_DATA_DEBUG) { DLog() }
     
-    if (networkAvailable) {
-        return [self SM_handleInsertedObjectsWhenOnline:insertedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
-    } else {
-        return [self SM_handleInsertedObjectsWhenOffline:insertedObjects inContext:context options:options error:error];
+    switch (savePolicy) {
+        case SMSavePolicyNetworkThenCache:
+            return [self SM_handleInsertedObjectsWhenOnline:insertedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyNetworkOnly:
+            return [self SM_handleInsertedObjectsWhenOnline:insertedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyCacheOnly:
+            return [self SM_handleInsertedObjectsWhenOffline:insertedObjects inContext:context options:options error:error];
+            break;
+        default:
+            // TODO throw error
+            break;
     }
 }
 
@@ -742,13 +761,23 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     return returnDictionary;
 }
 
-- (BOOL)SM_handleUpdatedObjects:(NSSet *)updatedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error networkAvailable:(BOOL)networkAvailable
+- (BOOL)SM_handleUpdatedObjects:(NSSet *)updatedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options savePolicy:(SMSavePolicy)savePolicy error:(NSError *__autoreleasing *)error
 {
     if (SM_CORE_DATA_DEBUG) { DLog() }
-    if (networkAvailable) {
-        return [self SM_handleUpdatedObjectsWhenOnline:updatedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
-    } else {
-        return [self SM_handleUpdatedObjectsWhenOffline:updatedObjects inContext:context options:options error:error];
+    
+    switch (savePolicy) {
+        case SMSavePolicyNetworkThenCache:
+            return [self SM_handleUpdatedObjectsWhenOnline:updatedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyNetworkOnly:
+            return [self SM_handleUpdatedObjectsWhenOnline:updatedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyCacheOnly:
+            return [self SM_handleUpdatedObjectsWhenOffline:updatedObjects inContext:context options:options error:error];
+            break;
+        default:
+            // TODO throw error
+            break;
     }
 }
 
@@ -902,13 +931,23 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
 }
 
-- (BOOL)SM_handleDeletedObjects:(NSSet *)deletedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error networkAvailable:(BOOL)networkAvailable
+- (BOOL)SM_handleDeletedObjects:(NSSet *)deletedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options savePolicy:(SMSavePolicy)savePolicy error:(NSError *__autoreleasing *)error
 {
     if (SM_CORE_DATA_DEBUG) { DLog() }
-    if (networkAvailable) {
-        return [self SM_handleDeletedObjectsWhenOnline:deletedObjects inContext:context options:options error:error];
-    } else {
-        return [self SM_handleDeletedObjectsWhenOffline:deletedObjects inContext:context options:options error:error];
+    
+    switch (savePolicy) {
+        case SMSavePolicyNetworkThenCache:
+            return [self SM_handleDeletedObjectsWhenOnline:deletedObjects inContext:context options:options error:error];
+            break;
+        case SMSavePolicyNetworkOnly:
+            return [self SM_handleDeletedObjectsWhenOnline:deletedObjects inContext:context options:options error:error];
+            break;
+        case SMSavePolicyCacheOnly:
+            return [self SM_handleDeletedObjectsWhenOffline:deletedObjects inContext:context options:options error:error];
+            break;
+        default:
+            // TODO throw error
+            break;
     }
 }
 

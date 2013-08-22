@@ -19,6 +19,7 @@
 @interface SMRequestOptions ()
 
 @property (nonatomic, readwrite) BOOL cachePolicySet;
+@property (nonatomic, readwrite) BOOL savePolicySet;
 
 @end
 
@@ -32,6 +33,8 @@
 @synthesize cachePolicy = _cachePolicy;
 @synthesize cacheResults = _cacheResults;
 @synthesize cachePolicySet = _cachePolicySet;
+@synthesize savePolicy = _savePolicy;
+@synthesize savePolicySet = _savePolicySet;
 
 
 + (SMRequestOptions *)options
@@ -45,6 +48,8 @@
     opts.cachePolicy = SMCachePolicyTryNetworkOnly;
     opts.cachePolicySet = NO;
     opts.cacheResults = YES;
+    opts.savePolicy = SMSavePolicyNetworkThenCache;
+    opts.savePolicySet = NO;
     return opts;
 }
 
@@ -84,6 +89,13 @@
     return opt;
 }
 
++ (SMRequestOptions *)optionsWithSavePolicy:(SMSavePolicy)savePolicy
+{
+    SMRequestOptions *opt = [SMRequestOptions options];
+    opt.savePolicy = savePolicy;
+    return opt;
+}
+
 + (SMRequestOptions *)optionsWithCacheResults:(BOOL)cacheResults
 {
     SMRequestOptions *opt = [SMRequestOptions options];
@@ -97,6 +109,14 @@
         _cachePolicy = cachePolicy;
     }
     self.cachePolicySet = YES;
+}
+
+- (void)setSavePolicy:(SMSavePolicy)savePolicy
+{
+    if (_savePolicy != savePolicy) {
+        _savePolicy = savePolicy;
+    }
+    self.savePolicySet = YES;
 }
 
 - (void)setExpandDepth:(NSUInteger)depth

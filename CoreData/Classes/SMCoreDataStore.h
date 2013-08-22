@@ -29,6 +29,12 @@ typedef NS_ENUM(NSInteger, SMCachePolicy) {
     SMCachePolicyTryCacheElseNetwork
 };
 
+typedef NS_ENUM(NSInteger, SMSavePolicy) {
+    SMSavePolicyNetworkThenCache,
+    SMSavePolicyNetworkOnly,
+    SMSavePolicyCacheOnly
+};
+
 typedef NS_ENUM(NSInteger, SMMergeObjectKey) {
     SMClientObject = 0,
     SMServerObject = 1,
@@ -103,6 +109,13 @@ extern SMMergePolicy const SMMergePolicyServerModifiedWins;
  @since Available in iOS SDK 1.2.0 and later.
  */
 @property (nonatomic) SMCachePolicy cachePolicy;
+
+/**
+ The policy defining where to direct save requests.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+@property (nonatomic) SMSavePolicy savePolicy;
 
 /**
  The queue used to execute sync callbacks (success and failure).
