@@ -507,7 +507,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
     SMRequestOptions *options = [threadDictionary objectForKey:SMRequestSpecificOptions];
     if (!options) {
-        options = self.coreDataStore.globalRequestOptions;
+        // We should be able to use a copy of options
+        options = [self.coreDataStore.globalRequestOptions copy];
     }
     
     NSSaveChangesRequest *saveRequest = [[NSSaveChangesRequest alloc] initWithInsertedObjects:[context insertedObjects] updatedObjects:[context updatedObjects] deletedObjects:[context deletedObjects] lockedObjects:nil];
@@ -525,7 +526,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         policyToUse = SMSavePolicyCacheOnly;
     } else {
         if (policyToUse == SMSavePolicyNetworkOnly) {
-            // Modify options.cacheResults
+            [options setCacheResults:NO];
         }
     }
     
