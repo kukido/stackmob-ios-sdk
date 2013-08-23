@@ -515,20 +515,22 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
     NSSaveChangesRequest *saveRequest = [[NSSaveChangesRequest alloc] initWithInsertedObjects:[context insertedObjects] updatedObjects:[context updatedObjects] deletedObjects:[context deletedObjects] lockedObjects:nil];
     
-    BOOL networkAvailable;
-    if (SM_CACHE_ENABLED) {
-        networkAvailable = [self SM_checkNetworkAvailability];
-    } else {
-        networkAvailable = YES;
-    }
-    
     SMSavePolicy policyToUse = options.savePolicySet ? options.savePolicy : [self.coreDataStore savePolicy];
     
-    if (!networkAvailable) {
-        policyToUse = SMSavePolicyCacheOnly;
-    } else {
-        if (policyToUse == SMSavePolicyNetworkOnly) {
-            [options setCacheResults:NO];
+    if (policyToUse != SMSavePolicyCacheOnly) {
+        BOOL networkAvailable;
+        if (SM_CACHE_ENABLED) {
+            networkAvailable = [self SM_checkNetworkAvailability];
+        } else {
+            networkAvailable = YES;
+        }
+        
+        if (!networkAvailable) {
+            policyToUse = SMSavePolicyCacheOnly;
+        } else {
+            if (policyToUse == SMSavePolicyNetworkOnly) {
+                [options setCacheResults:NO];
+            }
         }
     }
     

@@ -21,7 +21,7 @@
 #import "SMTestProperties.h"
 
 SPEC_BEGIN(SMSavePolicySpec)
-/*
+
 describe(@"SMSavePolicy, default networkThenCache", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -752,7 +752,7 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         
     });
 });
-*/
+
 
 describe(@"Per Request Save Policy", ^{
     __block SMTestProperties *testProperties;
@@ -830,9 +830,9 @@ describe(@"Per Request Save Policy", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
     });
+    /*
     it(@"not setting policy works, async", ^{
         
-        dispatch_group_t group = dispatch_group_create();
         dispatch_queue_t queue = dispatch_queue_create("aQueue", NULL);
         
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
@@ -844,21 +844,19 @@ describe(@"Per Request Save Policy", ^{
             [todo assignObjectId];
         }
         
-        dispatch_group_enter(group);
-        
+        __block NSError *anError = [NSError errorWithDomain:@"error" code:400 userInfo:nil];
         [testProperties.moc saveWithSuccessCallbackQueue:queue failureCallbackQueue:queue onSuccess:^{
             NSLog(@"here");
-            dispatch_group_leave(group);
+            anError = nil;
         } onFailure:^(NSError *error) {
-            NSLog(@"here");
-            [error shouldBeNil];
-            dispatch_group_leave(group);
+            anError = error;
         }];
-                
-        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(2);
+        
+        [anError shouldBeNil];
+                        
     });
-    /*
     it(@"setting request policy works, async", ^{
         
         dispatch_group_t group = dispatch_group_create();
