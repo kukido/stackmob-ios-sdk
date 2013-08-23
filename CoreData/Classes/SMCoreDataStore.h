@@ -113,7 +113,7 @@ extern SMMergePolicy const SMMergePolicyServerModifiedWins;
 /**
  The policy defining where to direct save requests.
  
- @since Available in iOS SDK 2.1.0 and later.
+ @since Available in iOS SDK 2.2.0 and later.
  */
 @property (nonatomic) SMSavePolicy savePolicy;
 
