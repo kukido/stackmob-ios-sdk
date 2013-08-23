@@ -2516,14 +2516,14 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             // Populate cached object
             [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:values entity:entity];
             
-            NSError *saveError = nil;
-            BOOL saveSuccess = [self SM_saveCache:&saveError];
-            if (!saveSuccess) {
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Did Not Save Cache") }
-            }
-            [self SM_saveCacheMap];
-            
         }];
+        
+        NSError *saveError = nil;
+        BOOL saveSuccess = [self SM_saveCache:&saveError];
+        if (!saveSuccess) {
+            if (SM_CORE_DATA_DEBUG) { DLog(@"Did Not Save Cache") }
+        }
+        [self SM_saveCacheMap];
         
         
     }

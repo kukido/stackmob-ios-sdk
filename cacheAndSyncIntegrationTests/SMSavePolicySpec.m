@@ -22,6 +22,124 @@
 
 SPEC_BEGIN(SMSavePolicySpec)
 
+describe(@"Save policy works with syncing", ^{
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+    });
+    afterEach(^{
+        [testProperties.cds setSavePolicy:SMSavePolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:networkFetch returnManagedObjectIDs:NO error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        SM_CACHE_ENABLED = NO;
+    });
+    it(@"Can save locally a few times, sync, and all is well", ^{
+        
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
+        
+        [[[SMClient defaultClient] coreDataStore] setSavePolicy:SMSavePolicyCacheOnly];
+        [[[SMClient defaultClient] coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        
+        for (int i=0; i < 5; i++) {
+            NSManagedObject *newTodo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+            [newTodo assignObjectId];
+            [newTodo setValue:@"new todo" forKey:@"title"];
+        }
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        [error shouldBeNil];
+        
+        // Create 5 new objects
+        for (int i=0; i < 5; i++) {
+            NSManagedObject *newTodo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+            [newTodo assignObjectId];
+            [newTodo setValue:@"second new todo" forKey:@"title"];
+        }
+        
+        error = nil;
+        success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        [error shouldBeNil];
+        
+        // Updated 5 of the todos
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        [fetch setPredicate:[NSPredicate predicateWithFormat:@"title == 'new todo'"]];
+        
+        error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [obj setValue:@"updated todo" forKey:@"title"];
+        }];
+        
+        error = nil;
+        success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        [error shouldBeNil];
+        
+        [[[SMClient defaultClient] coreDataStore] setCachePolicy:SMCachePolicyTryNetworkOnly];
+        
+        // At this point there should be nothing on the server
+        error = nil;
+        NSFetchRequest *todoFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        NSUInteger count = [testProperties.moc countForFetchRequestAndWait:todoFetch error:&error];
+        
+        [error shouldBeNil];
+        [[theValue(count) should] equal:theValue(0)];
+        
+        // Now sync
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyServerModifiedWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            [[objects should] haveCountOf:10];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        
+        // Now there should be 10 objects on StackMob
+        // At this point there should be nothing on the server
+        error = nil;
+        NSFetchRequest *todoFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        NSUInteger count2 = [testProperties.moc countForFetchRequestAndWait:todoFetch2 error:&error];
+        
+        [error shouldBeNil];
+        [[theValue(count2) should] equal:theValue(10)];
+        
+    });
+    
+});
+
 describe(@"SMSavePolicy, default networkThenCache", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
