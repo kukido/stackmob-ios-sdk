@@ -508,8 +508,10 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     SMRequestOptions *options = [threadDictionary objectForKey:SMRequestSpecificOptions];
     if (!options) {
         // We should be able to use a copy of options
-        options = [self.coreDataStore.globalRequestOptions copy];
+        options = self.coreDataStore.globalRequestOptions;
     }
+    
+    BOOL previousStateOfCacheResults = options.cacheResults;
     
     NSSaveChangesRequest *saveRequest = [[NSSaveChangesRequest alloc] initWithInsertedObjects:[context insertedObjects] updatedObjects:[context updatedObjects] deletedObjects:[context deletedObjects] lockedObjects:nil];
     
@@ -552,7 +554,10 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         }
     }
     
+    [options setCacheResults:previousStateOfCacheResults];
+    
     return [NSArray array];
+    
 }
 
 - (BOOL)SM_handleInsertedObjects:(NSSet *)insertedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options savePolicy:(SMSavePolicy)savePolicy error:(NSError *__autoreleasing *)error

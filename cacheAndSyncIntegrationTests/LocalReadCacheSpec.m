@@ -81,6 +81,8 @@ describe(@"Cache Results option", ^{
         error = nil;
         NSArray *array = [testProperties.moc executeFetchRequestAndWait:request returnManagedObjectIDs:YES error:&error];
         
+        
+        
         [error shouldBeNil];
         [[array should] haveCountOf:10];
         
