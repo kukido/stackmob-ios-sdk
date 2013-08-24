@@ -1371,24 +1371,24 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     if (SM_CACHE_ENABLED) {
         id resultsToReturn = nil;
         NSError *tempError = nil;
-        SMCachePolicy policyToUse = options.cachePolicySet ? options.cachePolicy : [self.coreDataStore cachePolicy];
+        SMFetchPolicy policyToUse = options.fetchPolicySet ? options.fetchPolicy : [self.coreDataStore fetchPolicy];
         switch (policyToUse) {
-            case SMCachePolicyTryNetworkOnly:
+            case SMFetchPolicyNetworkOnly:
                 if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
                 resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
                 break;
-            case SMCachePolicyTryCacheOnly:
+            case SMFetchPolicyCacheOnly:
                 if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
                 resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
                 break;
-            case SMCachePolicyTryNetworkElseCache:
+            case SMFetchPolicyTryNetworkElseCache:
                 if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
                 resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:&tempError];
                 if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
                     resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
                 }
                 break;
-            case SMCachePolicyTryCacheElseNetwork:
+            case SMFetchPolicyTryCacheElseNetwork:
                 if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
                 resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
                 if (*error) {
@@ -1447,23 +1447,23 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     if (SM_CACHE_ENABLED) {
         NSArray *resultsToReturn = nil;
         NSError *tempError = nil;
-        switch ([self.coreDataStore cachePolicy]) {
-            case SMCachePolicyTryNetworkOnly:
+        switch ([self.coreDataStore fetchPolicy]) {
+            case SMFetchPolicyNetworkOnly:
                 if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
                 resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
                 break;
-            case SMCachePolicyTryCacheOnly:
+            case SMFetchPolicyCacheOnly:
                 if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
                 resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 break;
-            case SMCachePolicyTryNetworkElseCache:
+            case SMFetchPolicyTryNetworkElseCache:
                 if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
                 resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:&tempError];
                 if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
                     resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 }
                 break;
-            case SMCachePolicyTryCacheElseNetwork:
+            case SMFetchPolicyTryCacheElseNetwork:
                 if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
                 resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 if (error != NULL && *error) {

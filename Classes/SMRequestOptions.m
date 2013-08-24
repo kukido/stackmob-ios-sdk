@@ -18,7 +18,8 @@
 
 @interface SMRequestOptions ()
 
-@property (nonatomic, readwrite) BOOL cachePolicySet;
+@property (nonatomic, readwrite) BOOL cachePolicySet __attribute__((deprecated));
+@property (nonatomic, readwrite) BOOL fetchPolicySet;
 @property (nonatomic, readwrite) BOOL savePolicySet;
 
 @end
@@ -31,10 +32,12 @@
 @synthesize numberOfRetries = _SM_numberOfRetries;
 @synthesize retryBlock = _SM_retryBlock;
 @synthesize cachePolicy = _cachePolicy;
-@synthesize cacheResults = _cacheResults;
 @synthesize cachePolicySet = _cachePolicySet;
+@synthesize fetchPolicy = _fetchPolicy;
+@synthesize fetchPolicySet = _fetchPolicySet;
 @synthesize savePolicy = _savePolicy;
 @synthesize savePolicySet = _savePolicySet;
+@synthesize cacheResults = _cacheResults;
 
 
 + (SMRequestOptions *)options
@@ -45,8 +48,8 @@
     opts.tryRefreshToken = YES;
     opts.numberOfRetries = 3;
     opts.retryBlock = nil;
-    opts.cachePolicy = SMCachePolicyTryNetworkOnly;
-    opts.cachePolicySet = NO;
+    opts.fetchPolicy = SMFetchPolicyNetworkOnly;
+    opts.fetchPolicySet = NO;
     opts.cacheResults = YES;
     opts.savePolicy = SMSavePolicyNetworkThenCache;
     opts.savePolicySet = NO;
@@ -82,10 +85,32 @@
     return opt;
 }
 
+
 + (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy
 {
+    switch (cachePolicy) {
+        case 0:
+            return [self optionsWithFetchPolicy:SMFetchPolicyNetworkOnly];
+            break;
+        case 1:
+            return [self optionsWithFetchPolicy:SMFetchPolicyCacheOnly];
+            break;
+        case 2:
+            return [self optionsWithFetchPolicy:SMFetchPolicyTryNetworkElseCache];
+            break;
+        case 3:
+            return [self optionsWithFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
+            break;
+        default:
+            break;
+    }
+    
+}
+
++ (SMRequestOptions *)optionsWithFetchPolicy:(SMFetchPolicy)fetchPolicy
+{
     SMRequestOptions *opt = [SMRequestOptions options];
-    opt.cachePolicy = cachePolicy;
+    opt.fetchPolicy = fetchPolicy;
     return opt;
 }
 
@@ -105,10 +130,37 @@
 
 - (void)setCachePolicy:(SMCachePolicy)cachePolicy
 {
+    /*
     if (_cachePolicy != cachePolicy) {
         _cachePolicy = cachePolicy;
     }
     self.cachePolicySet = YES;
+     */
+    switch (cachePolicy) {
+        case 0:
+            [self setFetchPolicy:SMFetchPolicyNetworkOnly];
+            break;
+        case 1:
+            [self setFetchPolicy:SMFetchPolicyCacheOnly];
+            break;
+        case 2:
+            [self setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
+            break;
+        case 3:
+            [self setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
+            break;
+        default:
+            break;
+    }
+    
+}
+
+- (void)setFetchPolicy:(SMFetchPolicy)fetchPolicy
+{
+    if (_fetchPolicy != fetchPolicy) {
+        _fetchPolicy = fetchPolicy;
+    }
+    self.fetchPolicySet = YES;
 }
 
 - (void)setSavePolicy:(SMSavePolicy)savePolicy

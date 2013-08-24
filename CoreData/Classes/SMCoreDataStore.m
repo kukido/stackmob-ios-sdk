@@ -22,6 +22,7 @@
 #import "Common.h"
 
 static NSString *const SM_ManagedObjectContextKey = @"SM_ManagedObjectContextKey";
+NSString *const SMSetFetchPolicyNotification = @"SMSetFetchPolicyNotification";
 NSString *const SMSetCachePolicyNotification = @"SMSetCachePolicyNotification";
 NSString *const SMDirtyQueueNotification = @"SMDirtyQueueNotification";
 
@@ -74,6 +75,7 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
 
 - (NSManagedObjectContext *)SM_newPrivateQueueContextWithParent:(NSManagedObjectContext *)parent;
 - (void)SM_didReceiveSetCachePolicyNotification:(NSNotification *)notification;
+- (void)SM_didReceiveSetFetchPolicyNotification:(NSNotification *)notification;
 
 @end
 
@@ -88,6 +90,7 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
 @synthesize defaultSMMergePolicy = _defaultSMMergePolicy;
 @synthesize cachePurgeQueue = _cachePurgeQueue;
 @synthesize cachePolicy = _cachePolicy;
+@synthesize fetchPolicy = _fetchPolicy;
 @synthesize savePolicy = _savePolicy;
 @synthesize globalRequestOptions = _globalRequestOptions;
 @synthesize insertsSMMergePolicy = _insertsSMMergePolicy;
@@ -111,7 +114,8 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
         self.globalRequestOptions = [SMRequestOptions options];
         
         /// Set default cache and merge policies
-        [self setCachePolicy:SMCachePolicyTryNetworkOnly];
+        //[self setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [self setFetchPolicy:SMFetchPolicyNetworkOnly];
         [self setSavePolicy:SMSavePolicyNetworkThenCache];
         
         _defaultCoreDataMergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;
@@ -132,6 +136,7 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
         
         /// Add observer for set cache policy
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(SM_didReceiveSetCachePolicyNotification:) name:SMSetCachePolicyNotification object:self.session.networkMonitor];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(SM_didReceiveSetFetchPolicyNotification:) name:SMSetFetchPolicyNotification object:self.session.networkMonitor];
         
         // Add observer for dirty queue
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(SM_didReceiveDirtyQueueNotification:) name:SMDirtyQueueNotification object:nil];
@@ -293,8 +298,14 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
 
 - (void)SM_didReceiveSetCachePolicyNotification:(NSNotification *)notification
 {
-    SMCachePolicy newCachePolicy = [[[notification userInfo] objectForKey:@"NewCachePolicy"] intValue];
-    [self setCachePolicy:newCachePolicy];
+    SMFetchPolicy newFetchPolicy = [[[notification userInfo] objectForKey:@"NewCachePolicy"] intValue];
+    [self setFetchPolicy:newFetchPolicy];
+}
+
+- (void)SM_didReceiveSetFetchPolicyNotification:(NSNotification *)notification
+{
+    SMFetchPolicy newFetchPolicy = [[[notification userInfo] objectForKey:@"NewFetchPolicy"] intValue];
+    [self setFetchPolicy:newFetchPolicy];
 }
 
 - (void)SM_didReceiveDirtyQueueNotification:(NSNotification *)notification
@@ -308,6 +319,27 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
         self.currentDirtyQueue = [NSArray arrayWithArray:arrayOfDirtyObjects];
     }
 }
+
+- (void)setCachePolicy:(SMCachePolicy)cachePolicy
+{
+    switch (cachePolicy) {
+        case 0:
+            [self setFetchPolicy:SMFetchPolicyNetworkOnly];
+            break;
+        case 1:
+            [self setFetchPolicy:SMFetchPolicyCacheOnly];
+            break;
+        case 2:
+            [self setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
+            break;
+        case 3:
+            [self setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
+            break;
+        default:
+            break;
+    }
+}
+
 
 - (void)syncWithServer
 {

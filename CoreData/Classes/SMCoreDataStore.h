@@ -17,16 +17,24 @@
 #import "SMDataStore.h"
 #import "SMSyncedObject.h"
 
+extern NSString *const SMSetFetchPolicyNotification;
 extern NSString *const SMSetCachePolicyNotification;
 extern NSString *const SMDirtyQueueNotification;
 
 extern BOOL SM_CACHE_ENABLED;
 
-typedef NS_ENUM(NSInteger, SMCachePolicy) {
-    SMCachePolicyTryNetworkOnly,
-    SMCachePolicyTryCacheOnly,
-    SMCachePolicyTryNetworkElseCache,
-    SMCachePolicyTryCacheElseNetwork
+typedef NS_ENUM(NSInteger, SMCachePolicy ) {
+    SMCachePolicyTryNetworkOnly __attribute__((deprecated)),
+    SMCachePolicyTryCacheOnly __attribute__((deprecated)),
+    SMCachePolicyTryNetworkElseCache __attribute__((deprecated)),
+    SMCachePolicyTryCacheElseNetwork __attribute__((deprecated))
+};
+
+typedef NS_ENUM(NSInteger, SMFetchPolicy) {
+    SMFetchPolicyNetworkOnly,
+    SMFetchPolicyCacheOnly,
+    SMFetchPolicyTryNetworkElseCache,
+    SMFetchPolicyTryCacheElseNetwork
 };
 
 typedef NS_ENUM(NSInteger, SMSavePolicy) {
@@ -108,7 +116,14 @@ extern SMMergePolicy const SMMergePolicyServerModifiedWins;
  
  @since Available in iOS SDK 1.2.0 and later.
  */
-@property (nonatomic) SMCachePolicy cachePolicy;
+@property (nonatomic) SMCachePolicy cachePolicy __attribute__((deprecated));
+
+/**
+ The policy defining where to fetch requests.
+ 
+ @since Available in iOS SDK 2.2.0 and later.
+ */
+@property (nonatomic) SMFetchPolicy fetchPolicy;
 
 /**
  The policy defining where to direct save requests.

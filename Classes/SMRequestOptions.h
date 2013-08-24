@@ -82,7 +82,36 @@
  
  @since Available in iOS SDK 2.1.0 and later.
  */
-@property (nonatomic) SMCachePolicy cachePolicy;
+@property (nonatomic) SMCachePolicy cachePolicy __attribute__((deprecated));
+
+/**
+ Whether or not the cache policy property has been set.
+ 
+ Default is NO. Used internally.
+ 
+ @since Available in iOS SDK 2.1.0 and later.
+ */
+@property (nonatomic, readonly) BOOL cachePolicySet __attribute__((deprecated));
+
+/**
+ A fetch policy for the request these options are passed to.
+ 
+ Use to override the current default fetch policy exclusively for one request.
+ 
+ @note This option is only used for Core Data fetch requests.
+ 
+ @since Available in iOS SDK 2.2.0 and later.
+ */
+@property (nonatomic) SMFetchPolicy fetchPolicy;
+
+/**
+ Whether or not the fetch policy property has been set.
+ 
+ Default is NO. Used internally.
+ 
+ @since Available in iOS SDK 2.2.0 and later.
+ */
+@property (nonatomic, readonly) BOOL fetchPolicySet;
 
 /**
  A save policy for the request these options are passed to.
@@ -118,15 +147,6 @@
  @since Available in iOS SDK 2.1.0 and later.
  */
 @property (nonatomic) BOOL cacheResults;
-
-/**
- Whether or not the cache policy property has been set.
- 
- Default is NO. Used internally.
- 
- @since Available in iOS SDK 2.1.0 and later.
- */
-@property (nonatomic, readonly) BOOL cachePolicySet;
 
 ///-------------------------------
 /// @name Initialize
@@ -238,6 +258,23 @@
  @since Available in iOS SDK 2.1.0 and later.
  */
 + (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy;
+
+/**
+ Options that will define a fetch policy for the request it is passed to.
+ 
+ Use to override the current default fetch policy for a particular request.
+ 
+ Pass the options to one of the fetch methods in the `NSManagedObjectContext+Concurrency` category.
+ 
+ @note This option is only used for Core Data fetch requests.
+ 
+ @param fetchPolicy The fetch policy.
+ 
+ @return An `SMRequestOptions` object with a fetch policy set.
+ 
+ @since Available in iOS SDK 2.2.0 and later.
+ */
++ (SMRequestOptions *)optionsWithFetchPolicy:(SMFetchPolicy)fetchPolicy;
 
 /**
  Options that will define whether or not any fetched or saved objects should be cached.
