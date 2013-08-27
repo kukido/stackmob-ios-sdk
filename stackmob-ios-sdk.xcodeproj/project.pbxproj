@@ -200,6 +200,8 @@
 		DE288A4317CD4FDE00CFB8A3 /* peoplepermissions.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1BDE301682C105009282BA /* peoplepermissions.json */; };
 		DE288A4417CD4FE100CFB8A3 /* blogpostspermissions.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1BDE341682C111009282BA /* blogpostspermissions.json */; };
 		DE288A4517CD4FE500CFB8A3 /* placespermissions.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1BDE311682C106009282BA /* placespermissions.json */; };
+		DE288A4A17CD579F00CFB8A3 /* goatPic.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = DE05E13C15E2BE8A00224E4E /* goatPic.jpeg */; };
+		DE288A4B17CD57A000CFB8A3 /* goatPic.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = DE05E13C15E2BE8A00224E4E /* goatPic.jpeg */; };
 		DE2EA1A116CC7304001FA904 /* SMGeoPoint.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 1D83529416C5ACD000814C71 /* SMGeoPoint.h */; };
 		DE2EA1A216CC7304001FA904 /* SMLocationManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 1D8352A716C8512400814C71 /* SMLocationManager.h */; };
 		DE2EA1A316CC7304001FA904 /* Common.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEEDC32616C984B4008B1CC2 /* Common.h */; };
@@ -1400,6 +1402,7 @@
 				DE288A4317CD4FDE00CFB8A3 /* peoplepermissions.json in Resources */,
 				DE288A4417CD4FE100CFB8A3 /* blogpostspermissions.json in Resources */,
 				DE288A4517CD4FE500CFB8A3 /* placespermissions.json in Resources */,
+				DE288A4B17CD57A000CFB8A3 /* goatPic.jpeg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1414,6 +1417,7 @@
 				DE5B5CB317C6CFE20051905F /* blogpostspermissions.json in Resources */,
 				DE5B5CB417C6CFE70051905F /* placespermissions.json in Resources */,
 				DE5B5CB717C6D11F0051905F /* StackMobCredentials.plist in Resources */,
+				DE288A4A17CD579F00CFB8A3 /* goatPic.jpeg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
