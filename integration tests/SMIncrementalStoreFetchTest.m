@@ -610,7 +610,7 @@ describe(@"OR query from network should return same as cache", ^{
         testProperties = [[SMTestProperties alloc] init];
         [testProperties.client setUserSchema:@"User3"];
         //[[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
         
         user1 = [[User3 alloc] initWithEntity:[NSEntityDescription entityForName:@"User3" inManagedObjectContext:testProperties.moc] insertIntoManagedObjectContext:testProperties.moc];
         user1ID = [NSString stringWithFormat:@"matt%d", arc4random() / 10000];
@@ -639,7 +639,7 @@ describe(@"OR query from network should return same as cache", ^{
     });
     afterEach(^{
         //[[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         NSError *fetchError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&fetchError];
@@ -655,7 +655,7 @@ describe(@"OR query from network should return same as cache", ^{
         SM_CACHE_ENABLED = NO;
     });
     it(@"simple query", ^{
-        [testProperties.client.coreDataStore setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.client.coreDataStore setFetchPolicy:SMFetchPolicyNetworkOnly];
         // Should only call the network once
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
         
@@ -676,7 +676,7 @@ describe(@"OR query from network should return same as cache", ^{
             [[array should] contain:user2ID];
         }
         
-        [testProperties.client.coreDataStore setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.client.coreDataStore setFetchPolicy:SMFetchPolicyCacheOnly];
         // Second fetch from cache should yeild same results
         NSFetchRequest *secondFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         [secondFetch setPredicate:predicate];
@@ -704,7 +704,7 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
         [[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
     });
     
     afterEach(^{

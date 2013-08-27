@@ -184,7 +184,7 @@ describe(@"countForFetchRequest, cache", ^{
         
     });
     it(@"async works", ^{
-        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         __block dispatch_group_t group = dispatch_group_create();
         __block dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
@@ -201,7 +201,7 @@ describe(@"countForFetchRequest, cache", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     });
     it(@"async with predicates works", ^{
-        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         __block dispatch_group_t group = dispatch_group_create();
         __block dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
@@ -219,7 +219,7 @@ describe(@"countForFetchRequest, cache", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     });
     it(@"sync works", ^{
-        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -229,7 +229,7 @@ describe(@"countForFetchRequest, cache", ^{
         [error shouldBeNil];
     });
     it(@"sync with predicate works", ^{
-        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -240,7 +240,7 @@ describe(@"countForFetchRequest, cache", ^{
         [error shouldBeNil];
     });
     it(@"fetch request with maually set count result type works", ^{
-        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -251,7 +251,7 @@ describe(@"countForFetchRequest, cache", ^{
         [error shouldBeNil];
     });
     it(@"cacheElseNetwork, cache filled", ^{
-        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -318,7 +318,7 @@ describe(@"CacheElseNetwork count", ^{
         
     });
     it(@"cacheElseNetwork, cache not filled", ^{
-        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
