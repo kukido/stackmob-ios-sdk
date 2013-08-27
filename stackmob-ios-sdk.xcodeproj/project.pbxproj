@@ -195,6 +195,11 @@
 		DE288A3917CC27EA00CFB8A3 /* SMMergePolicyUpdatesSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A917C6B0CA004417A5 /* SMMergePolicyUpdatesSpec.m */; };
 		DE288A3A17CD4A9A00CFB8A3 /* Superpower.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0CC7AF15CB605900E491C4 /* Superpower.m */; };
 		DE288A3B17CD4A9E00CFB8A3 /* Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D8351CE16C08D6F00814C71 /* Random.m */; };
+		DE288A4117CD4FD700CFB8A3 /* person.json in Resources */ = {isa = PBXBuildFile; fileRef = DE0CC79F15CB5DED00E491C4 /* person.json */; };
+		DE288A4217CD4FDA00CFB8A3 /* personpermissions.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1BDE351682C111009282BA /* personpermissions.json */; };
+		DE288A4317CD4FDE00CFB8A3 /* peoplepermissions.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1BDE301682C105009282BA /* peoplepermissions.json */; };
+		DE288A4417CD4FE100CFB8A3 /* blogpostspermissions.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1BDE341682C111009282BA /* blogpostspermissions.json */; };
+		DE288A4517CD4FE500CFB8A3 /* placespermissions.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1BDE311682C106009282BA /* placespermissions.json */; };
 		DE2EA1A116CC7304001FA904 /* SMGeoPoint.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 1D83529416C5ACD000814C71 /* SMGeoPoint.h */; };
 		DE2EA1A216CC7304001FA904 /* SMLocationManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 1D8352A716C8512400814C71 /* SMLocationManager.h */; };
 		DE2EA1A316CC7304001FA904 /* Common.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEEDC32616C984B4008B1CC2 /* Common.h */; };
@@ -1390,6 +1395,11 @@
 			files = (
 				DE288A0117CC1A0C00CFB8A3 /* InfoPlist.strings in Resources */,
 				DE288A2117CC1C5000CFB8A3 /* StackMobCredentials.plist in Resources */,
+				DE288A4117CD4FD700CFB8A3 /* person.json in Resources */,
+				DE288A4217CD4FDA00CFB8A3 /* personpermissions.json in Resources */,
+				DE288A4317CD4FDE00CFB8A3 /* peoplepermissions.json in Resources */,
+				DE288A4417CD4FE100CFB8A3 /* blogpostspermissions.json in Resources */,
+				DE288A4517CD4FE500CFB8A3 /* placespermissions.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
