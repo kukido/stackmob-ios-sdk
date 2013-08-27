@@ -146,6 +146,17 @@ typedef enum {
  
  @since Available in iOS SDK 1.1.3 and later.
  */
-- (void)setNetworkStatusChangeBlockWithCachePolicyReturn:(SMCachePolicy (^)(SMNetworkStatus status))block;
+- (void)setNetworkStatusChangeBlockWithCachePolicyReturn:(SMCachePolicy (^)(SMNetworkStatus status))block __attribute__((deprecated));
+
+/**
+ Provide a block to execute whenever there is a change in network reachability.
+ 
+ The block must return an SMFetchPolicy.  This method is useful when you want to set the fetch policy based on the network status.
+ 
+ @param block The block to execute when the network status changes.
+ 
+ @since Available in iOS SDK 2.2.0 and later.
+ */
+- (void)setNetworkStatusChangeBlockWithFetchPolicyReturn:(SMFetchPolicy (^)(SMNetworkStatus status))block;
 
 @end

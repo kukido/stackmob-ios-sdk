@@ -577,7 +577,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             return [self SM_handleInsertedObjectsWhenOffline:insertedObjects inContext:context options:options error:error];
             break;
         default:
-            // TODO throw error
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to handle inserted objects but passed an invalid save policy."];
             break;
     }
 }
@@ -784,7 +784,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             return [self SM_handleUpdatedObjectsWhenOffline:updatedObjects inContext:context options:options error:error];
             break;
         default:
-            // TODO throw error
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to handle updated objects but passed an invalid save policy."];
             break;
     }
 }
@@ -954,7 +954,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             return [self SM_handleDeletedObjectsWhenOffline:deletedObjects inContext:context options:options error:error];
             break;
         default:
-            // TODO throw error
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to handle deleted objects but passed an invalid save policy."];
             break;
     }
 }
@@ -1371,25 +1371,25 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     if (SM_CACHE_ENABLED) {
         id resultsToReturn = nil;
         NSError *tempError = nil;
-        SMCachePolicy policyToUse = options.cachePolicySet ? options.cachePolicy : [self.coreDataStore cachePolicy];
+        SMFetchPolicy policyToUse = options.fetchPolicySet ? options.fetchPolicy : [self.coreDataStore fetchPolicy];
         switch (policyToUse) {
-            case SMCachePolicyTryNetworkOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
+            case SMFetchPolicyNetworkOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkOnly") }
                 resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
                 break;
-            case SMCachePolicyTryCacheOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
+            case SMFetchPolicyCacheOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheOnly") }
                 resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
                 break;
-            case SMCachePolicyTryNetworkElseCache:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
+            case SMFetchPolicyTryNetworkElseCache:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkElseCache") }
                 resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:&tempError];
                 if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
                     resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
                 }
                 break;
-            case SMCachePolicyTryCacheElseNetwork:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
+            case SMFetchPolicyTryCacheElseNetwork:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheElseNetwork") }
                 resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
                 if (*error) {
                     return nil;
@@ -1447,24 +1447,24 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     if (SM_CACHE_ENABLED) {
         NSArray *resultsToReturn = nil;
         NSError *tempError = nil;
-        switch ([self.coreDataStore cachePolicy]) {
-            case SMCachePolicyTryNetworkOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
+        switch ([self.coreDataStore fetchPolicy]) {
+            case SMFetchPolicyNetworkOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkOnly") }
                 resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
                 break;
-            case SMCachePolicyTryCacheOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
+            case SMFetchPolicyCacheOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheOnly") }
                 resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 break;
-            case SMCachePolicyTryNetworkElseCache:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
+            case SMFetchPolicyTryNetworkElseCache:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkElseCache") }
                 resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:&tempError];
                 if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
                     resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 }
                 break;
-            case SMCachePolicyTryCacheElseNetwork:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
+            case SMFetchPolicyTryCacheElseNetwork:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheElseNetwork") }
                 resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 if (error != NULL && *error) {
                     return nil;

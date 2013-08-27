@@ -32,7 +32,7 @@ describe(@"Basic insert when offline", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
     });
     afterEach(^{
         SM_CACHE_ENABLED = NO;
@@ -224,7 +224,7 @@ describe(@"moving object from insert to update to delete - check dirty queue", ^
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
     });
     afterEach(^{
         SM_CACHE_ENABLED = NO;

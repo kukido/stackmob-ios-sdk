@@ -24,12 +24,14 @@ NSString * SMCurrentNetworkStatusKey = @"SMCurrentNetworkStatusKey";
 
 typedef void (^SMNetworkStatusBlock)(SMNetworkStatus status);
 typedef SMCachePolicy (^SMCachePolicyReturnBlock)(SMNetworkStatus status);
+typedef SMFetchPolicy (^SMFetchPolicyReturnBlock)(SMNetworkStatus status);
 
 @interface SMNetworkReachability ()
 
 @property (nonatomic) int networkStatus;
 @property (readwrite, nonatomic, copy) SMNetworkStatusBlock localNetworkStatusBlock;
 @property (readwrite, nonatomic, copy) SMCachePolicyReturnBlock localNetworkStatusBlockWithReturn;
+@property (readwrite, nonatomic, copy) SMFetchPolicyReturnBlock localNetworkStatusBlockWithFetchReturn;
 
 - (void)addNetworkStatusDidChangeObserver;
 - (void)removeNetworkStatusDidChangeObserver;
@@ -79,6 +81,11 @@ typedef SMCachePolicy (^SMCachePolicyReturnBlock)(SMNetworkStatus status);
     self.localNetworkStatusBlockWithReturn = block;
 }
 
+- (void)setNetworkStatusChangeBlockWithFetchPolicyReturn:(SMFetchPolicy (^)(SMNetworkStatus))block
+{
+    self.localNetworkStatusBlockWithFetchReturn = block;
+}
+
 - (void)networkChangeNotificationFromAFNetworking:(NSNotification *)notification
 {
     int notificationNetworkStatus = [self translateAFNetworkingStatus:[[[notification userInfo] objectForKey:AFNetworkingReachabilityNotificationStatusItem] intValue]];
@@ -93,6 +100,10 @@ typedef SMCachePolicy (^SMCachePolicyReturnBlock)(SMNetworkStatus status);
         if (self.localNetworkStatusBlockWithReturn) {
             SMCachePolicy newCachePolicy = self.localNetworkStatusBlockWithReturn(self.networkStatus);
             [[NSNotificationCenter defaultCenter] postNotificationName:SMSetCachePolicyNotification object:self userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:newCachePolicy], @"NewCachePolicy", nil]];
+        }
+        if (self.localNetworkStatusBlockWithFetchReturn) {
+            SMFetchPolicy newFetchPolicy = self.localNetworkStatusBlockWithFetchReturn(self.networkStatus);
+            [[NSNotificationCenter defaultCenter] postNotificationName:SMSetFetchPolicyNotification object:self userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:newFetchPolicy], @"NewFetchPolicy", nil]];
         }
     }
     

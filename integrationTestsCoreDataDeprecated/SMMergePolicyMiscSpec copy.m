@@ -88,7 +88,7 @@ describe(@"many-to-many relationships being serialized correctly on sync", ^{
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
-        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *favRelation = [[[results objectAtIndex:0] valueForKey:@"favorites"] anyObject];
@@ -97,7 +97,7 @@ describe(@"many-to-many relationships being serialized correctly on sync", ^{
         
         NSFetchRequest *favFetch = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:favFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:favFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation = [[[results objectAtIndex:0] valueForKey:@"persons"] anyObject];
@@ -131,7 +131,7 @@ describe(@"many-to-many relationships being serialized correctly on sync", ^{
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *favRelation2 = [[[results objectAtIndex:0] valueForKey:@"favorites"] anyObject];
@@ -140,7 +140,7 @@ describe(@"many-to-many relationships being serialized correctly on sync", ^{
         
         NSFetchRequest *favFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:favFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:favFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation2 = [[[results objectAtIndex:0] valueForKey:@"persons"] anyObject];
@@ -242,7 +242,7 @@ describe(@"many-to-one relationships being serialized correctly on sync", ^{
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
-        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *interestRelation = [[[results objectAtIndex:0] valueForKey:@"interests"] anyObject];
@@ -251,7 +251,7 @@ describe(@"many-to-one relationships being serialized correctly on sync", ^{
         
         NSFetchRequest *interestFetch = [[NSFetchRequest alloc] initWithEntityName:@"Interest"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:interestFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:interestFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"person"];
@@ -285,7 +285,7 @@ describe(@"many-to-one relationships being serialized correctly on sync", ^{
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *interestRelation2 = [[[results objectAtIndex:0] valueForKey:@"interests"] anyObject];
@@ -294,7 +294,7 @@ describe(@"many-to-one relationships being serialized correctly on sync", ^{
         
         NSFetchRequest *interestFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Interest"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:interestFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:interestFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"person"];
@@ -395,7 +395,7 @@ describe(@"one-to-one relationships being serialized correctly on sync", ^{
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
-        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *superpowerRelation = [[results objectAtIndex:0] valueForKey:@"superpower"];
@@ -404,7 +404,7 @@ describe(@"one-to-one relationships being serialized correctly on sync", ^{
         
         NSFetchRequest *superpowerFetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"person"];
@@ -438,7 +438,7 @@ describe(@"one-to-one relationships being serialized correctly on sync", ^{
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *superpowerRelation2 = [[results objectAtIndex:0] valueForKey:@"superpower"];
@@ -447,7 +447,7 @@ describe(@"one-to-one relationships being serialized correctly on sync", ^{
         
         NSFetchRequest *superpowerFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"person"];
@@ -549,7 +549,7 @@ describe(@"With User Object: many-to-many relationships being serialized correct
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         error = nil;
-        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *favRelation = [[[results objectAtIndex:0] valueForKey:@"favorites"] anyObject];
@@ -558,7 +558,7 @@ describe(@"With User Object: many-to-many relationships being serialized correct
         
         NSFetchRequest *favFetch = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:favFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:favFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation = [[[results objectAtIndex:0] valueForKey:@"user3s"] anyObject];
@@ -592,7 +592,7 @@ describe(@"With User Object: many-to-many relationships being serialized correct
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *favRelation2 = [[[results objectAtIndex:0] valueForKey:@"favorites"] anyObject];
@@ -601,7 +601,7 @@ describe(@"With User Object: many-to-many relationships being serialized correct
         
         NSFetchRequest *favFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Favorite"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:favFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:favFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation2 = [[[results objectAtIndex:0] valueForKey:@"user3s"] anyObject];
@@ -704,7 +704,7 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         error = nil;
-        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *interestRelation = [[[results objectAtIndex:0] valueForKey:@"interests"] anyObject];
@@ -713,7 +713,7 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         
         NSFetchRequest *interestFetch = [[NSFetchRequest alloc] initWithEntityName:@"Interest"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:interestFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:interestFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"user3"];
@@ -747,7 +747,7 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *interestRelation2 = [[[results objectAtIndex:0] valueForKey:@"interests"] anyObject];
@@ -756,7 +756,7 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         
         NSFetchRequest *interestFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Interest"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:interestFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:interestFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"user3"];
@@ -858,7 +858,7 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         error = nil;
-        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *superpowerRelation = [[results objectAtIndex:0] valueForKey:@"superpower"];
@@ -867,7 +867,7 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         
         NSFetchRequest *superpowerFetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation = [[results objectAtIndex:0] valueForKey:@"user3"];
@@ -901,7 +901,7 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:personFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *superpowerRelation2 = [[results objectAtIndex:0] valueForKey:@"superpower"];
@@ -910,7 +910,7 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         
         NSFetchRequest *superpowerFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
         error = nil;
-        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly] error:&error];
+        results = [testProperties.moc executeFetchRequestAndWait:superpowerFetch2 returnManagedObjectIDs:NO options:[SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly] error:&error];
         
         [error shouldBeNil];
         NSManagedObject *personRelation2 = [[results objectAtIndex:0] valueForKey:@"user3"];
@@ -996,14 +996,14 @@ describe(@"Sync Errors, Inserting offline to a forbidden schema with POST perms"
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), newQueue, ^{
             
             // Check cache
-            [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+            [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
             NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
             saveError = nil;
             NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
             [[results should] haveCountOf:0];
             
             // Check server
-            [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+            [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
             NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
             saveError = nil;
             results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -1068,14 +1068,14 @@ describe(@"Sync Errors, Inserting offline to a forbidden schema with GET perms",
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), newQueue, ^{
             
             // Check cache
-            [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+            [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
             NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
             saveError = nil;
             NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
             [[results should] haveCountOf:0];
             
             // Check server
-            [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+            [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
             NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
             saveError = nil;
             results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -1134,7 +1134,7 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *todoFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:todoFetch error:&saveError];
@@ -1190,7 +1190,7 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -1215,7 +1215,7 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         offlineClientUpdateTitles = 0;
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -1260,7 +1260,7 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *todoFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:todoFetch error:&saveError];
@@ -1316,7 +1316,7 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -1341,7 +1341,7 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         offlineClientUpdateTitles = 0;
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -1387,7 +1387,7 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *todoFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:todoFetch error:&saveError];
@@ -1443,7 +1443,7 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -1468,7 +1468,7 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         offlineClientUpdateTitles = 0;
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -1561,7 +1561,7 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *todoFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:todoFetch error:&saveError];
@@ -1592,7 +1592,7 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -1617,7 +1617,7 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         offlineClientUpdateTitles = 0;
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -1690,7 +1690,7 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *todoFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:todoFetch error:&saveError];
@@ -1722,7 +1722,7 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -1747,7 +1747,7 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         offlineClientUpdateTitles = 0;
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -1818,7 +1818,7 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *todoFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:todoFetch error:&saveError];
@@ -1850,7 +1850,7 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -1875,7 +1875,7 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         offlineClientUpdateTitles = 0;
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -1971,14 +1971,14 @@ describe(@"Sync Errors, Updating offline to a forbidden schema with PUT perms", 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), newQueue, ^{
             
             // Check cache
-            [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+            [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
             NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Offlinepermsput"];
             saveError = nil;
             NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
             [[results should] haveCountOf:0];
             
             // Check server
-            [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+            [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
             NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Offlinepermsput"];
             saveError = nil;
             results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -1988,7 +1988,7 @@ describe(@"Sync Errors, Updating offline to a forbidden schema with PUT perms", 
             }
             
             // Check cache
-            [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+            [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
             NSFetchRequest *cacheFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Offlinepermsput"];
             saveError = nil;
             results = [testProperties.moc executeFetchRequestAndWait:cacheFetch2 error:&saveError];
@@ -2079,7 +2079,7 @@ describe(@"Sync Errors, Updating offline to a forbidden schema with GET perms", 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), newQueue, ^{
             
             // Check cache
-            [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+            [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
             NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Offlinepermsget"];
             saveError = nil;
             NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -2140,14 +2140,14 @@ describe(@"Sync Global request options with HTTPS", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
         [[results should] haveCountOf:1];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -2221,7 +2221,7 @@ describe(@"Syncing with user objects, Inserts", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -2231,7 +2231,7 @@ describe(@"Syncing with user objects, Inserts", ^{
         }
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -2301,7 +2301,7 @@ describe(@"Syncing with user objects, Updates", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -2311,7 +2311,7 @@ describe(@"Syncing with user objects, Updates", ^{
         }
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -2372,14 +2372,14 @@ describe(@"Syncing with user objects, Deletes", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
         [[results should] haveCountOf:0];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -2445,7 +2445,7 @@ describe(@"syncInProgress", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -2453,7 +2453,7 @@ describe(@"syncInProgress", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"offline insert"];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -2502,7 +2502,7 @@ describe(@"syncInProgress", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -2510,7 +2510,7 @@ describe(@"syncInProgress", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"offline insert"];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
