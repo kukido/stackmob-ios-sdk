@@ -15,6 +15,7 @@
  */
 
 #import "SMRequestOptions.h"
+#import "SMError.h"
 
 @interface SMRequestOptions ()
 
@@ -102,6 +103,7 @@
             return [self optionsWithFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
             break;
         default:
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to set an invalid cache policy."];
             break;
     }
     
@@ -149,6 +151,7 @@
             [self setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
             break;
         default:
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to set an invalid cache policy."];
             break;
     }
     

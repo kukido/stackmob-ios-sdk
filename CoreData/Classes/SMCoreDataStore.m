@@ -345,6 +345,7 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
             [self setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
             break;
         default:
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to set an invalid cache policy."];
             break;
     }
 }
