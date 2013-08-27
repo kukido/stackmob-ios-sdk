@@ -193,6 +193,8 @@
 		DE288A3717CC27DF00CFB8A3 /* SMMergePolicyDeletesSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A617C6B0CA004417A5 /* SMMergePolicyDeletesSpec.m */; };
 		DE288A3817CC27E500CFB8A3 /* SMMergePolicyMiscSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A817C6B0CA004417A5 /* SMMergePolicyMiscSpec.m */; };
 		DE288A3917CC27EA00CFB8A3 /* SMMergePolicyUpdatesSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A917C6B0CA004417A5 /* SMMergePolicyUpdatesSpec.m */; };
+		DE288A3A17CD4A9A00CFB8A3 /* Superpower.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0CC7AF15CB605900E491C4 /* Superpower.m */; };
+		DE288A3B17CD4A9E00CFB8A3 /* Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D8351CE16C08D6F00814C71 /* Random.m */; };
 		DE2EA1A116CC7304001FA904 /* SMGeoPoint.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 1D83529416C5ACD000814C71 /* SMGeoPoint.h */; };
 		DE2EA1A216CC7304001FA904 /* SMLocationManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 1D8352A716C8512400814C71 /* SMLocationManager.h */; };
 		DE2EA1A316CC7304001FA904 /* Common.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEEDC32616C984B4008B1CC2 /* Common.h */; };
@@ -1805,6 +1807,8 @@
 				DE288A3117CC1DD300CFB8A3 /* SMMergePolicyMiscSpec copy.m in Sources */,
 				DE288A3217CC1DD300CFB8A3 /* SMMergePolicyUpdatesSpec copy.m in Sources */,
 				DE288A3317CC1DD300CFB8A3 /* SMSavePolicySpec copy.m in Sources */,
+				DE288A3A17CD4A9A00CFB8A3 /* Superpower.m in Sources */,
+				DE288A3B17CD4A9E00CFB8A3 /* Random.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
