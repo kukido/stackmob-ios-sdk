@@ -83,7 +83,7 @@ describe(@"Insert 1 Offline, should send as an insert no merge, NO CONFLICT", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -91,7 +91,7 @@ describe(@"Insert 1 Offline, should send as an insert no merge, NO CONFLICT", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"offline insert"];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -180,7 +180,7 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -188,7 +188,7 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"offline client insert"];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -252,7 +252,7 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -260,7 +260,7 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"online server insert"];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -324,7 +324,7 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -332,7 +332,7 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"online server insert"];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -419,7 +419,7 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -427,7 +427,7 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"offline client insert"];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -491,7 +491,7 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -499,7 +499,7 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"offline client insert"];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];
@@ -563,7 +563,7 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&saveError];
@@ -571,7 +571,7 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"online server insert"];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         saveError = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&saveError];

@@ -130,12 +130,11 @@
 
 - (void)setCachePolicy:(SMCachePolicy)cachePolicy
 {
-    /*
     if (_cachePolicy != cachePolicy) {
         _cachePolicy = cachePolicy;
     }
     self.cachePolicySet = YES;
-     */
+    
     switch (cachePolicy) {
         case 0:
             [self setFetchPolicy:SMFetchPolicyNetworkOnly];

@@ -961,7 +961,7 @@ describe(@"Writing Default Values Offline, Strings", ^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"todoId == '1234'"]];
         error = nil;
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results should] haveCountOf:1];
         
@@ -990,7 +990,7 @@ describe(@"Writing Default Values Offline, Strings", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&error];
@@ -998,7 +998,7 @@ describe(@"Writing Default Values Offline, Strings", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"What!"];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&error];
@@ -1049,7 +1049,7 @@ describe(@"Writing Default Values Offline, Integer", ^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"person_id == '1234'"]];
         error = nil;
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results should] haveCountOf:1];
         
@@ -1078,7 +1078,7 @@ describe(@"Writing Default Values Offline, Integer", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&error];
@@ -1086,7 +1086,7 @@ describe(@"Writing Default Values Offline, Integer", ^{
         [[[[results objectAtIndex:0] valueForKey:@"armor_class"] should] equal:theValue(1)];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&error];
@@ -1136,7 +1136,7 @@ describe(@"Writing Default Values Offline with Update, Integer", ^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"person_id == '1234'"]];
         error = nil;
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results should] haveCountOf:1];
         
@@ -1157,7 +1157,7 @@ describe(@"Writing Default Values Offline with Update, Integer", ^{
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [fetch2 setPredicate:[NSPredicate predicateWithFormat:@"person_id == '1234'"]];
         error = nil;
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSArray *results2 = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results2 should] haveCountOf:1];
         
@@ -1189,7 +1189,7 @@ describe(@"Writing Default Values Offline with Update, Integer", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&error];
@@ -1197,7 +1197,7 @@ describe(@"Writing Default Values Offline with Update, Integer", ^{
         [[[[results objectAtIndex:0] valueForKey:@"armor_class"] should] equal:theValue(13)];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&error];
@@ -1248,7 +1248,7 @@ describe(@"Writing Default Values Offline, Boolean", ^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"randomId == '1234'"]];
         error = nil;
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results should] haveCountOf:1];
         
@@ -1277,7 +1277,7 @@ describe(@"Writing Default Values Offline, Boolean", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&error];
@@ -1285,7 +1285,7 @@ describe(@"Writing Default Values Offline, Boolean", ^{
         [[[[results objectAtIndex:0] valueForKey:@"done"] should] equal:theValue(NO)];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&error];
@@ -1335,7 +1335,7 @@ describe(@"Writing Default Values Offline with Udpate, Boolean", ^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"randomId == '1234'"]];
         error = nil;
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results should] haveCountOf:1];
         
@@ -1357,7 +1357,7 @@ describe(@"Writing Default Values Offline with Udpate, Boolean", ^{
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         [fetch2 setPredicate:[NSPredicate predicateWithFormat:@"randomId == '1234'"]];
         error = nil;
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSArray *results2 = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results2 should] haveCountOf:1];
         
@@ -1388,7 +1388,7 @@ describe(@"Writing Default Values Offline with Udpate, Boolean", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&error];
@@ -1396,7 +1396,7 @@ describe(@"Writing Default Values Offline with Udpate, Boolean", ^{
         [[[[results objectAtIndex:0] valueForKey:@"done"] should] equal:theValue(YES)];
         
         // Check server
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&error];

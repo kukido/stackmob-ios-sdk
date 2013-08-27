@@ -298,6 +298,11 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
 
 - (void)SM_didReceiveSetCachePolicyNotification:(NSNotification *)notification
 {
+    SMCachePolicy newCachePolicy = [[[notification userInfo] objectForKey:@"NewCachePolicy"] intValue];
+    if (_cachePolicy != newCachePolicy) {
+        _cachePolicy = newCachePolicy;
+    }
+    
     SMFetchPolicy newFetchPolicy = [[[notification userInfo] objectForKey:@"NewCachePolicy"] intValue];
     [self setFetchPolicy:newFetchPolicy];
 }
@@ -322,6 +327,10 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
 
 - (void)setCachePolicy:(SMCachePolicy)cachePolicy
 {
+    if (_cachePolicy != cachePolicy) {
+        _cachePolicy = cachePolicy;
+    }
+    
     switch (cachePolicy) {
         case 0:
             [self setFetchPolicy:SMFetchPolicyNetworkOnly];

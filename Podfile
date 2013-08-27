@@ -19,3 +19,7 @@ end
 target 'cacheAndSyncIntegrationTests', :exclusive => true do
     pod 'Kiwi', '1.1.1'
 end
+
+target 'integrationTestsCoreDataDeprecated', :exclusive => true do
+    pod 'Kiwi', '1.1.1'
+end
