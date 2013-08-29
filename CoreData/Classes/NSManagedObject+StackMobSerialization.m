@@ -181,7 +181,9 @@
                         }
                         
                         NSString *primaryRelationshipKey = [[cacheMapEntry allKeys] objectAtIndex:indexOfObject];
-                        [relatedObjectDictionaries addObject:primaryRelationshipKey];
+                        if (primaryRelationshipKey) {
+                            [relatedObjectDictionaries addObject:primaryRelationshipKey];
+                        }
                     } else {
                         [relatedObjectDictionaries addObject:childObjectID];
                     }
