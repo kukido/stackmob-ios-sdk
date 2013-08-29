@@ -27,6 +27,74 @@
 
 SPEC_BEGIN(NSManagedObject_StackMobSerializationSpec)
 
+/*
+describe(@"SMDictionarySerialiazation with cachemap entries", ^{
+    
+    "relationship_team" =     {
+        
+        "relationship_league" =         {
+            "app_creation_date" = 1376511925959;
+            fouls = 6;
+            "full_timeouts" = 1;
+            "game_length" = 480;
+            "is_archived" = 0;
+            "is_quarters" = 0;
+            "league_id" = "5FA82460-0E2B-4671-889A-F3E3ADA72BEA";
+            "maximum_games_allowed" = 100;
+            "maximum_teams_allowed" = 25;
+            name = matt6league;
+            "relationship_games" =             (
+            );
+            "relationship_owner" =             {
+                "age_string" = "High School";
+                city = Sf;
+                email = "matt@stackmob.com";
+                "first_name" = Matt6;
+                "has_logged_in" = 0;
+                "hm_credit_money" = 20;
+                "is_active" = 0;
+                "last_name" = Matt6;
+                "maximum_amount_of_leagues" = 1;
+                "relationship_leagues" =                 (
+                                                          1
+                                                          );
+                "sign_up_date" = 1376511899881;
+                username = matt6;
+            };
+            "relationship_teams" =             (
+                                                1
+                                                );
+            "team_deletions_remaining" = 3;
+            "thirty_second_timeouts" = 32;
+        };
+        "relationship_players" =         (
+                                          5,
+                                          3,
+                                          4,
+                                          1,
+                                          2
+                                          );
+        "relationship_season_lineups" =         (
+        );
+        "relationship_team_stats" =         (
+        );
+        "roster_adjustments_remaining" = 25;
+        season = 1376512020636;
+        "season_total_loss_margin" = 0;
+        "season_total_victory_margin" = 0;
+        "team_city" = Sf;
+        "team_color" = "0.203922 0.596078 0.858824 1";
+        "team_id" = "B140C32B-E7C4-417C-B562-F7FC93194151";
+        "team_name" = matt61;
+        wins = 0;
+    };
+
+    
+    NSDictionary *preDict = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:1], "first_name", [NSNumber numberWithBool:YES], "is_active", [NSNull null], "notes", @"6CED52DE-7D90-4942-8AE4-8076EEBDB61C", "player_id", @"PG", @"position", [NSArray array], @"relationship_linups", [NSArray array], @"relationship_player_stats", [NSDictionary dictionaryWithObjectsAndKeys:@"Matt6", @"head_coach", nil], @"relationship_teams", nil];
+    
+});
+     */
+
 describe(@"NSManagedObject_StackMobSerialization", ^{
     describe(@"-assignObjectId", ^{
         context(@"given an object with an id field matching its entity name", ^{
@@ -262,7 +330,7 @@ describe(@"NSManagedObject_StackMobSerialization", ^{
             describe(@"properties", ^{
                 __block NSDictionary *dictionary = nil;
                 beforeEach(^{
-                    dictionary = [[iMadeYouACookie SMDictionarySerialization:NO sendLocalTimestamps:NO] objectForKey:@"SerializedDict"];
+                    dictionary = [[iMadeYouACookie SMDictionarySerialization:NO sendLocalTimestamps:NO cacheMap:nil] objectForKey:@"SerializedDict"];
                 });
                 /*
                 it(@"includes nil properties", ^{
@@ -279,7 +347,7 @@ describe(@"NSManagedObject_StackMobSerialization", ^{
             describe(@"relationships", ^{
                 __block NSDictionary *dictionary = nil;
                 beforeEach(^{
-                    dictionary = [[iMadeYouACookie SMDictionarySerialization:NO sendLocalTimestamps:NO] objectForKey:@"SerializedDict"];
+                    dictionary = [[iMadeYouACookie SMDictionarySerialization:NO sendLocalTimestamps:NO cacheMap:nil] objectForKey:@"SerializedDict"];
                 });
                 /*
                 it(@"includes nil relationships", ^{
@@ -289,7 +357,7 @@ describe(@"NSManagedObject_StackMobSerialization", ^{
                 describe(@"circular relationships", ^{
                     it(@"survives circular references", ^{
                         [[[[[[hooman valueForKey:@"lolcats"] anyObject] valueForKey:@"photo"] valueForKey:@"photographer"] should] equal:hooman];
-                        [[hooman SMDictionarySerialization:NO sendLocalTimestamps:NO] shouldNotBeNil];
+                        [[hooman SMDictionarySerialization:NO sendLocalTimestamps:NO cacheMap:nil] shouldNotBeNil];
                     });
                 });
             });
@@ -408,7 +476,7 @@ describe(@"sendLocalTimestamps", ^{
         [todo setValue:[NSDate date] forKey:@"createddate"];
         [todo setValue:[NSDate date] forKey:@"lastmoddate"];
         
-        NSDictionary *serializedDict = [todo SMDictionarySerialization:YES sendLocalTimestamps:NO];
+        NSDictionary *serializedDict = [todo SMDictionarySerialization:YES sendLocalTimestamps:NO cacheMap:nil];
         [[theValue([[[serializedDict objectForKey:@"SerializedDict"] allKeys] indexOfObject:@"createddate"]) should] equal:theValue(NSNotFound)];
         [[theValue([[[serializedDict objectForKey:@"SerializedDict"] allKeys] indexOfObject:@"lastmoddate"]) should] equal:theValue(NSNotFound)];
     });
@@ -419,7 +487,7 @@ describe(@"sendLocalTimestamps", ^{
         [todo setValue:[NSDate date] forKey:@"createddate"];
         [todo setValue:[NSDate date] forKey:@"lastmoddate"];
         
-        NSDictionary *serializedDict = [todo SMDictionarySerialization:YES sendLocalTimestamps:YES];
+        NSDictionary *serializedDict = [todo SMDictionarySerialization:YES sendLocalTimestamps:YES cacheMap:nil];
         [[theValue([[[serializedDict objectForKey:@"SerializedDict"] allKeys] indexOfObject:@"createddate"]) shouldNot] equal:theValue(NSNotFound)];
         [[theValue([[[serializedDict objectForKey:@"SerializedDict"] allKeys] indexOfObject:@"lastmoddate"]) shouldNot] equal:theValue(NSNotFound)];
     });
@@ -431,7 +499,7 @@ describe(@"sendLocalTimestamps", ^{
         [todo setValue:[NSDate date] forKey:@"createddate"];
         [todo setValue:[NSDate date] forKey:@"lastmoddate"];
         
-        NSDictionary *serializedDict = [todo SMDictionarySerialization:NO sendLocalTimestamps:NO];
+        NSDictionary *serializedDict = [todo SMDictionarySerialization:NO sendLocalTimestamps:NO cacheMap:nil];
         [[theValue([[[serializedDict objectForKey:@"SerializedDict"] allKeys] indexOfObject:@"createddate"]) shouldNot] equal:theValue(NSNotFound)];
         [[theValue([[[serializedDict objectForKey:@"SerializedDict"] allKeys] indexOfObject:@"lastmoddate"]) shouldNot] equal:theValue(NSNotFound)];
     });
@@ -442,7 +510,7 @@ describe(@"sendLocalTimestamps", ^{
         [todo setValue:[NSDate date] forKey:@"createddate"];
         [todo setValue:[NSDate date] forKey:@"lastmoddate"];
         
-        NSDictionary *serializedDict = [todo SMDictionarySerialization:NO sendLocalTimestamps:YES];
+        NSDictionary *serializedDict = [todo SMDictionarySerialization:NO sendLocalTimestamps:YES cacheMap:nil];
         [[theValue([[[serializedDict objectForKey:@"SerializedDict"] allKeys] indexOfObject:@"createddate"]) shouldNot] equal:theValue(NSNotFound)];
         [[theValue([[[serializedDict objectForKey:@"SerializedDict"] allKeys] indexOfObject:@"lastmoddate"]) shouldNot] equal:theValue(NSNotFound)];
     });

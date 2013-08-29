@@ -510,51 +510,78 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
     SMRequestOptions *options = [threadDictionary objectForKey:SMRequestSpecificOptions];
     if (!options) {
+        // We should be able to use a copy of options
         options = self.coreDataStore.globalRequestOptions;
     }
     
+    BOOL previousStateOfCacheResults = options.cacheResults;
+    
     NSSaveChangesRequest *saveRequest = [[NSSaveChangesRequest alloc] initWithInsertedObjects:[context insertedObjects] updatedObjects:[context updatedObjects] deletedObjects:[context deletedObjects] lockedObjects:nil];
     
-    BOOL networkAvailable;
-    if (SM_CACHE_ENABLED) {
-        networkAvailable = [self SM_checkNetworkAvailability];
-    } else {
-        networkAvailable = YES;
+    SMSavePolicy policyToUse = options.savePolicySet ? options.savePolicy : [self.coreDataStore savePolicy];
+    
+    if (policyToUse != SMSavePolicyCacheOnly) {
+        BOOL networkAvailable;
+        if (SM_CACHE_ENABLED) {
+            networkAvailable = [self SM_checkNetworkAvailability];
+        } else {
+            networkAvailable = YES;
+        }
+        
+        if (!networkAvailable) {
+            policyToUse = SMSavePolicyCacheOnly;
+        } else {
+            if (policyToUse == SMSavePolicyNetworkOnly) {
+                [options setCacheResults:NO];
+            }
+        }
     }
     
     NSSet *insertedObjects = [saveRequest insertedObjects];
     if ([insertedObjects count] > 0) {
-        BOOL insertSuccess = [self SM_handleInsertedObjects:insertedObjects inContext:context options:options error:error networkAvailable:networkAvailable];
+        BOOL insertSuccess = [self SM_handleInsertedObjects:insertedObjects inContext:context options:options savePolicy:policyToUse error:error];
         if (!insertSuccess) {
             return nil;
         }
     }
     NSSet *updatedObjects = [saveRequest updatedObjects];
     if ([updatedObjects count] > 0) {
-        BOOL updateSuccess = [self SM_handleUpdatedObjects:updatedObjects inContext:context options:options error:error networkAvailable:networkAvailable];
+        BOOL updateSuccess = [self SM_handleUpdatedObjects:updatedObjects inContext:context options:options savePolicy:policyToUse error:error];
         if (!updateSuccess) {
             return nil;
         }
     }
     NSSet *deletedObjects = [saveRequest deletedObjects];
     if ([deletedObjects count] > 0) {
-        BOOL deleteSuccess = [self SM_handleDeletedObjects:deletedObjects inContext:context options:options error:error networkAvailable:networkAvailable];
+        BOOL deleteSuccess = [self SM_handleDeletedObjects:deletedObjects inContext:context options:options savePolicy:policyToUse error:error];
         if (!deleteSuccess) {
             return nil;
         }
     }
     
+    [options setCacheResults:previousStateOfCacheResults];
+    
     return [NSArray array];
+    
 }
 
-- (BOOL)SM_handleInsertedObjects:(NSSet *)insertedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error networkAvailable:(BOOL)networkAvailable
+- (BOOL)SM_handleInsertedObjects:(NSSet *)insertedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options savePolicy:(SMSavePolicy)savePolicy error:(NSError *__autoreleasing *)error
 {
     if (SM_CORE_DATA_DEBUG) { DLog() }
     
-    if (networkAvailable) {
-        return [self SM_handleInsertedObjectsWhenOnline:insertedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
-    } else {
-        return [self SM_handleInsertedObjectsWhenOffline:insertedObjects inContext:context options:options error:error];
+    switch (savePolicy) {
+        case SMSavePolicyNetworkThenCache:
+            return [self SM_handleInsertedObjectsWhenOnline:insertedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyNetworkOnly:
+            return [self SM_handleInsertedObjectsWhenOnline:insertedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyCacheOnly:
+            return [self SM_handleInsertedObjectsWhenOffline:insertedObjects inContext:context options:options error:error];
+            break;
+        default:
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to handle inserted objects but passed an invalid save policy."];
+            break;
     }
 }
 
@@ -580,8 +607,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     [insertedObjects enumerateObjectsUsingBlock:^(id managedObject, BOOL *stop) {
         
         // Create operation for inserted object
+        NSDictionary *serializedObjDict = [managedObject SMDictionarySerialization:serializeFullObjects sendLocalTimestamps:self.coreDataStore.sendLocalTimestamps cacheMap:[self.cacheMappingTable copy]];
         
-        NSDictionary *serializedObjDict = [managedObject SMDictionarySerialization:serializeFullObjects sendLocalTimestamps:self.coreDataStore.sendLocalTimestamps];
         NSString *schemaName = [managedObject SMSchema];
         __block NSString *insertedObjectID = [managedObject SMObjectId];
         
@@ -745,13 +772,23 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     return returnDictionary;
 }
 
-- (BOOL)SM_handleUpdatedObjects:(NSSet *)updatedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error networkAvailable:(BOOL)networkAvailable
+- (BOOL)SM_handleUpdatedObjects:(NSSet *)updatedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options savePolicy:(SMSavePolicy)savePolicy error:(NSError *__autoreleasing *)error
 {
     if (SM_CORE_DATA_DEBUG) { DLog() }
-    if (networkAvailable) {
-        return [self SM_handleUpdatedObjectsWhenOnline:updatedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
-    } else {
-        return [self SM_handleUpdatedObjectsWhenOffline:updatedObjects inContext:context options:options error:error];
+    
+    switch (savePolicy) {
+        case SMSavePolicyNetworkThenCache:
+            return [self SM_handleUpdatedObjectsWhenOnline:updatedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyNetworkOnly:
+            return [self SM_handleUpdatedObjectsWhenOnline:updatedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyCacheOnly:
+            return [self SM_handleUpdatedObjectsWhenOffline:updatedObjects inContext:context options:options error:error];
+            break;
+        default:
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to handle updated objects but passed an invalid save policy."];
+            break;
     }
 }
 
@@ -776,7 +813,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         
         // Create operation for updated object
         
-        NSDictionary *serializedObjDict = [managedObject SMDictionarySerialization:serializeFullObjects sendLocalTimestamps:self.coreDataStore.sendLocalTimestamps];
+        NSDictionary *serializedObjDict = [managedObject SMDictionarySerialization:serializeFullObjects sendLocalTimestamps:self.coreDataStore.sendLocalTimestamps cacheMap:[self.cacheMappingTable copy]];
+        
         NSString *schemaName = [managedObject SMSchema];
         __block NSString *updatedObjectID = [managedObject SMObjectId];
         
@@ -904,13 +942,23 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
 }
 
-- (BOOL)SM_handleDeletedObjects:(NSSet *)deletedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error networkAvailable:(BOOL)networkAvailable
+- (BOOL)SM_handleDeletedObjects:(NSSet *)deletedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options savePolicy:(SMSavePolicy)savePolicy error:(NSError *__autoreleasing *)error
 {
     if (SM_CORE_DATA_DEBUG) { DLog() }
-    if (networkAvailable) {
-        return [self SM_handleDeletedObjectsWhenOnline:deletedObjects inContext:context options:options error:error];
-    } else {
-        return [self SM_handleDeletedObjectsWhenOffline:deletedObjects inContext:context options:options error:error];
+    
+    switch (savePolicy) {
+        case SMSavePolicyNetworkThenCache:
+            return [self SM_handleDeletedObjectsWhenOnline:deletedObjects inContext:context options:options error:error];
+            break;
+        case SMSavePolicyNetworkOnly:
+            return [self SM_handleDeletedObjectsWhenOnline:deletedObjects inContext:context options:options error:error];
+            break;
+        case SMSavePolicyCacheOnly:
+            return [self SM_handleDeletedObjectsWhenOffline:deletedObjects inContext:context options:options error:error];
+            break;
+        default:
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to handle deleted objects but passed an invalid save policy."];
+            break;
     }
 }
 
@@ -1326,25 +1374,25 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     if (SM_CACHE_ENABLED) {
         id resultsToReturn = nil;
         NSError *tempError = nil;
-        SMCachePolicy policyToUse = options.cachePolicySet ? options.cachePolicy : [self.coreDataStore cachePolicy];
+        SMFetchPolicy policyToUse = options.fetchPolicySet ? options.fetchPolicy : [self.coreDataStore fetchPolicy];
         switch (policyToUse) {
-            case SMCachePolicyTryNetworkOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
+            case SMFetchPolicyNetworkOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkOnly") }
                 resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
                 break;
-            case SMCachePolicyTryCacheOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
+            case SMFetchPolicyCacheOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheOnly") }
                 resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
                 break;
-            case SMCachePolicyTryNetworkElseCache:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
+            case SMFetchPolicyTryNetworkElseCache:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkElseCache") }
                 resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:&tempError];
                 if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
                     resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
                 }
                 break;
-            case SMCachePolicyTryCacheElseNetwork:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
+            case SMFetchPolicyTryCacheElseNetwork:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheElseNetwork") }
                 resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
                 if (*error) {
                     return nil;
@@ -1402,24 +1450,24 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     if (SM_CACHE_ENABLED) {
         NSArray *resultsToReturn = nil;
         NSError *tempError = nil;
-        switch ([self.coreDataStore cachePolicy]) {
-            case SMCachePolicyTryNetworkOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
+        switch ([self.coreDataStore fetchPolicy]) {
+            case SMFetchPolicyNetworkOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkOnly") }
                 resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
                 break;
-            case SMCachePolicyTryCacheOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
+            case SMFetchPolicyCacheOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheOnly") }
                 resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 break;
-            case SMCachePolicyTryNetworkElseCache:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
+            case SMFetchPolicyTryNetworkElseCache:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkElseCache") }
                 resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:&tempError];
                 if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
                     resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 }
                 break;
-            case SMCachePolicyTryCacheElseNetwork:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
+            case SMFetchPolicyTryCacheElseNetwork:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheElseNetwork") }
                 resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 if (error != NULL && *error) {
                     return nil;
@@ -1554,10 +1602,13 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             [results addObject:sm_managedObject];
         }
         
-        NSError *cacheSaveError = nil;
-        [self SM_saveCache:&cacheSaveError];
-        if (cacheSaveError) {
-            if (SM_CORE_DATA_DEBUG) { DLog(@"Cache save unsuccessful, %@", cacheSaveError) }
+        if ([self.localManagedObjectContext hasChanges]) {
+            NSError *cacheSaveError = nil;
+            [self SM_saveCache:&cacheSaveError];
+            if (cacheSaveError) {
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Cache save unsuccessful, %@", cacheSaveError) }
+            }
+            [self SM_saveCacheMap];
         }
         
         return results;
@@ -2467,12 +2518,33 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             
             // Get cached managed object or create if needed
             // If we are offline, do not assign server base date
-            NSManagedObject *cacheManagedObject = offline ? [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES]] : [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES serverLastModDate:[values objectForKey:SMLastModDateKey]]];
+            NSManagedObject *cacheManagedObject = nil;
+            
+            if (offline) {
+                cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES]];
+            } else {
+                if ([[values objectForKey:SMLastModDateKey] isKindOfClass:[NSDate class]]) {
+                    cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES serverLastModDate:[values objectForKey:SMLastModDateKey]]];
+                } else {
+                    long double convertedValue = [[values objectForKey:SMLastModDateKey] doubleValue] / 1000.0000;
+                    NSDate *serverLastModDate = [NSDate dateWithTimeIntervalSince1970:convertedValue];
+                    cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:objectID entityName:[entity name] createIfNeeded:YES serverLastModDate:serverLastModDate]];
+                }
+            }
             
             // Populate cached object
             [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:values entity:entity saveCache:YES];
             
         }];
+        
+        NSError *saveError = nil;
+        BOOL saveSuccess = [self SM_saveCache:&saveError];
+        if (!saveSuccess) {
+            if (SM_CORE_DATA_DEBUG) { DLog(@"Did Not Save Cache") }
+        }
+        [self SM_saveCacheMap];
+        
+        
     }
 }
 
@@ -2489,7 +2561,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
     if (cacheResult) {
         [self SM_serializeAndCacheObjectWithID:objectID values:objectFromServer entity:entity context:context];
-        [self SM_saveCache:NULL];
+        //[self SM_saveCache:NULL];
     }
     
     serializedObjectDictionary = [self SM_responseSerializationForDictionary:objectFromServer schemaEntityDescription:entity managedObjectContext:context includeRelationships:includeRelationships];
@@ -2649,8 +2721,14 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 
                 // Cache object
                 [self SM_serializeAndCacheObjectWithID:relatedObjectPrimaryKey values:expandedObject entity:[relationship destinationEntity] context:context];
-
-                NSManagedObject *newlyCachedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:relatedObjectPrimaryKey entityName:[[relationship destinationEntity] name] createIfNeeded:YES serverLastModDate:[expandedObject objectForKey:SMLastModDateKey]]];
+                
+                NSDate *serverLastModDate = nil;
+                if ([expandedObject objectForKey:SMLastModDateKey]) {
+                    long double convertedValue = [[expandedObject objectForKey:SMLastModDateKey] doubleValue] / 1000.0000;
+                    serverLastModDate = [NSDate dateWithTimeIntervalSince1970:convertedValue];
+                }
+                
+                NSManagedObject *newlyCachedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:relatedObjectPrimaryKey entityName:[[relationship destinationEntity] name] createIfNeeded:YES serverLastModDate:serverLastModDate]];
                 
                 if ([relationship isOrdered]) {
                     [(NSMutableOrderedSet *)newRelationshipContents addObject:newlyCachedObject];
@@ -2659,13 +2737,19 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 }
             }];
             
-            [self SM_saveCache:error];
+            if ([self.localManagedObjectContext hasChanges]) {
+                [self SM_saveCache:error];
+                [self SM_saveCacheMap];
+            }
             
             return arrayToReturn;
             
         } else {
             // Save empty array
-            [self SM_saveCache:error];
+            if ([self.localManagedObjectContext hasChanges]) {
+                [self SM_saveCache:error];
+                [self SM_saveCacheMap];
+            }
             return [NSArray array];
         }
     } else {
@@ -2696,12 +2780,19 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             NSManagedObject *newlyCachedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:relatedObjectPrimaryKey entityName:[[relationship destinationEntity] name] createIfNeeded:NO]];
             [cacheParentObject setValue:newlyCachedObject forKey:[relationship name]];
             // Save Cache if has changes
-            [self SM_saveCache:error];
+            if ([self.localManagedObjectContext hasChanges]) {
+                [self SM_saveCache:error];
+                [self SM_saveCacheMap];
+            }
+            
             
             return relationshipObjectID;
         } else {
             // Save Cache if has changes
-            [self SM_saveCache:error];
+            if ([self.localManagedObjectContext hasChanges]) {
+                [self SM_saveCache:error];
+                [self SM_saveCacheMap];
+            }
             return [NSNull null];
         }
     }
@@ -2725,6 +2816,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
     // Populate cached object
     [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:serializedObjectDict entity:entity saveCache:YES];
+    
 }
 
 - (void)SM_populateManagedObject:(NSManagedObject *)object withDictionary:(NSDictionary *)dictionary entity:(NSEntityDescription *)entity
@@ -2735,7 +2827,11 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     [dictionary enumerateKeysAndObjectsUsingBlock:^(id propertyName, id propertyValue, BOOL *stop) {
         NSPropertyDescription *propertyDescription = [[entity propertiesByName] objectForKey:propertyName];
         if ([propertyDescription isKindOfClass:[NSAttributeDescription class]]) {
-            [object setPrimitiveValue:dictionary[propertyName] forKey:propertyName];
+            if (dictionary[propertyName] == [NSNull null]) {
+                [object setPrimitiveValue:nil forKey:propertyName];
+            } else {
+                [object setPrimitiveValue:dictionary[propertyName] forKey:propertyName];
+            }
         } else if (![object hasFaultForRelationshipNamed:propertyName]) {
             NSRelationshipDescription *relationshipDescription = (NSRelationshipDescription *)propertyDescription;
             if ([relationshipDescription isToMany]) {
@@ -2885,7 +2981,9 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         if (!saveSuccess) {
             if (SM_CORE_DATA_DEBUG) { DLog(@"Did Not Save Cache") }
         }
+        [self SM_saveCacheMap];
     }
+
 }
 
 - (NSManagedObjectID *)SM_retrieveCacheObjectForRemoteID:(NSString *)remoteID entityName:(NSString *)entityName createIfNeeded:(BOOL)createIfNeeded {
@@ -2894,6 +2992,10 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
 
 - (NSManagedObjectID *)SM_retrieveCacheObjectForRemoteID:(NSString *)remoteID entityName:(NSString *)entityName createIfNeeded:(BOOL)createIfNeeded serverLastModDate:(NSDate *)serverLastModDate {
     if (SM_CORE_DATA_DEBUG) {DLog()}
+    
+    if (serverLastModDate && ![serverLastModDate isKindOfClass:[NSDate class]]) {
+        [NSException raise:SMExceptionIncompatibleObject format:@"Server Last Mod Date not a date type. Please submit a ticket or post with StackMob support."];
+    }
     
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:entityName];
     NSEntityDescription *desc = [NSEntityDescription entityForName:entityName inManagedObjectContext:self.localManagedObjectContext];
@@ -4150,8 +4252,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         if (attributeDescription.attributeType != NSUndefinedAttributeType) {
             if ([[theObject allKeys] indexOfObject:[entityDescription SMFieldNameForProperty:attributeDescription]] != NSNotFound) {
                 id value = [theObject valueForKey:[entityDescription SMFieldNameForProperty:attributeDescription]];
-                if (value == [NSNull null]) {
-                    [serializedDictionary setObject:value forKey:attributeName];
+                if (value == nil || value == [NSNull null]) {
+                    [serializedDictionary setValue:nil forKey:attributeName];
                 } else if (value && attributeDescription.attributeType == NSDateAttributeType) {
                     long double convertedValue = [value doubleValue] / 1000.0000;
                     NSDate *convertedDate = [NSDate dateWithTimeIntervalSince1970:convertedValue];
@@ -4162,8 +4264,6 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                         NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value];
                         [serializedDictionary setObject:data forKey:attributeName];
                     }
-                } else if (value == nil) {
-                    [serializedDictionary setValue:value forKey:attributeName];
                 } else {
                     [serializedDictionary setObject:value forKey:attributeName];
                 }

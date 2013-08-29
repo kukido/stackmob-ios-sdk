@@ -197,7 +197,6 @@ describe(@"can set a field to nil, int", ^{
     });
 });
 
-/*
 describe(@"can set a field to nil, binary", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -260,8 +259,198 @@ describe(@"can set a field to nil, binary", ^{
         [[[results objectAtIndex:0] valueForKey:@"pic"] shouldBeNil];
     });
 });
-*/
-/*
+
+describe(@"using the cache, binary field set to nil propogates, binary", ^{
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        
+        // Create todo
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
+        [todoObject assignObjectId];
+        NSError *error = nil;
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        NSString* pathToImageFile = [bundle pathForResource:@"goatPic" ofType:@"jpeg"];
+        NSData *theData = [NSData dataWithContentsOfFile:pathToImageFile options:NSDataReadingMappedIfSafe error:&error];
+        [error shouldBeNil];
+        NSString *dataString = [SMBinaryDataConversion stringForBinaryData:theData name:@"whatever" contentType:@"image/jpeg"];
+        [todoObject setValue:dataString forKey:@"pic"];
+        
+        error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+    });
+    afterEach(^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        SM_CACHE_ENABLED = NO;
+    });
+    it(@"sets field to nil correctly", ^{
+        
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        
+        // Read Todo
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldNotBeNil];
+        
+        // Set to nil
+        [[results objectAtIndex:0] setValue:nil forKey:@"pic"];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Sync
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            dispatch_group_leave(group);
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed update"];
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+        }];
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        // Read todo
+        NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:fetch2 error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        
+        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldBeNil];
+    });
+});
+
+describe(@"using the cache, binary field not set, doesn't propogates", ^{
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+        
+        // Create todo
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
+        NSError *error = nil;
+        [todoObject setValue:@"cool" forKey:@"name"];
+        [todoObject assignObjectId];
+        
+        error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+    });
+    afterEach(^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        SM_CACHE_ENABLED = NO;
+    });
+    it(@"sets field to nil correctly", ^{
+        
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        
+        // Read Todo
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldBeNil];
+        
+        // Set to nil
+        [[results objectAtIndex:0] setValue:@"invisible" forKey:@"name"];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        // Sync
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            dispatch_group_leave(group);
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed update"];
+        }];
+        
+        [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
+            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+        }];
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        // Read todo
+        NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:fetch2 error:&error];
+        [error shouldBeNil];
+        [[results should] haveCountOf:1];
+        
+        [[[results objectAtIndex:0] valueForKey:@"pic"] shouldBeNil];
+    });
+});
+
 describe(@"can set a field to nil, geopoint", ^{
     __block SMTestProperties *testProperties = nil;
     __block SMGeoPoint *geo = nil;
@@ -324,7 +513,7 @@ describe(@"can set a field to nil, geopoint", ^{
         [[[results objectAtIndex:0] valueForKey:@"geopoint"] shouldBeNil];
     });
 });
-*/
+
 
 describe(@"create an instance of SMCoreDataStore from SMClient", ^{
     __block SMTestProperties *testProperties = nil;
@@ -772,7 +961,7 @@ describe(@"Writing Default Values Offline, Strings", ^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"todoId == '1234'"]];
         error = nil;
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results should] haveCountOf:1];
         
@@ -801,7 +990,7 @@ describe(@"Writing Default Values Offline, Strings", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&error];
@@ -809,7 +998,7 @@ describe(@"Writing Default Values Offline, Strings", ^{
         [[[[results objectAtIndex:0] valueForKey:@"title"] should] equal:@"What!"];
         
         // Check server
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&error];
@@ -860,7 +1049,7 @@ describe(@"Writing Default Values Offline, Integer", ^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"person_id == '1234'"]];
         error = nil;
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results should] haveCountOf:1];
         
@@ -889,7 +1078,7 @@ describe(@"Writing Default Values Offline, Integer", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&error];
@@ -897,7 +1086,7 @@ describe(@"Writing Default Values Offline, Integer", ^{
         [[[[results objectAtIndex:0] valueForKey:@"armor_class"] should] equal:theValue(1)];
         
         // Check server
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&error];
@@ -947,7 +1136,7 @@ describe(@"Writing Default Values Offline with Update, Integer", ^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"person_id == '1234'"]];
         error = nil;
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results should] haveCountOf:1];
         
@@ -968,7 +1157,7 @@ describe(@"Writing Default Values Offline with Update, Integer", ^{
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [fetch2 setPredicate:[NSPredicate predicateWithFormat:@"person_id == '1234'"]];
         error = nil;
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSArray *results2 = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results2 should] haveCountOf:1];
         
@@ -1000,7 +1189,7 @@ describe(@"Writing Default Values Offline with Update, Integer", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&error];
@@ -1008,7 +1197,7 @@ describe(@"Writing Default Values Offline with Update, Integer", ^{
         [[[[results objectAtIndex:0] valueForKey:@"armor_class"] should] equal:theValue(13)];
         
         // Check server
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&error];
@@ -1059,7 +1248,7 @@ describe(@"Writing Default Values Offline, Boolean", ^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"randomId == '1234'"]];
         error = nil;
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results should] haveCountOf:1];
         
@@ -1088,7 +1277,7 @@ describe(@"Writing Default Values Offline, Boolean", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&error];
@@ -1096,7 +1285,7 @@ describe(@"Writing Default Values Offline, Boolean", ^{
         [[[[results objectAtIndex:0] valueForKey:@"done"] should] equal:theValue(NO)];
         
         // Check server
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&error];
@@ -1146,7 +1335,7 @@ describe(@"Writing Default Values Offline with Udpate, Boolean", ^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"randomId == '1234'"]];
         error = nil;
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results should] haveCountOf:1];
         
@@ -1168,7 +1357,7 @@ describe(@"Writing Default Values Offline with Udpate, Boolean", ^{
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         [fetch2 setPredicate:[NSPredicate predicateWithFormat:@"randomId == '1234'"]];
         error = nil;
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSArray *results2 = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [[results2 should] haveCountOf:1];
         
@@ -1199,7 +1388,7 @@ describe(@"Writing Default Values Offline with Udpate, Boolean", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:cacheFetch error:&error];
@@ -1207,7 +1396,7 @@ describe(@"Writing Default Values Offline with Udpate, Boolean", ^{
         [[[[results objectAtIndex:0] valueForKey:@"done"] should] equal:theValue(YES)];
         
         // Check server
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         error = nil;
         results = [testProperties.moc executeFetchRequestAndWait:serverFetch error:&error];
@@ -1237,5 +1426,6 @@ describe(@"inserting to a schema with permission Allow any logged in user when w
         [[theValue(saveSuccess) should] beNo];
     });
 });
+
 
 SPEC_END

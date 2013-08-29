@@ -1,5 +1,19 @@
 <h2>StackMob iOS SDK Change Log</h2>
 
+
+<h3>v2.1.1 - August 22, 2013</h3>
+
+**Features**
+
+* Performance improvements when caching fetched objects from the network.
+
+**Fixes**
+
+* Fix where syncing was corrupting to-many relationship references.
+* Server base last mod dates are properly translated to NSDate instances.
+* Fix <code>optionsWithCachePolicy</code> method initialization.
+
+
 <h3>v2.1.0 - July 30, 2013</h3>
 
 **Features**

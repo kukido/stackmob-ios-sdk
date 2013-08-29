@@ -84,10 +84,11 @@
  
  @param serializeFullObjects Whether to serialize the managed object's recently changed values or the entire object.
  @param sendLocalTimestamps Whether to include the createddate and lastmoddate keys in the serialized dictionary.
+ @param cacheMap The current cache map file used to translate relationship references.
  
  @since Available in iOS SDK 1.0.0 and later.
  */
-- (NSDictionary *)SMDictionarySerialization:(BOOL)serializeFullObjects sendLocalTimestamps:(BOOL)sendLocalTimestamps;
+- (NSDictionary *)SMDictionarySerialization:(BOOL)serializeFullObjects sendLocalTimestamps:(BOOL)sendLocalTimestamps cacheMap:(NSDictionary *)cacheMap;
 
 /**
  Use to retrieve the value of a relationship.  

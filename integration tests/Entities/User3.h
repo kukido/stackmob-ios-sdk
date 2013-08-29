@@ -18,11 +18,16 @@
 #import <CoreData/CoreData.h>
 #import "StackMob.h"
 
+@class Superpower;
+
 @interface User3 : SMUserManagedObject
 
-@property (nonatomic, retain) NSString * username;
 @property (nonatomic, retain) NSString * email;
+@property (nonatomic, retain) NSString * username;
 @property (nonatomic, retain) NSSet *todos;
+@property (nonatomic, retain) NSSet *favorites;
+@property (nonatomic, retain) NSSet *interests;
+@property (nonatomic, retain) Superpower *superpower;
 @end
 
 @interface User3 (CoreDataGeneratedAccessors)
@@ -31,5 +36,12 @@
 - (void)removeTodosObject:(NSManagedObject *)value;
 - (void)addTodos:(NSSet *)values;
 - (void)removeTodos:(NSSet *)values;
-
+- (void)addFavoritesObject:(NSManagedObject *)value;
+- (void)removeFavoritesObject:(NSManagedObject *)value;
+- (void)addFavorites:(NSSet *)values;
+- (void)removeFavorites:(NSSet *)values;
+- (void)addInterestsObject:(NSManagedObject *)value;
+- (void)removeInterestsObject:(NSManagedObject *)value;
+- (void)addInterests:(NSSet *)values;
+- (void)removeInterests:(NSSet *)values;
 @end

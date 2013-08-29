@@ -46,15 +46,19 @@ describe(@"with a prepopulated database of people", ^{
         [[theValue(createSuccess) should] beYes];
         
         // Log in user
+        __block BOOL loggedIn = NO;
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
             [client loginWithUsername:@"dude" password:@"sweet" onSuccess:^(NSDictionary *result) {
                 NSLog(@"Logged In, %@", result);
+                loggedIn = YES;
                 syncReturn(semaphore);
             } onFailure:^(NSError *error) {
                 [error shouldBeNil];
                 syncReturn(semaphore);
             }];
         });
+        
+        [[theValue(loggedIn) should] beYes];
         
         [SMIntegrationTestHelpers destroyAllForFixturesNamed:fixtureNames];
         
