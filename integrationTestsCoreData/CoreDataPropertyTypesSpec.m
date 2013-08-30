@@ -804,6 +804,7 @@ describe(@"Testing CRUD on an Entity with a SMGeoPoint attribute", ^{
     __block NSManagedObjectContext *moc = nil;
     __block NSManagedObject *geoObject = nil;
     __block NSManagedObject *geoObject2 = nil;
+    __block NSString *geoObjectID = nil;
     __block SMClient *client = nil;
     __block SMCoreDataStore *cds = nil;
     __block SMGeoPoint *location = nil;
@@ -827,7 +828,7 @@ describe(@"Testing CRUD on an Entity with a SMGeoPoint attribute", ^{
         
         [geoObject setValue:data forKey:@"geopoint"];
         [geoObject setValue:@"StackMob" forKey:@"name"];
-        [geoObject setValue:[geoObject assignObjectId] forKey:[geoObject primaryKeyField]];
+        geoObjectID = [geoObject assignObjectId];
         
         geoObject2 = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:moc];
         NSNumber *lat2 = [NSNumber numberWithDouble:42.280373];
@@ -1004,6 +1005,19 @@ describe(@"Testing CRUD on an Entity with a SMGeoPoint attribute", ^{
     
     it(@"Will save and read without error after update", ^{
         
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
+        
+        [fetch setPredicate:[NSPredicate predicateWithFormat:@"randomId == %@", geoObjectID]];
+        
+        NSError *fetcherror = nil;
+        NSArray *fetchresults = [moc executeFetchRequestAndWait:fetch error:&fetcherror];
+        
+        [fetcherror shouldBeNil];
+        
+        [[fetchresults should] haveCountOf:1];
+        
+        NSManagedObject *theGeoObject = [fetchresults objectAtIndex:0];
+        
         // Fisherman's Wharf
         NSNumber *lat = [NSNumber numberWithDouble:37.810317];
         NSNumber *lon = [NSNumber numberWithDouble:-122.418167];
@@ -1012,7 +1026,7 @@ describe(@"Testing CRUD on an Entity with a SMGeoPoint attribute", ^{
         
         NSData *data = [NSKeyedArchiver archivedDataWithRootObject:newLocation];
         
-        [geoObject setValue:data forKey:@"geopoint"];
+        [theGeoObject setValue:data forKey:@"geopoint"];
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             if (error != nil) {
                 DLog(@"Error userInfo is %@", [error userInfo]);

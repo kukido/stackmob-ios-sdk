@@ -272,9 +272,15 @@
 
 - (void)attachObjectIdToDictionary:(NSDictionary **)objectDictionary
 {
+    NSString *objectID = [self SMObjectId];
+    
+    if (!objectID) {
+        [NSException raise:SMExceptionInvalidArugments format:@"No object ID assigned to object before save. Object in question is %@", *objectDictionary];
+    }
+    
     NSMutableDictionary *dictionaryToReturn = [*objectDictionary mutableCopy];
     
-    [dictionaryToReturn setObject:[self SMObjectId] forKey:[self SMPrimaryKeyField]];
+    [dictionaryToReturn setObject:objectID forKey:[self SMPrimaryKeyField]];
     
     *objectDictionary = dictionaryToReturn;
 }
