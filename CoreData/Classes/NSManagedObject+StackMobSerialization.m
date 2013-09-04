@@ -272,7 +272,7 @@
 {
     NSMutableDictionary *dictionaryToReturn = [*objectDictionary mutableCopy];
     
-    [dictionaryToReturn setObject:[self SMObjectId] forKey:[self SMPrimaryKeyField]];
+    [dictionaryToReturn setValue:[self SMObjectId] forKey:[self SMPrimaryKeyField]];
     
     *objectDictionary = dictionaryToReturn;
 }

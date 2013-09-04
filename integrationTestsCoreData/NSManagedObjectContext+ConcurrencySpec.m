@@ -150,7 +150,6 @@ describe(@"countForFetchRequest, cache", ^{
     beforeAll(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [SMCoreDataIntegrationTestHelpers removeSQLiteDatabaseAndMapsWithPublicKey:testProperties.client.publicKey];
         arrayOfObjects = [NSMutableArray array];
         for (int i=0; i < 10; i++) {
             NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
@@ -269,7 +268,6 @@ describe(@"CacheElseNetwork count", ^{
     beforeAll(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [SMCoreDataIntegrationTestHelpers removeSQLiteDatabaseAndMapsWithPublicKey:testProperties.client.publicKey];
         arrayOfObjects = [NSMutableArray array];
         dispatch_group_t group = dispatch_group_create();
         dispatch_queue_t queue = dispatch_queue_create("createqueue", NULL);
@@ -331,61 +329,52 @@ describe(@"CacheElseNetwork count", ^{
 });
 
 describe(@"fetching runs in the background", ^{
-    __block SMClient *client = nil;
-    __block SMCoreDataStore *cds = nil;
-    __block NSManagedObjectContext *moc = nil;
+    __block SMTestProperties *testProperties = nil;
     __block NSMutableArray *arrayOfObjects = nil;
     
     beforeAll(^{
-        client = [SMIntegrationTestHelpers defaultClient];
-        [SMClient setDefaultClient:client];
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        NSBundle *classBundle = [NSBundle bundleForClass:[self class]];
-        NSURL *modelURL = [classBundle URLForResource:@"SMCoreDataIntegrationTest" withExtension:@"momd"];
-        NSManagedObjectModel *aModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-        cds = [client coreDataStoreWithManagedObjectModel:aModel];
-        moc = [cds contextForCurrentThread];
+        testProperties = [[SMTestProperties alloc] init];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         arrayOfObjects = [NSMutableArray array];
         for (int i=0; i < 30; i++) {
-            NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:moc];
+            NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
             [newManagedObject setValue:@"bob" forKey:@"title"];
-            [newManagedObject setValue:[newManagedObject assignObjectId] forKey:[newManagedObject primaryKeyField]];
-            
+            [newManagedObject assignObjectId];
             [arrayOfObjects addObject:newManagedObject];
         }
         __block BOOL saveSuccess = NO;
         __block NSError *error = nil;
         
-        saveSuccess = [moc saveAndWait:&error];
+        saveSuccess = [testProperties.moc saveAndWait:&error];
         [[theValue(saveSuccess) should] beYes];
     });
     afterAll(^{
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         for (NSManagedObject *obj in arrayOfObjects) {
-            [moc deleteObject:obj];
+            [testProperties.moc deleteObject:obj];
         }
         __block NSError *error = nil;
-        BOOL saveSuccess = [moc saveAndWait:&error];
+        BOOL saveSuccess = [testProperties.moc saveAndWait:&error];
         [[theValue(saveSuccess) should] beYes];
         [arrayOfObjects removeAllObjects];
         
     });
     it(@"fetches, sync method", ^{
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
-        NSArray *results = [moc executeFetchRequestAndWait:fetch error:&error];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
         [results shouldNotBeNil];
         [error shouldBeNil];
         
     });
     it(@"fetches, async method", ^{
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         __block dispatch_group_t group = dispatch_group_create();
         __block dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         dispatch_group_enter(group);
-        [moc executeFetchRequest:fetch returnManagedObjectIDs:NO successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *results) {
+        [testProperties.moc executeFetchRequest:fetch returnManagedObjectIDs:NO successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *results) {
             [results shouldNotBeNil];
             dispatch_group_leave(group);
         } onFailure:^(NSError *error) {
@@ -401,53 +390,46 @@ describe(@"fetching runs in the background", ^{
 });
 
 describe(@"Returning managed object vs. ids", ^{
-    __block SMClient *client = nil;
-    __block SMCoreDataStore *cds = nil;
-    __block NSManagedObjectContext *moc = nil;
+    __block SMTestProperties *testProperties = nil;
     __block NSMutableArray *arrayOfObjects = nil;
     
     beforeAll(^{
-        client = [SMIntegrationTestHelpers defaultClient];
-        [SMClient setDefaultClient:client];
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        NSBundle *classBundle = [NSBundle bundleForClass:[self class]];
-        NSURL *modelURL = [classBundle URLForResource:@"SMCoreDataIntegrationTest" withExtension:@"momd"];
-        NSManagedObjectModel *aModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-        cds = [client coreDataStoreWithManagedObjectModel:aModel];
-        moc = [cds contextForCurrentThread];
+        testProperties = [[SMTestProperties alloc] init];
+        
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         arrayOfObjects = [NSMutableArray array];
         for (int i=0; i < 30; i++) {
-            NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:moc];
+            NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
             [newManagedObject setValue:@"bob" forKey:@"title"];
-            [newManagedObject setValue:[newManagedObject assignObjectId] forKey:[newManagedObject primaryKeyField]];
+            [newManagedObject assignObjectId];
             
             [arrayOfObjects addObject:newManagedObject];
         }
         __block BOOL saveSuccess = NO;
         __block NSError *error = nil;
         
-        saveSuccess = [moc saveAndWait:&error];
+        saveSuccess = [testProperties.moc saveAndWait:&error];
         [[theValue(saveSuccess) should] beYes];
     });
     afterAll(^{
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         for (NSManagedObject *obj in arrayOfObjects) {
-            [moc deleteObject:obj];
+            [testProperties.moc deleteObject:obj];
         }
         __block NSError *error = nil;
-        BOOL saveSuccess = [moc saveAndWait:&error];
+        BOOL saveSuccess = [testProperties.moc saveAndWait:&error];
         [[theValue(saveSuccess) should] beYes];
         [arrayOfObjects removeAllObjects];
         
     });
     it(@"Properly returns managed objects, async method", ^{
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
         
         dispatch_group_enter(group);
-        [moc executeFetchRequest:fetch returnManagedObjectIDs:NO successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *results) {
+        [testProperties.moc executeFetchRequest:fetch returnManagedObjectIDs:NO successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *results) {
             [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 [[theValue([obj class] == [NSManagedObject class]) should] beYes];
             }];
@@ -464,13 +446,13 @@ describe(@"Returning managed object vs. ids", ^{
         
     });
     it(@"Properly returns managed objects ids, async method", ^{
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
         
         dispatch_group_enter(group);
-        [moc executeFetchRequest:fetch returnManagedObjectIDs:YES successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *results) {
+        [testProperties.moc executeFetchRequest:fetch returnManagedObjectIDs:YES successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSArray *results) {
             [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 [[theValue([obj isTemporaryID]) should] beNo];
                 [[theValue([obj isKindOfClass:[NSManagedObjectID class]]) should] beYes];
@@ -488,11 +470,11 @@ describe(@"Returning managed object vs. ids", ^{
         
     });
     it(@"Properly returns managed objects, sync method", ^{
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
 
         NSError *error = nil;
-        NSArray *results = [moc executeFetchRequestAndWait:fetch returnManagedObjectIDs:NO error:&error];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch returnManagedObjectIDs:NO error:&error];
         [error shouldBeNil];
         [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             [[theValue([obj class] == [NSManagedObject class]) should] beYes];
@@ -500,11 +482,11 @@ describe(@"Returning managed object vs. ids", ^{
         
     });
     it(@"Properly returns managed objects ids, sync method", ^{
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         NSError *error = nil;
-        NSArray *results = [moc executeFetchRequestAndWait:fetch returnManagedObjectIDs:YES error:&error];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch returnManagedObjectIDs:YES error:&error];
         [error shouldBeNil];
         [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             [[theValue([obj isTemporaryID]) should] beNo];
@@ -516,19 +498,11 @@ describe(@"Returning managed object vs. ids", ^{
 
 
 describe(@"sending options with requests, saves", ^{
-    __block SMClient *client = nil;
-    __block SMCoreDataStore *cds = nil;
-    __block NSManagedObjectContext *moc = nil;
+    __block SMTestProperties *testProperties = nil;
     beforeAll(^{
         //SM_CORE_DATA_DEBUG = YES;
-        client = [SMIntegrationTestHelpers defaultClient];
-        [SMClient setDefaultClient:client];
-        [client setUserSchema:@"User3"];
-        NSBundle *classBundle = [NSBundle bundleForClass:[self class]];
-        NSURL *modelURL = [classBundle URLForResource:@"SMCoreDataIntegrationTest" withExtension:@"momd"];
-        NSManagedObjectModel *aModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-        cds = [client coreDataStoreWithManagedObjectModel:aModel];
-        moc = [cds contextForCurrentThread];
+        testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setUserSchema:@"User3"];
     });
     afterEach(^{
         NSArray *arrayOfSchemaObjectsToDelete = [NSArray arrayWithObjects:@"User3", @"Person", nil];
@@ -539,17 +513,17 @@ describe(@"sending options with requests, saves", ^{
             
             fetch = [[NSFetchRequest alloc] initWithEntityName:schemaName];
             error = nil;
-            results = [moc executeFetchRequestAndWait:fetch error:&error];
+            results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
             if (!error) {
                 [results enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *innerstop) {
-                    [moc deleteObject:obj];
+                    [testProperties.moc deleteObject:obj];
                 }];
             }
             
         }];
         
         error = nil;
-        [moc saveAndWait:&error];
+        [testProperties.moc saveAndWait:&error];
         
         
     });
@@ -573,27 +547,27 @@ describe(@"sending options with requests, saves", ^{
          */
         
         //SM_CORE_DATA_DEBUG = YES;
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
         
-        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [person assignObjectId];
         [person setValue:@"bob" forKey:@"first_name"];
         
         NSError *error = nil;
-        BOOL success = [moc saveAndWait:&error];
+        BOOL success = [testProperties.moc saveAndWait:&error];
         if (!success) {
             NSLog(@"no success");
         }
         
-        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:moc];
-        [user setUsername:[user assignObjectId]];
+        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        [user assignObjectId];
         [user setPassword:@"smith"];
         
         [person setValue:@"smith" forKey:@"last_name"];
@@ -601,7 +575,7 @@ describe(@"sending options with requests, saves", ^{
         SMRequestOptions *options = [SMRequestOptions optionsWithHeaders:[NSDictionary dictionaryWithObjectsAndKeys:@"random", @"header", nil]];
         options.isSecure = YES;
         error = nil;
-        success = [moc saveAndWait:&error options:options];
+        success = [testProperties.moc saveAndWait:&error options:options];
         if (!success) {
             NSLog(@"no success");
         }
@@ -624,27 +598,27 @@ describe(@"sending options with requests, saves", ^{
          1 x secure + 1 x non-secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x non-secure enqueueHTTPRequestOperation
          */
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
         
-        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [person assignObjectId];
         [person setValue:@"bob" forKey:@"first_name"];
         
         NSError *error = nil;
-        BOOL success = [moc saveAndWait:&error];
+        BOOL success = [testProperties.moc saveAndWait:&error];
         if (!success) {
             [error shouldBeNil];
         }
         
-        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:moc];
-        [user setUsername:[user assignObjectId]];
+        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        [user assignObjectId];
         [user setPassword:@"smith"];
         
         [person setValue:@"smith" forKey:@"last_name"];
@@ -652,7 +626,7 @@ describe(@"sending options with requests, saves", ^{
         SMRequestOptions *options = [SMRequestOptions optionsWithHeaders:[NSDictionary dictionaryWithObjectsAndKeys:@"random", @"header", nil]];
         
         error = nil;
-        success = [moc saveAndWait:&error options:options];
+        success = [testProperties.moc saveAndWait:&error options:options];
         if (!success) {
             [error shouldBeNil];
         }
@@ -673,20 +647,20 @@ describe(@"sending options with requests, saves", ^{
          2 x secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x secure enqueueHTTPRequestOperation
          */
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
-        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [person assignObjectId];
         [person setValue:@"bob" forKey:@"first_name"];
         
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [moc saveOnSuccess:^{
+            [testProperties.moc saveOnSuccess:^{
                 syncReturn(semaphore);
             } onFailure:^(NSError *asyncError) {
                 [asyncError shouldBeNil];
@@ -694,8 +668,8 @@ describe(@"sending options with requests, saves", ^{
             }];
         });
         
-        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:moc];
-        [user setUsername:[user assignObjectId]];
+        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        [user assignObjectId];
         [user setPassword:@"smith"];
         
         [person setValue:@"smith" forKey:@"last_name"];
@@ -704,7 +678,7 @@ describe(@"sending options with requests, saves", ^{
         options.isSecure = YES;
         
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [moc saveWithSuccessCallbackQueue:dispatch_get_current_queue() failureCallbackQueue:dispatch_get_current_queue() options:options onSuccess:^{
+            [testProperties.moc saveWithSuccessCallbackQueue:dispatch_get_current_queue() failureCallbackQueue:dispatch_get_current_queue() options:options onSuccess:^{
                 syncReturn(semaphore);
             } onFailure:^(NSError *asyncError) {
                 [asyncError shouldBeNil];
@@ -728,20 +702,20 @@ describe(@"sending options with requests, saves", ^{
          1 x secure + 1 x non-secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x non-secure enqueueHTTPRequestOperation
          */
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
-        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [person assignObjectId];
         [person setValue:@"bob" forKey:@"first_name"];
         
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [moc saveOnSuccess:^{
+            [testProperties.moc saveOnSuccess:^{
                 
                 syncReturn(semaphore);
             } onFailure:^(NSError *asyncError) {
@@ -750,8 +724,8 @@ describe(@"sending options with requests, saves", ^{
             }];
         });
         
-        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:moc];
-        [user setUsername:[user assignObjectId]];
+        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        [user assignObjectId];
         [user setPassword:@"smith"];
         
         [person setValue:@"smith" forKey:@"last_name"];
@@ -759,7 +733,7 @@ describe(@"sending options with requests, saves", ^{
         SMRequestOptions *options = [SMRequestOptions optionsWithHeaders:[NSDictionary dictionaryWithObjectsAndKeys:@"random", @"header", nil]];
         
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [moc saveWithSuccessCallbackQueue:dispatch_get_current_queue() failureCallbackQueue:dispatch_get_current_queue() options:options onSuccess:^{
+            [testProperties.moc saveWithSuccessCallbackQueue:dispatch_get_current_queue() failureCallbackQueue:dispatch_get_current_queue() options:options onSuccess:^{
                 
                 syncReturn(semaphore);
             } onFailure:^(NSError *asyncError) {
@@ -774,19 +748,11 @@ describe(@"sending options with requests, saves", ^{
 
 
 describe(@"creating global request options, saves", ^{
-    __block SMClient *client = nil;
-    __block SMCoreDataStore *cds = nil;
-    __block NSManagedObjectContext *moc = nil;
+    __block SMTestProperties *testProperties = nil;
     beforeAll(^{
         //SM_CORE_DATA_DEBUG = YES;
-        client = [SMIntegrationTestHelpers defaultClient];
-        [SMClient setDefaultClient:client];
-        [client setUserSchema:@"User3"];
-        NSBundle *classBundle = [NSBundle bundleForClass:[self class]];
-        NSURL *modelURL = [classBundle URLForResource:@"SMCoreDataIntegrationTest" withExtension:@"momd"];
-        NSManagedObjectModel *aModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-        cds = [client coreDataStoreWithManagedObjectModel:aModel];;
-        moc = [cds contextForCurrentThread];
+        testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setUserSchema:@"User3"];
     });
     afterEach(^{
         NSArray *arrayOfSchemaObjectsToDelete = [NSArray arrayWithObjects:@"User3", @"Person", nil];
@@ -797,17 +763,17 @@ describe(@"creating global request options, saves", ^{
             
             fetch = [[NSFetchRequest alloc] initWithEntityName:schemaName];
             error = nil;
-            results = [moc executeFetchRequestAndWait:fetch error:&error];
+            results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
             if (!error) {
                 [results enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *innerstop) {
-                    [moc deleteObject:obj];
+                    [testProperties.moc deleteObject:obj];
                 }];
             }
             
         }];
         
         error = nil;
-        [moc saveAndWait:&error];
+        [testProperties.moc saveAndWait:&error];
         
         
     });
@@ -829,31 +795,31 @@ describe(@"creating global request options, saves", ^{
          3 x secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x secure enqueueHTTPRequestOperation
          */
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:3];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:3];
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
-        [cds setGlobalRequestOptions:[SMRequestOptions optionsWithHTTPS]];
-        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        [testProperties.cds setGlobalRequestOptions:[SMRequestOptions optionsWithHTTPS]];
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [person assignObjectId];
         [person setValue:@"bob" forKey:@"first_name"];
         
         NSError *error = nil;
-        BOOL success = [moc saveAndWait:&error];
+        BOOL success = [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
         
-        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:moc];
-        [user setUsername:[user assignObjectId]];
+        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        [user assignObjectId];
         [user setPassword:@"smith"];
         
         [person setValue:@"smith" forKey:@"last_name"];
         
         error = nil;
-        success = [moc saveAndWait:&error];
+        success = [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
     });
     it(@"saveAndWait:options:, global request options regular", ^{
@@ -872,31 +838,31 @@ describe(@"creating global request options, saves", ^{
          1 x secure + 1 x non-secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x non-secure enqueueHTTPRequestOperation
          */
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
-        [cds setGlobalRequestOptions:[SMRequestOptions options]];
-        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        [testProperties.cds setGlobalRequestOptions:[SMRequestOptions options]];
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [person assignObjectId];
         [person setValue:@"bob" forKey:@"first_name"];
         
         NSError *error = nil;
-        BOOL success = [moc saveAndWait:&error];
+        BOOL success = [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
         
-        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:moc];
-        [user setUsername:[user assignObjectId]];
+        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        [user assignObjectId];
         [user setPassword:@"smith"];
         
         [person setValue:@"smith" forKey:@"last_name"];
         
         error = nil;
-        success = [moc saveAndWait:&error];
+        success = [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
     });
     
@@ -916,21 +882,21 @@ describe(@"creating global request options, saves", ^{
          3 x secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x secure enqueueHTTPRequestOperation
          */
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:3];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:3];
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
-        [cds setGlobalRequestOptions:[SMRequestOptions optionsWithHTTPS]];
-        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        [testProperties.cds setGlobalRequestOptions:[SMRequestOptions optionsWithHTTPS]];
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [person assignObjectId];
         [person setValue:@"bob" forKey:@"first_name"];
         
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [moc saveOnSuccess:^{
+            [testProperties.moc saveOnSuccess:^{
             
                 syncReturn(semaphore);
             } onFailure:^(NSError *asyncError) {
@@ -939,14 +905,14 @@ describe(@"creating global request options, saves", ^{
             }];
         });
         
-        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:moc];
-        [user setUsername:[user assignObjectId]];
+        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
+        [user assignObjectId];
         [user setPassword:@"smith"];
         
         [person setValue:@"smith" forKey:@"last_name"];
         
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [moc saveOnSuccess:^{
+            [testProperties.moc saveOnSuccess:^{
                 
                 syncReturn(semaphore);
             } onFailure:^(NSError *asyncError) {
@@ -971,21 +937,21 @@ describe(@"creating global request options, saves", ^{
          1 x secure + 1 x non-secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x non-secure enqueueHTTPRequestOperation
          */
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
-        [cds setGlobalRequestOptions:[SMRequestOptions options]];
-        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
+        [testProperties.cds setGlobalRequestOptions:[SMRequestOptions options]];
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
         [person setValue:@"bob" forKey:@"first_name"];
         
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [moc saveOnSuccess:^{
+            [testProperties.moc saveOnSuccess:^{
                 syncReturn(semaphore);
             } onFailure:^(NSError *asyncError) {
                 [asyncError shouldBeNil];
@@ -993,14 +959,14 @@ describe(@"creating global request options, saves", ^{
             }];
         });
         
-        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:moc];
+        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
         [user setUsername:[user assignObjectId]];
         [user setPassword:@"smith"];
         
         [person setValue:@"smith" forKey:@"last_name"];
         
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
-            [moc saveOnSuccess:^{
+            [testProperties.moc saveOnSuccess:^{
                 syncReturn(semaphore);
             } onFailure:^(NSError *asyncError) {
                 [asyncError shouldBeNil];
@@ -1012,30 +978,22 @@ describe(@"creating global request options, saves", ^{
 });
 
 describe(@"sending options with requests, fetches", ^{
-    __block SMClient *client = nil;
-    __block SMCoreDataStore *cds = nil;
-    __block NSManagedObjectContext *moc = nil;
+    __block SMTestProperties *testProperties = nil;
     beforeAll(^{
         //SM_CORE_DATA_DEBUG = YES;
-        client = [SMIntegrationTestHelpers defaultClient];
-        [SMClient setDefaultClient:client];
-        [client setUserSchema:@"User3"];
-        NSBundle *classBundle = [NSBundle bundleForClass:[self class]];
-        NSURL *modelURL = [classBundle URLForResource:@"SMCoreDataIntegrationTest" withExtension:@"momd"];
-        NSManagedObjectModel *aModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-        cds = [client coreDataStoreWithManagedObjectModel:aModel];
-        moc = [cds contextForCurrentThread];
+        testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setUserSchema:@"User3"];
         
-        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
+        NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
         [person setValue:@"bob" forKey:@"first_name"];
         
-        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:moc];
+        User3 *user = [NSEntityDescription insertNewObjectForEntityForName:@"User3" inManagedObjectContext:testProperties.moc];
         [user setUsername:[user assignObjectId]];
         [user setPassword:@"smith"];
         
         NSError *error = nil;
-        BOOL success = [moc saveAndWait:&error];
+        BOOL success = [testProperties.moc saveAndWait:&error];
         [[theValue(success) should] beYes];
     });
     afterAll(^{
@@ -1047,36 +1005,36 @@ describe(@"sending options with requests, fetches", ^{
             
             fetch = [[NSFetchRequest alloc] initWithEntityName:schemaName];
             error = nil;
-            results = [moc executeFetchRequestAndWait:fetch error:&error];
+            results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
             if (!error) {
                 [results enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *innerstop) {
-                    [moc deleteObject:obj];
+                    [testProperties.moc deleteObject:obj];
                 }];
             }
             
         }];
         
         error = nil;
-        [moc saveAndWait:&error];
+        [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
         
     });
     it(@"executeFetchRequestAndWait:error:, sending HTTPS", ^{
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
         
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         
         SMRequestOptions *options = [SMRequestOptions optionsWithHeaders:[NSDictionary dictionaryWithObjectsAndKeys:@"random", @"header", nil]];
         options.isSecure = YES;
         NSError *error = nil;
-        NSArray *results = [moc executeFetchRequestAndWait:fetchRequest returnManagedObjectIDs:NO options:options error:&error];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetchRequest returnManagedObjectIDs:NO options:options error:&error];
         
         [error shouldBeNil];
         [[theValue([results count]) should] equal:theValue(1)];
@@ -1086,19 +1044,19 @@ describe(@"sending options with requests, fetches", ^{
     
     it(@"executeFetchRequestAndWait:error:, not sending HTTPS", ^{
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         
         SMRequestOptions *options = [SMRequestOptions optionsWithHeaders:[NSDictionary dictionaryWithObjectsAndKeys:@"random", @"header", nil]];
         NSError *error = nil;
-        NSArray *results = [moc executeFetchRequestAndWait:fetchRequest returnManagedObjectIDs:NO options:options error:&error];
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetchRequest returnManagedObjectIDs:NO options:options error:&error];
         
         [error shouldBeNil];
         [[theValue([results count]) should] equal:theValue(1)];
@@ -1107,13 +1065,13 @@ describe(@"sending options with requests, fetches", ^{
     
     it(@"executeFetchRequest:onSuccess, sending HTTPS", ^{
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
         
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         
@@ -1124,7 +1082,7 @@ describe(@"sending options with requests, fetches", ^{
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         
         dispatch_group_enter(group);
-        [moc executeFetchRequest:fetchRequest returnManagedObjectIDs:NO successCallbackQueue:queue failureCallbackQueue:queue options:options onSuccess:^(NSArray *results) {
+        [testProperties.moc executeFetchRequest:fetchRequest returnManagedObjectIDs:NO successCallbackQueue:queue failureCallbackQueue:queue options:options onSuccess:^(NSArray *results) {
             [[theValue([results count]) should] equal:theValue(1)];
             dispatch_group_leave(group);
         } onFailure:^(NSError *error) {
@@ -1137,14 +1095,14 @@ describe(@"sending options with requests, fetches", ^{
     });
     it(@"executeFetchRequest:onSuccess, not sending HTTPS", ^{
         
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
         // Used to be 1, 3 because we added code to pull values on different threads
-        [[[client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:3];
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:3];
         
-        [[[client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
+        [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         
@@ -1155,7 +1113,7 @@ describe(@"sending options with requests, fetches", ^{
         
         __block NSManagedObjectID *objectID = nil;
         dispatch_group_enter(group);
-        [moc executeFetchRequest:fetchRequest returnManagedObjectIDs:NO successCallbackQueue:queue failureCallbackQueue:queue options:options onSuccess:^(NSArray *results) {
+        [testProperties.moc executeFetchRequest:fetchRequest returnManagedObjectIDs:NO successCallbackQueue:queue failureCallbackQueue:queue options:options onSuccess:^(NSArray *results) {
             [[theValue([results count]) should] equal:theValue(1)];
             // Add code here to test threading
             
@@ -1170,7 +1128,7 @@ describe(@"sending options with requests, fetches", ^{
             dispatch_group_leave(group);
         }];
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-        NSManagedObject *bob = [moc objectWithID:objectID];
+        NSManagedObject *bob = [testProperties.moc objectWithID:objectID];
         NSString *first_name = [bob valueForKey:@"first_name"];
         NSLog(@"outside of block, first_name is %@", first_name);
     });
