@@ -44,6 +44,8 @@ describe(@"countForFetchRequest, network", ^{
         
         saveSuccess = [testProperties.moc saveAndWait:&error];
         [[theValue(saveSuccess) should] beYes];
+        
+        sleep(3);
     });
     afterAll(^{
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -54,6 +56,7 @@ describe(@"countForFetchRequest, network", ^{
         BOOL saveSuccess = [testProperties.moc saveAndWait:&error];
         [[theValue(saveSuccess) should] beYes];
         [arrayOfObjects removeAllObjects];
+        sleep(3);
         
     });
     it(@"async works", ^{
@@ -164,6 +167,8 @@ describe(@"countForFetchRequest, cache", ^{
         saveSuccess = [testProperties.moc saveAndWait:&error];
         [[theValue(saveSuccess) should] beYes];
         
+        sleep(3);
+        
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         error = nil;
         [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
@@ -180,6 +185,8 @@ describe(@"countForFetchRequest, cache", ^{
         [[theValue(saveSuccess) should] beYes];
         [arrayOfObjects removeAllObjects];
         SM_CACHE_ENABLED = NO;
+        
+        sleep(3);
         
     });
     it(@"async works", ^{
@@ -281,6 +288,8 @@ describe(@"CacheElseNetwork count", ^{
             }];
         }
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(3);
     });
     afterAll(^{
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -313,6 +322,8 @@ describe(@"CacheElseNetwork count", ^{
         }
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(3);
         
     });
     it(@"cacheElseNetwork, cache not filled", ^{
@@ -347,6 +358,8 @@ describe(@"fetching runs in the background", ^{
         
         saveSuccess = [testProperties.moc saveAndWait:&error];
         [[theValue(saveSuccess) should] beYes];
+        
+        sleep(3);
     });
     afterAll(^{
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -357,6 +370,9 @@ describe(@"fetching runs in the background", ^{
         BOOL saveSuccess = [testProperties.moc saveAndWait:&error];
         [[theValue(saveSuccess) should] beYes];
         [arrayOfObjects removeAllObjects];
+        
+        
+        sleep(3);
         
     });
     it(@"fetches, sync method", ^{
@@ -410,6 +426,8 @@ describe(@"Returning managed object vs. ids", ^{
         
         saveSuccess = [testProperties.moc saveAndWait:&error];
         [[theValue(saveSuccess) should] beYes];
+        
+        sleep(3);
     });
     afterAll(^{
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -420,6 +438,8 @@ describe(@"Returning managed object vs. ids", ^{
         BOOL saveSuccess = [testProperties.moc saveAndWait:&error];
         [[theValue(saveSuccess) should] beYes];
         [arrayOfObjects removeAllObjects];
+        
+        sleep(3);
         
     });
     it(@"Properly returns managed objects, async method", ^{
@@ -525,6 +545,9 @@ describe(@"sending options with requests, saves", ^{
         error = nil;
         [testProperties.moc saveAndWait:&error];
         
+        [error shouldBeNil];
+        
+        sleep(3);
         
     });
     
@@ -775,7 +798,7 @@ describe(@"creating global request options, saves", ^{
         error = nil;
         [testProperties.moc saveAndWait:&error];
         
-        
+        sleep(3);
     });
     
     it(@"saveAndWait:options:, global request options have HTTPS", ^{
@@ -995,6 +1018,8 @@ describe(@"sending options with requests, fetches", ^{
         NSError *error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error];
         [[theValue(success) should] beYes];
+        
+        sleep(3);
     });
     afterAll(^{
         NSArray *arrayOfSchemaObjectsToDelete = [NSArray arrayWithObjects:@"User3", @"Person", nil];
@@ -1017,6 +1042,8 @@ describe(@"sending options with requests, fetches", ^{
         error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
+        
+        sleep(3);
         
     });
     it(@"executeFetchRequestAndWait:error:, sending HTTPS", ^{

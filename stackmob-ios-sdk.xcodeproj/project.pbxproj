@@ -147,9 +147,9 @@
 		DE1F26691733375F00DA734F /* FileManagement.h in Headers */ = {isa = PBXBuildFile; fileRef = DE1F26671733375F00DA734F /* FileManagement.h */; };
 		DE1F266A1733375F00DA734F /* FileManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1F26681733375F00DA734F /* FileManagement.m */; };
 		DE227A39175D5B14009365C1 /* AFHTTPRequestOperation+RemoveContentType.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEC253471750303F0023BEDA /* AFHTTPRequestOperation+RemoveContentType.h */; };
+		DE246AC717D7DBD00023C231 /* SMIncrementalStoreTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0CC7A715CB5EA200E491C4 /* SMIncrementalStoreTest.m */; };
 		DE2889E617C8207A00CFB8A3 /* SMMergePolicyInsertsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A717C6B0CA004417A5 /* SMMergePolicyInsertsSpec.m */; };
 		DE2889EA17CBEBA600CFB8A3 /* SMSavePolicySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE5B5CAC17C6CFA00051905F /* SMSavePolicySpec.m */; };
-		DE2889F217CC19E500CFB8A3 /* NSManagedObjectContext+ConcurrencySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB68FBF169F95EE00CC45F4 /* NSManagedObjectContext+ConcurrencySpec.m */; };
 		DE2889F917CC1A0C00CFB8A3 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CCCE4F71580389800C38962 /* SenTestingKit.framework */; };
 		DE2889FA17CC1A0C00CFB8A3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CCCE4F91580389800C38962 /* UIKit.framework */; };
 		DE2889FB17CC1A0C00CFB8A3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CCCE4E91580389800C38962 /* Foundation.framework */; };
@@ -1777,7 +1777,7 @@
 				1D8351D016C08D7000814C71 /* Random.m in Sources */,
 				1D8351E016C0969A00814C71 /* SMCoreDataIntegrationTest.xcdatamodeld in Sources */,
 				DE1D1F3E172F44EF00B60EB0 /* SMTestProperties.m in Sources */,
-				DE2889F217CC19E500CFB8A3 /* NSManagedObjectContext+ConcurrencySpec.m in Sources */,
+				DE246AC717D7DBD00023C231 /* SMIncrementalStoreTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -37,6 +37,9 @@ describe(@"with fixtures", ^{
     beforeEach(^{
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
+        
+        sleep(3);
+        
         client = [SMIntegrationTestHelpers defaultClient];
         [SMClient setDefaultClient:client];
         NSBundle *classBundle = [NSBundle bundleForClass:[self class]];
@@ -52,6 +55,9 @@ describe(@"with fixtures", ^{
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         [SMIntegrationTestHelpers destroyAllForFixturesNamed:fixturesToLoad];
+        
+        sleep(3);
+        
         [SMCoreDataIntegrationTestHelpers removeObserversrForMOCNotificationsWithContext:moc];
     });
     
@@ -84,6 +90,9 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(3);
+                
                 DLog(@"inserted objects after save are %@", [moc insertedObjects]);
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
                     if (error != nil) {
@@ -121,7 +130,7 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
-                
+                                
                 //link superpower to person
                 [sean setValue:invisibility forKey:@"superpower"];
                 [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
@@ -130,6 +139,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(3);
                 
                 __block NSManagedObject *person;
                 __block NSManagedObject *superpower;
@@ -218,6 +229,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(3);
                 
                 // fetch and check
                 __block NSString *seanId = [sean valueForKey:[sean primaryKeyField]];
@@ -327,6 +340,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(3);
                 
                 // fetch and check
                 __block NSString *batmanId = [batman valueForKey:[batman primaryKeyField]];
@@ -466,6 +481,9 @@ describe(@"with fixtures", ^{
                     }
                     DLog(@"Executed syncronous update");
                 }];
+                
+                sleep(3);
+                
                 NSLog(@"updated objects after update %@", [moc updatedObjects]);
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
                     if (error != nil) {
@@ -551,6 +569,8 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
+                sleep(3);
+                
                 // delete the person
                 [SMCoreDataIntegrationTestHelpers executeSynchronousDelete:moc withObject:[firstPerson objectID] andBlock:^(NSError *error) {
                     DLog(@"Executed syncronous delete");
@@ -559,6 +579,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(3);
                 
                 // make sure everything is cool
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
@@ -625,6 +647,8 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
+                sleep(3);
+                
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"first_name = %@", firstPersonName];
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     if (error != nil) {
@@ -643,6 +667,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(3);
                 
                 // delete objects
                 [[[SMIntegrationTestHelpers defaultClient] dataStore] deleteObjectId:[basketball SMObjectId] inSchema:[basketball SMSchema] onSuccess:^(NSString *objectId, NSString *schema) {
@@ -684,7 +710,16 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
         [camelCaseObject setValue:@"new" forKey:@"name"];
         [camelCaseObject setValue:@"1234" forKey:@"server_id"];
         [camelCaseObject setValue:[NSNumber numberWithInt:1900] forKey:@"yearBorn"];
-        [camelCaseObject setValue:[camelCaseObject assignObjectId] forKey:[camelCaseObject primaryKeyField]];
+        [camelCaseObject assignObjectId];
+        
+        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
+            if (error != nil) {
+                DLog(@"Error userInfo is %@", [error userInfo]);
+                [error shouldBeNil];
+            }
+        }];
+        
+        sleep(3);
     });
     afterEach(^{
         moc = [cds contextForCurrentThread];
@@ -697,26 +732,12 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
             }
         }];
         
-    });
-    
-    it(@"Will save without error after creation", ^{
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
-            if (error != nil) {
-                DLog(@"Error userInfo is %@", [error userInfo]);
-                [error shouldBeNil];
-            }
-        }];
+        sleep(3);
+        
     });
     
     it(@"Will successfully read with a predicate", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
-            if (error != nil) {
-                DLog(@"Error userInfo is %@", [error userInfo]);
-                [error shouldBeNil];
-            }
-        }];
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -737,13 +758,13 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
         [anotherRandom setValue:@"another" forKey:@"name"];
         [anotherRandom setValue:@"1234" forKey:@"server_id"];
         [anotherRandom setValue:[NSNumber numberWithInt:2012] forKey:@"yearBorn"];
-        [anotherRandom setValue:[anotherRandom assignObjectId] forKey:[anotherRandom primaryKeyField]];
+        [anotherRandom assignObjectId];
         
         NSManagedObject *yetAnotherRandom = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:moc];
         [yetAnotherRandom setValue:@"yetAnother" forKey:@"name"];
         [yetAnotherRandom setValue:@"1234" forKey:@"server_id"];
         [yetAnotherRandom setValue:[NSNumber numberWithInt:1800] forKey:@"yearBorn"];
-        [yetAnotherRandom setValue:[yetAnotherRandom assignObjectId] forKey:[yetAnotherRandom primaryKeyField]];
+        [yetAnotherRandom assignObjectId];
         
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             if (error != nil) {
@@ -751,6 +772,8 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
         
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         [fetchRequest setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"yearBorn" ascending:YES]]];
@@ -775,18 +798,13 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
                 [error shouldBeNil];
             }
         }];
-        NSLog(@"end of test");
+        
+        sleep(3);
         
     });
     
     it(@"Will save without error after update", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
-            if (error != nil) {
-                DLog(@"Error userInfo is %@", [error userInfo]);
-                [error shouldBeNil];
-            }
-        }];
         [camelCaseObject setValue:[NSNumber numberWithInt:2000] forKey:@"yearBorn"];
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             if (error != nil) {
@@ -794,6 +812,9 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
+        
     });
      
 });
@@ -818,17 +839,17 @@ describe(@"test camel case with relationships", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:moc];
         
+        [todo assignObjectId];
         [todo setValue:@"Hello One-To-One" forKey:@"title"];
-        [todo setValue:[todo assignObjectId] forKey:[todo primaryKeyField]];
         
         category = [NSEntityDescription insertNewObjectForEntityForName:@"Category" inManagedObjectContext:moc];
         
+        [category assignObjectId];
         [category setValue:@"Work" forKey:@"name"];
-        [category setValue:[category assignObjectId] forKey:[category primaryKeyField]];
         
         
         NSError *error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -839,13 +860,15 @@ describe(@"test camel case with relationships", ^{
         [todo setValue:category forKey:@"category"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"You created a relationship between the Todo and Category Object!");
         }
+        
+        sleep(3);
         
         [moc deleteObject:todo];
         [moc deleteObject:category];
@@ -855,6 +878,8 @@ describe(@"test camel case with relationships", ^{
                 [saveError shouldBeNil];
             }
         }];
+        
+        sleep(3);
     });
 });
 
@@ -886,7 +911,7 @@ describe(@"Updating existing object relationship fields to nil", ^{
         
         // save
         NSError *error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -898,7 +923,7 @@ describe(@"Updating existing object relationship fields to nil", ^{
         [person setValue:superpower forKey:@"superpower"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -910,7 +935,7 @@ describe(@"Updating existing object relationship fields to nil", ^{
         [person setValue:nil forKey:@"superpower"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -918,17 +943,21 @@ describe(@"Updating existing object relationship fields to nil", ^{
             DLog(@"Saved");
         }
         
+        sleep(3);
+        
         // delete objects and save
         [moc deleteObject:person];
         [moc deleteObject:superpower];
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
         }
+        
+        sleep(3);
         
     });
     it(@"passes for one-to-many", ^{
@@ -942,7 +971,7 @@ describe(@"Updating existing object relationship fields to nil", ^{
         
         // save
         NSError *error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -954,7 +983,7 @@ describe(@"Updating existing object relationship fields to nil", ^{
         [person setValue:[NSSet setWithObject:interest] forKey:@"interests"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -966,7 +995,7 @@ describe(@"Updating existing object relationship fields to nil", ^{
         [person setValue:nil forKey:@"interests"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -974,17 +1003,21 @@ describe(@"Updating existing object relationship fields to nil", ^{
             DLog(@"Saved");
         }
         
+        sleep(3);
+        
         // delete objects and save
         [moc deleteObject:person];
         [moc deleteObject:interest];
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
         }
+        
+        sleep(3);
     });
 });
 
@@ -1014,7 +1047,7 @@ describe(@"can update a field to null", ^{
         
         // save
         NSError *error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -1025,7 +1058,7 @@ describe(@"can update a field to null", ^{
         [person setValue:nil forKey:@"armor_class"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -1033,10 +1066,12 @@ describe(@"can update a field to null", ^{
             DLog(@"Saved");
         }
         
+        sleep(3);
+        
         // delete objects and save
         [moc deleteObject:person];
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -1044,6 +1079,7 @@ describe(@"can update a field to null", ^{
             DLog(@"Saved");
         }
 
+        sleep(3);
         
     });
     it(@"updates with relationships, too", ^{
@@ -1057,7 +1093,7 @@ describe(@"can update a field to null", ^{
         
         // save
         NSError *error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -1071,7 +1107,7 @@ describe(@"can update a field to null", ^{
         
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -1080,25 +1116,29 @@ describe(@"can update a field to null", ^{
         }
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
         }
+        
+        sleep(3);
         
         // delete objects and save
         [moc deleteObject:person];
         [moc deleteObject:superpower];
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
-        }        
+        }
+        
+        sleep(3);
     });
     
 });
@@ -1128,7 +1168,7 @@ describe(@"Delete propagation with Cascade Rule", ^{
         
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
-        
+                
         // Check cache map
         __block NSDictionary *lcMapResults = nil;
         NSURL *cacheMapURL = [SMCoreDataIntegrationTestHelpers SM_getStoreURLForCacheMapTableWithPublicKey:testProperties.client.publicKey];
@@ -1143,6 +1183,7 @@ describe(@"Delete propagation with Cascade Rule", ^{
         [testProperties.moc deleteObject:person];
         error = nil;
         [testProperties.moc saveAndWait:&error];
+        
                 
         lcMapResults = nil;
         lcMapResults = [SMCoreDataIntegrationTestHelpers getContentsOfFileAtPath:[cacheMapURL path]];

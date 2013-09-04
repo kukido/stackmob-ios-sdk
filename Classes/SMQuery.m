@@ -290,7 +290,7 @@
     return value;
 }
 
-- (void)SM_setKeysAndValuesFrom:(NSDictionary *)requestParameters to:(NSMutableDictionary *__autoreleasing*)newParameters
+- (void)SM_setKeysAndValuesFrom:(NSDictionary *)requestParameters to:(NSMutableDictionary *)newParameters
 {
     BOOL shouldAddAnd = NO;
     __block NSString *keyToSet = @"";
@@ -299,8 +299,8 @@
         _andGroup += 1;
         [requestParameters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
             keyToSet = [NSString stringWithFormat:@"[or%d].[and%d].%@", _orGroup, _andGroup, key];
-            if (![[*newParameters allKeys] containsObject:keyToSet]) {
-                [*newParameters setObject:obj forKey:keyToSet];
+            if (![[newParameters allKeys] containsObject:keyToSet]) {
+                [newParameters setObject:obj forKey:keyToSet];
             } else {
                 [NSException raise:SMExceptionIncompatibleObject format:@"Duplicate parameter key found: %@.  This may cause unexpected query results as the key to set will override the existing key/value.  To include a condition where a key can be one of multiple values, use IN i.e. 'key IN [value1, value2]'.", keyToSet];
             }
@@ -308,8 +308,8 @@
     } else {
         [requestParameters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
             keyToSet = [NSString stringWithFormat:@"[or%d].%@", _orGroup, key];
-            if (![[*newParameters allKeys] containsObject:keyToSet]) {
-                [*newParameters setObject:obj forKey:keyToSet];
+            if (![[newParameters allKeys] containsObject:keyToSet]) {
+                [newParameters setObject:obj forKey:keyToSet];
             } else {
                 [NSException raise:SMExceptionIncompatibleObject format:@"Duplicate parameter key found: %@.  This may cause unexpected query results as the key to set will override the existing key/value.  To include a condition where a key can be one of multiple values, use IN i.e. 'key IN [value1, value2]'.", keyToSet];
             }
@@ -322,7 +322,7 @@
     NSMutableDictionary *newParameters = [NSMutableDictionary dictionary];
     if (_isOrQuery) {
         NSMutableDictionary *currentParametersCopy = [self.requestParameters mutableCopy];
-        [self SM_setKeysAndValuesFrom:query.requestParameters to:&newParameters];
+        [self SM_setKeysAndValuesFrom:query.requestParameters to:newParameters];
         
         // Enumerate through entries to be added and check for duplicate keys that would be overriden
         [newParameters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
@@ -338,8 +338,8 @@
         _isOrQuery = YES;
         _orGroup += 1;
         
-        [self SM_setKeysAndValuesFrom:self.requestParameters to:&newParameters];
-        [self SM_setKeysAndValuesFrom:query.requestParameters to:&newParameters];
+        [self SM_setKeysAndValuesFrom:self.requestParameters to:newParameters];
+        [self SM_setKeysAndValuesFrom:query.requestParameters to:newParameters];
         
         self.requestParameters = [NSDictionary dictionaryWithDictionary:newParameters];
     }

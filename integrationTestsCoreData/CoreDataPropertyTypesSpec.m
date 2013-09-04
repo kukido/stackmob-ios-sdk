@@ -88,6 +88,9 @@ describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -115,6 +118,9 @@ describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -152,6 +158,8 @@ describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -235,6 +243,9 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to True", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -263,6 +274,9 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to True", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -298,6 +312,8 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to True", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -374,6 +390,8 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to false", ^{
             }
         }];
         
+        sleep(3);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -402,6 +420,9 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to false", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -439,6 +460,8 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to false", ^{
                  [error shouldBeNil];
              }
          }];
+         
+         sleep(3);
      
          NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
          NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -514,6 +537,9 @@ describe(@"Testing CRUD on an Entity with a GeoPoint attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
+        
     });
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -529,6 +555,9 @@ describe(@"Testing CRUD on an Entity with a GeoPoint attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
+        
     });
     it(@"Will successfully read", ^{
         
@@ -848,6 +877,9 @@ describe(@"Testing CRUD on an Entity with a SMGeoPoint attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
+        
     });
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -859,6 +891,9 @@ describe(@"Testing CRUD on an Entity with a SMGeoPoint attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
+        
     });
     it(@"Will successfully read", ^{
         

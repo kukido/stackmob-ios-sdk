@@ -53,6 +53,8 @@ describe(@"SMUserManagedObject", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(3);
     });
     it(@"should have deleted the entry from the keychain", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
