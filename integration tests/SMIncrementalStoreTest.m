@@ -24,7 +24,7 @@
 #import "SMTestProperties.h"
 
 SPEC_BEGIN(SMIncrementalStoreTest)
-
+/*
 describe(@"with fixtures", ^{
     __block NSArray *fixturesToLoad;
     __block NSDictionary *fixtures;
@@ -818,7 +818,7 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
     });
      
 });
-
+*/
 describe(@"test camel case with relationships", ^{
     __block NSManagedObjectContext *moc = nil;
     __block SMClient *client = nil;
