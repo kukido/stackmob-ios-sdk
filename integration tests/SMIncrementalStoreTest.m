@@ -24,7 +24,7 @@
 #import "SMTestProperties.h"
 
 SPEC_BEGIN(SMIncrementalStoreTest)
-/*
+
 describe(@"with fixtures", ^{
     __block NSArray *fixturesToLoad;
     __block NSDictionary *fixtures;
@@ -38,7 +38,7 @@ describe(@"with fixtures", ^{
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         client = [SMIntegrationTestHelpers defaultClient];
         [SMClient setDefaultClient:client];
@@ -56,7 +56,7 @@ describe(@"with fixtures", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         [SMIntegrationTestHelpers destroyAllForFixturesNamed:fixturesToLoad];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         [SMCoreDataIntegrationTestHelpers removeObserversrForMOCNotificationsWithContext:moc];
     });
@@ -91,7 +91,7 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                 
                 DLog(@"inserted objects after save are %@", [moc insertedObjects]);
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
@@ -140,7 +140,7 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                 
                 __block NSManagedObject *person;
                 __block NSManagedObject *superpower;
@@ -230,7 +230,7 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                 
                 // fetch and check
                 __block NSString *seanId = [sean valueForKey:[sean primaryKeyField]];
@@ -341,7 +341,7 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                 
                 // fetch and check
                 __block NSString *batmanId = [batman valueForKey:[batman primaryKeyField]];
@@ -482,7 +482,7 @@ describe(@"with fixtures", ^{
                     DLog(@"Executed syncronous update");
                 }];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                 
                 NSLog(@"updated objects after update %@", [moc updatedObjects]);
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
@@ -569,7 +569,7 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                 
                 // delete the person
                 [SMCoreDataIntegrationTestHelpers executeSynchronousDelete:moc withObject:[firstPerson objectID] andBlock:^(NSError *error) {
@@ -580,7 +580,7 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                 
                 // make sure everything is cool
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
@@ -647,7 +647,7 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                 
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"first_name = %@", firstPersonName];
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
@@ -668,7 +668,7 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                 
                 // delete objects
                 [[[SMIntegrationTestHelpers defaultClient] dataStore] deleteObjectId:[basketball SMObjectId] inSchema:[basketball SMSchema] onSuccess:^(NSString *objectId, NSString *schema) {
@@ -719,7 +719,7 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         moc = [cds contextForCurrentThread];
@@ -732,7 +732,7 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
     
@@ -773,7 +773,7 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         [fetchRequest setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"yearBorn" ascending:YES]]];
@@ -799,7 +799,7 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
     
@@ -813,12 +813,12 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
      
 });
-*/
+
 describe(@"test camel case with relationships", ^{
     __block NSManagedObjectContext *moc = nil;
     __block SMClient *client = nil;
@@ -868,7 +868,7 @@ describe(@"test camel case with relationships", ^{
             DLog(@"You created a relationship between the Todo and Category Object!");
         }
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         [moc deleteObject:todo];
         [moc deleteObject:category];
@@ -879,7 +879,7 @@ describe(@"test camel case with relationships", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
 });
 
@@ -943,7 +943,7 @@ describe(@"Updating existing object relationship fields to nil", ^{
             DLog(@"Saved");
         }
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         // delete objects and save
         [moc deleteObject:person];
@@ -957,7 +957,7 @@ describe(@"Updating existing object relationship fields to nil", ^{
             DLog(@"Saved");
         }
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
     it(@"passes for one-to-many", ^{
@@ -1003,7 +1003,7 @@ describe(@"Updating existing object relationship fields to nil", ^{
             DLog(@"Saved");
         }
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         // delete objects and save
         [moc deleteObject:person];
@@ -1017,7 +1017,7 @@ describe(@"Updating existing object relationship fields to nil", ^{
             DLog(@"Saved");
         }
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
 });
 
@@ -1066,7 +1066,7 @@ describe(@"can update a field to null", ^{
             DLog(@"Saved");
         }
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         // delete objects and save
         [moc deleteObject:person];
@@ -1079,7 +1079,7 @@ describe(@"can update a field to null", ^{
             DLog(@"Saved");
         }
 
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
     it(@"updates with relationships, too", ^{
@@ -1124,7 +1124,7 @@ describe(@"can update a field to null", ^{
             DLog(@"Saved");
         }
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         // delete objects and save
         [moc deleteObject:person];
@@ -1138,7 +1138,7 @@ describe(@"can update a field to null", ^{
             DLog(@"Saved");
         }
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     
 });

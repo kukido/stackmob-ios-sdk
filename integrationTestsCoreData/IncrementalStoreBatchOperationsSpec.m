@@ -43,7 +43,7 @@ describe(@"Inserting/Updating/Deleting many objects works fine", ^{
         [[theValue(saveSuccess) should] beYes];
         [arrayOfObjects removeAllObjects];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
     it(@"inserts and updates without error", ^{

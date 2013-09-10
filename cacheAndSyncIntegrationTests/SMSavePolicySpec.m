@@ -501,7 +501,7 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
-        //sleep(1);
+        //sleep(SLEEP_TIME_MIN);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -628,7 +628,7 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         
         [testProperties.cds purgeCacheOfObjectsWithEntityName:@"Todo"];
         
-        sleep(1);
+        sleep(SLEEP_TIME_MIN);
         
         error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error];
@@ -701,7 +701,7 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         
         [testProperties.cds purgeCacheOfObjectsWithEntityName:@"Todo"];
         
-        sleep(1);
+        sleep(SLEEP_TIME_MIN);
         
         error = nil;
         success = [testProperties.moc saveAndWait:&error];
@@ -711,7 +711,7 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
-        //sleep(1);
+        //sleep(SLEEP_TIME_MIN);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -847,7 +847,7 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
-        //sleep(1);
+        //sleep(SLEEP_TIME_MIN);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];

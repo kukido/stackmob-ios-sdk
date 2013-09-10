@@ -38,7 +38,7 @@ describe(@"with fixtures", ^{
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         client = [SMIntegrationTestHelpers defaultClient];
         [SMClient setDefaultClient:client];
@@ -640,7 +640,7 @@ describe(@"OR query from network should return same as cache", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         //[[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -659,7 +659,7 @@ describe(@"OR query from network should return same as cache", ^{
         }];
         SM_CACHE_ENABLED = NO;
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     it(@"simple query", ^{
         [testProperties.client.coreDataStore setFetchPolicy:SMFetchPolicyNetworkOnly];
@@ -713,14 +713,14 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         [[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     
     afterEach(^{
         [SMIntegrationTestHelpers destroyAllForFixturesNamed:fixturesToLoad];
         SM_CACHE_ENABLED = NO;
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     it(@"single or", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
@@ -898,7 +898,7 @@ describe(@"Fetch request on User which inherits from the SMUserManagedObject", ^
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -915,7 +915,7 @@ describe(@"Fetch request on User which inherits from the SMUserManagedObject", ^
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     it(@"Should correctly fetch", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -990,7 +990,7 @@ describe(@"fetch requests for managed objects", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
     afterEach(^{
@@ -1004,7 +1004,7 @@ describe(@"fetch requests for managed objects", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     it(@"Should correctly fetch", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -1049,7 +1049,7 @@ describe(@"empty string", ^{
             [error shouldBeNil];
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -1066,7 +1066,7 @@ describe(@"empty string", ^{
             [error shouldBeNil];
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     it(@"equal to empty string", ^{
         

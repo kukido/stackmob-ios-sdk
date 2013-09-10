@@ -89,7 +89,7 @@ describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -119,7 +119,7 @@ describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -159,7 +159,7 @@ describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -244,7 +244,7 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to True", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -275,7 +275,7 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to True", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -313,7 +313,7 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to True", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -390,7 +390,7 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to false", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -421,7 +421,7 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to false", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -461,7 +461,7 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to false", ^{
              }
          }];
          
-         sleep(3);
+         sleep(SLEEP_TIME);
      
          NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
          NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -538,7 +538,7 @@ describe(@"Testing CRUD on an Entity with a GeoPoint attribute", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
     afterEach(^{
@@ -556,7 +556,7 @@ describe(@"Testing CRUD on an Entity with a GeoPoint attribute", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
     it(@"Will successfully read", ^{
@@ -878,7 +878,7 @@ describe(@"Testing CRUD on an Entity with a SMGeoPoint attribute", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
     afterEach(^{
@@ -892,7 +892,7 @@ describe(@"Testing CRUD on an Entity with a SMGeoPoint attribute", ^{
             }
         }];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
     it(@"Will successfully read", ^{
