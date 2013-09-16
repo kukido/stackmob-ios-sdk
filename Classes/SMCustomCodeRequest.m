@@ -41,7 +41,8 @@
 
 - (NSString *)URLEncodedStringFromValue:(NSString *)value
 {
-	return (__bridge_transfer  NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)value, nil, NULL, CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
+    static NSString * const legalURLCharactersToBeEscaped = @":/.?&=;+!@#$()~ ";
+	return (__bridge_transfer  NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)value, nil, (__bridge CFStringRef)(legalURLCharactersToBeEscaped), CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
 }
 
 @end
