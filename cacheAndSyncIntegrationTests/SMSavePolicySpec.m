@@ -47,6 +47,8 @@ describe(@"Save policy works with syncing", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Can save locally a few times, sync, and all is well", ^{
         
@@ -126,9 +128,10 @@ describe(@"Save policy works with syncing", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         
         // Now there should be 10 objects on StackMob
-        // At this point there should be nothing on the server
         error = nil;
         NSFetchRequest *todoFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         NSUInteger count2 = [testProperties.moc countForFetchRequestAndWait:todoFetch2 error:&error];
@@ -164,6 +167,8 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Saves in both places on create", ^{
         
@@ -179,6 +184,8 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         
         [[theValue(success) should] beYes];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -223,6 +230,8 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Pull down objects
         
         [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
@@ -243,6 +252,8 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         
         [[theValue(success) should] beYes];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -280,6 +291,8 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -308,6 +321,8 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         
         [[theValue(success) should] beYes];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -356,6 +371,8 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Saves in both places on create", ^{
         
@@ -371,6 +388,8 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         
         [[theValue(success) should] beYes];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -415,6 +434,8 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Pull down objects
         
         [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
@@ -435,6 +456,8 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         
         [[theValue(success) should] beYes];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -472,6 +495,8 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -501,7 +526,7 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
-        //sleep(SLEEP_TIME_MIN);
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -550,6 +575,8 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Saves on the network only on create", ^{
         
@@ -567,6 +594,8 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         
         [[theValue(success) should] beYes];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -611,6 +640,8 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Pull down objects
         
         [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
@@ -637,6 +668,8 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         
         [[theValue(success) should] beYes];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -676,6 +709,8 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -711,7 +746,7 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
-        //sleep(SLEEP_TIME_MIN);
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -760,6 +795,8 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Saves on the network only on create", ^{
         
@@ -777,6 +814,8 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         
         [[theValue(success) should] beYes];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -816,6 +855,8 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -847,7 +888,7 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
-        //sleep(SLEEP_TIME_MIN);
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -898,6 +939,8 @@ describe(@"Per Request Save Policy", ^{
         }
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"not setting policy works, sync", ^{
         

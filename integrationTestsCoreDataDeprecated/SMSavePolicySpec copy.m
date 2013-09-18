@@ -30,7 +30,7 @@ describe(@"Save policy works with syncing", ^{
     });
     afterEach(^{
         [testProperties.cds setSavePolicy:SMSavePolicyNetworkOnly];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         NSError *error = nil;
@@ -47,13 +47,15 @@ describe(@"Save policy works with syncing", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Can save locally a few times, sync, and all is well", ^{
         
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
         
         [[[SMClient defaultClient] coreDataStore] setSavePolicy:SMSavePolicyCacheOnly];
-        [[[SMClient defaultClient] coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
+        [[[SMClient defaultClient] coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
         
         for (int i=0; i < 5; i++) {
             NSManagedObject *newTodo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
@@ -98,7 +100,7 @@ describe(@"Save policy works with syncing", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
-        [[[SMClient defaultClient] coreDataStore] setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [[[SMClient defaultClient] coreDataStore] setFetchPolicy:SMFetchPolicyNetworkOnly];
         
         // At this point there should be nothing on the server
         error = nil;
@@ -126,9 +128,10 @@ describe(@"Save policy works with syncing", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         
         // Now there should be 10 objects on StackMob
-        // At this point there should be nothing on the server
         error = nil;
         NSFetchRequest *todoFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         NSUInteger count2 = [testProperties.moc countForFetchRequestAndWait:todoFetch2 error:&error];
@@ -147,7 +150,7 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         testProperties = [[SMTestProperties alloc] init];
     });
     afterEach(^{
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         NSError *error = nil;
@@ -164,6 +167,8 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Saves in both places on create", ^{
         
@@ -180,8 +185,10 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -190,7 +197,7 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         [[results should] haveCountOf:5];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -223,9 +230,11 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Pull down objects
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         NSError *error = nil;
@@ -244,8 +253,10 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -254,7 +265,7 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         [[results should] haveCountOf:5];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -280,8 +291,10 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -290,7 +303,7 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         [[results should] haveCountOf:5];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -309,8 +322,10 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -319,7 +334,7 @@ describe(@"SMSavePolicy, default networkThenCache", ^{
         [[results should] haveCountOf:5];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -339,7 +354,7 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [testProperties.cds setSavePolicy:SMSavePolicyNetworkThenCache];
     });
     afterEach(^{
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         NSError *error = nil;
@@ -356,6 +371,8 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Saves in both places on create", ^{
         
@@ -372,8 +389,10 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -382,7 +401,7 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [[results should] haveCountOf:5];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -415,9 +434,11 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Pull down objects
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         NSError *error = nil;
@@ -436,8 +457,10 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -446,7 +469,7 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [[results should] haveCountOf:5];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -472,8 +495,10 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -482,7 +507,7 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [[results should] haveCountOf:5];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -501,10 +526,10 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
-        //sleep(SLEEP_TIME_MIN);
+        sleep(SLEEP_TIME);
         
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -513,7 +538,7 @@ describe(@"SMSavePolicy, explicitly setting networkThenCache", ^{
         [[results should] haveCountOf:5];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -533,7 +558,7 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [testProperties.cds setSavePolicy:SMSavePolicyNetworkOnly];
     });
     afterEach(^{
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         NSError *error = nil;
@@ -550,6 +575,8 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Saves on the network only on create", ^{
         
@@ -568,8 +595,10 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -578,7 +607,7 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [[results should] haveCountOf:0];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -611,9 +640,11 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Pull down objects
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         NSError *error = nil;
@@ -638,8 +669,10 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -648,7 +681,7 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [[results should] haveCountOf:0];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -676,8 +709,10 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -686,7 +721,7 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [[results should] haveCountOf:0];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -711,10 +746,10 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
-        //sleep(SLEEP_TIME_MIN);
+        sleep(SLEEP_TIME);
         
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -723,7 +758,7 @@ describe(@"SMSavePolicy, setting networkOnly", ^{
         [[results should] haveCountOf:0];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -743,7 +778,7 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [testProperties.cds setSavePolicy:SMSavePolicyCacheOnly];
     });
     afterEach(^{
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         NSError *error = nil;
@@ -760,6 +795,8 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Saves on the network only on create", ^{
         
@@ -778,8 +815,10 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -788,7 +827,7 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [[results should] haveCountOf:5];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -816,8 +855,10 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -826,7 +867,7 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [[results should] haveCountOf:5];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -847,10 +888,10 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
-        //sleep(SLEEP_TIME_MIN);
+        sleep(SLEEP_TIME);
         
         // Check cache
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -859,7 +900,7 @@ describe(@"SMSavePolicy, setting cacheOnly", ^{
         [[results should] haveCountOf:5];
         [error shouldBeNil];
         
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *networkFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
         error = nil;
@@ -880,7 +921,7 @@ describe(@"Per Request Save Policy", ^{
         
     });
     afterAll(^{
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         [testProperties.cds setSavePolicy:SMSavePolicyNetworkThenCache];
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         NSError *error = nil;
@@ -898,6 +939,8 @@ describe(@"Per Request Save Policy", ^{
         }
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"not setting policy works, sync", ^{
         
@@ -949,57 +992,57 @@ describe(@"Per Request Save Policy", ^{
         [error shouldBeNil];
     });
     /*
-    it(@"not setting policy works, async", ^{
-        
-        dispatch_queue_t queue = dispatch_queue_create("aQueue", NULL);
-        
-        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
-        
-        [testProperties.cds setSavePolicy:SMSavePolicyCacheOnly];
-        
-        for (int i=0; i < 10; i++) {
-            NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
-            [todo assignObjectId];
-        }
-        
-        __block NSError *anError = [NSError errorWithDomain:@"error" code:400 userInfo:nil];
-        [testProperties.moc saveWithSuccessCallbackQueue:queue failureCallbackQueue:queue onSuccess:^{
-            NSLog(@"here");
-            anError = nil;
-        } onFailure:^(NSError *error) {
-            anError = error;
-        }];
-        
-        sleep(2);
-        
-        [anError shouldBeNil];
-                        
-    });
-    it(@"setting request policy works, async", ^{
-        
-        dispatch_group_t group = dispatch_group_create();
-        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
-        
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
-        
-        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
-        
-        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
-        SMRequestOptions *options = [SMRequestOptions options];
-        options.cachePolicy = SMCachePolicyTryCacheOnly;
-        [[theValue(options.cachePolicySet) should] beYes];
-        
-        dispatch_group_enter(group);
-        [testProperties.moc executeFetchRequest:request returnManagedObjectIDs:YES successCallbackQueue:queue failureCallbackQueue:queue options:options onSuccess:^(NSArray *results) {
-            [[results should] haveCountOf:10];
-            dispatch_group_leave(group);
-        } onFailure:^(NSError *error) {
-            [error shouldBeNil];
-            dispatch_group_leave(group);
-        }];
-        
-        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-    });
+     it(@"not setting policy works, async", ^{
+     
+     dispatch_queue_t queue = dispatch_queue_create("aQueue", NULL);
+     
+     [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+     
+     [testProperties.cds setSavePolicy:SMSavePolicyCacheOnly];
+     
+     for (int i=0; i < 10; i++) {
+     NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+     [todo assignObjectId];
+     }
+     
+     __block NSError *anError = [NSError errorWithDomain:@"error" code:400 userInfo:nil];
+     [testProperties.moc saveWithSuccessCallbackQueue:queue failureCallbackQueue:queue onSuccess:^{
+     NSLog(@"here");
+     anError = nil;
+     } onFailure:^(NSError *error) {
+     anError = error;
+     }];
+     
+     sleep(2);
+     
+     [anError shouldBeNil];
+     
+     });
+     it(@"setting request policy works, async", ^{
+     
+     dispatch_group_t group = dispatch_group_create();
+     dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+     
+     [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+     
+     [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+     
+     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+     SMRequestOptions *options = [SMRequestOptions options];
+     options.cachePolicy = SMFetchPolicyCacheOnly;
+     [[theValue(options.fetchPolicySet) should] beYes];
+     
+     dispatch_group_enter(group);
+     [testProperties.moc executeFetchRequest:request returnManagedObjectIDs:YES successCallbackQueue:queue failureCallbackQueue:queue options:options onSuccess:^(NSArray *results) {
+     [[results should] haveCountOf:10];
+     dispatch_group_leave(group);
+     } onFailure:^(NSError *error) {
+     [error shouldBeNil];
+     dispatch_group_leave(group);
+     }];
+     
+     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+     });
      */
 });
 

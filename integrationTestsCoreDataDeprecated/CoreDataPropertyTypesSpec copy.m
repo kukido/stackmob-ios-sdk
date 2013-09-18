@@ -88,6 +88,9 @@ describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -115,6 +118,9 @@ describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -153,6 +159,8 @@ describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
             }
         }];
         
+        sleep(SLEEP_TIME);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -167,8 +175,8 @@ describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
         }];
         
     });
-     
-     
+    
+    
 });
 
 describe(@"Testing CRUD on an Entity with a Boolean attribute set to True", ^{
@@ -235,6 +243,9 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to True", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -263,6 +274,9 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to True", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -299,6 +313,8 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to True", ^{
             }
         }];
         
+        sleep(SLEEP_TIME);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -311,9 +327,9 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to True", ^{
             [[theValue([results count]) should] equal:theValue(1)];
             [[[[results objectAtIndex:0] valueForKey:@"done"] should] equal:[NSNumber numberWithBool:NO]];
         }];
-     
+        
     });
- 
+    
 });
 
 
@@ -358,7 +374,7 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to false", ^{
     });
     
     
-     
+    
     it(@"Will successfully read with done == false", ^{
         moc = [cds contextForCurrentThread];
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -373,6 +389,8 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to false", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -402,6 +420,9 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to false", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
+        
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -418,43 +439,45 @@ describe(@"Testing CRUD on an Entity with a Boolean attribute set to false", ^{
             }
         }];
     });
-     it(@"Will save and read without error after update", ^{
-         moc = [cds contextForCurrentThread];
-         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-         booleanObject = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:moc];
-         [booleanObject setValue:@"Should be False" forKey:@"name"];
-         [booleanObject setValue:[NSNumber numberWithBool:NO] forKey:@"done"];
-         [booleanObject setValue:[booleanObject assignObjectId] forKey:[booleanObject primaryKeyField]];
-         
-         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
-             if (error != nil) {
-                 DLog(@"Error userInfo is %@", [error userInfo]);
-                 [error shouldBeNil];
-             }
-         }];
-         [booleanObject setValue:[NSNumber numberWithBool:YES] forKey:@"done"];
-         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
-             if (error != nil) {
-                 DLog(@"Error userInfo is %@", [error userInfo]);
-                 [error shouldBeNil];
-             }
-         }];
-     
-         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
-         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-         [fetchRequest setEntity:entity];
-         [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:fetchRequest andBlock:^(NSArray *results, NSError *error) {
-             if (error != nil) {
-                 DLog(@"Error userInfo is %@", [error userInfo]);
-                 [error shouldBeNil];
-             }
-             NSLog(@"results is %@", results);
-             [[theValue([results count]) should] equal:theValue(1)];
-             [[[[results objectAtIndex:0] valueForKey:@"done"] should] equal:[NSNumber numberWithBool:YES]];
-         }];
-     
+    it(@"Will save and read without error after update", ^{
+        moc = [cds contextForCurrentThread];
+        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        booleanObject = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:moc];
+        [booleanObject setValue:@"Should be False" forKey:@"name"];
+        [booleanObject setValue:[NSNumber numberWithBool:NO] forKey:@"done"];
+        [booleanObject setValue:[booleanObject assignObjectId] forKey:[booleanObject primaryKeyField]];
+        
+        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
+            if (error != nil) {
+                DLog(@"Error userInfo is %@", [error userInfo]);
+                [error shouldBeNil];
+            }
+        }];
+        [booleanObject setValue:[NSNumber numberWithBool:YES] forKey:@"done"];
+        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
+            if (error != nil) {
+                DLog(@"Error userInfo is %@", [error userInfo]);
+                [error shouldBeNil];
+            }
+        }];
+        
+        sleep(SLEEP_TIME);
+        
+        NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+        [fetchRequest setEntity:entity];
+        [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:fetchRequest andBlock:^(NSArray *results, NSError *error) {
+            if (error != nil) {
+                DLog(@"Error userInfo is %@", [error userInfo]);
+                [error shouldBeNil];
+            }
+            NSLog(@"results is %@", results);
+            [[theValue([results count]) should] equal:theValue(1)];
+            [[[[results objectAtIndex:0] valueForKey:@"done"] should] equal:[NSNumber numberWithBool:YES]];
+        }];
+        
     });
-     
+    
 });
 
 
@@ -473,17 +496,17 @@ describe(@"Testing CRUD on an Entity with a GeoPoint attribute", ^{
         cds = [client coreDataStoreWithManagedObjectModel:aModel];
         moc = [cds contextForCurrentThread];
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-    
+        
         geoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:moc];
         
         NSNumber *lat = [NSNumber numberWithDouble:37.77215879638275];
         NSNumber *lon = [NSNumber numberWithDouble:-122.4064476357965];
         
         location = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  lat
-                                  ,@"lat"
-                                  ,lon
-                                  ,@"lon", nil];
+                    lat
+                    ,@"lat"
+                    ,lon
+                    ,@"lon", nil];
         
         NSData *data = [NSKeyedArchiver archivedDataWithRootObject:location];
         
@@ -496,10 +519,10 @@ describe(@"Testing CRUD on an Entity with a GeoPoint attribute", ^{
         NSNumber *lon2 = [NSNumber numberWithDouble:-71.416669];
         
         NSDictionary *location2 = [NSDictionary dictionaryWithObjectsAndKeys:
-                    lat2
-                    ,@"lat"
-                    ,lon2
-                    ,@"lon", nil];
+                                   lat2
+                                   ,@"lat"
+                                   ,lon2
+                                   ,@"lon", nil];
         
         NSData *data2 = [NSKeyedArchiver archivedDataWithRootObject:location2];
         [geoObject2 setValue:data2 forKey:@"geopoint"];
@@ -514,6 +537,9 @@ describe(@"Testing CRUD on an Entity with a GeoPoint attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
+        
     });
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -529,6 +555,9 @@ describe(@"Testing CRUD on an Entity with a GeoPoint attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
+        
     });
     it(@"Will successfully read", ^{
         
@@ -556,10 +585,10 @@ describe(@"Testing CRUD on an Entity with a GeoPoint attribute", ^{
         coordinate.longitude = -122.418167;
         
         SMPredicate *predicate = [SMPredicate predicateWhere:@"geopoint" isWithin:3.5
-                                                        milesOf:coordinate];
+                                                     milesOf:coordinate];
         [fetchRequest setPredicate:predicate];
         
-    
+        
         
         [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:fetchRequest andBlock:^(NSArray *results, NSError *error) {
             if (error != nil) {
@@ -666,7 +695,7 @@ describe(@"Testing CRUD on an Entity with a GeoPoint attribute", ^{
         }];
         
     });
-
+    
     it(@"Will successfully read using an NSPredicate instance method", ^{
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
@@ -760,10 +789,10 @@ describe(@"Testing CRUD on an Entity with a GeoPoint attribute", ^{
         NSNumber *lon = [NSNumber numberWithDouble:-122.418167];
         
         NSDictionary *newLocation = [NSDictionary dictionaryWithObjectsAndKeys:
-                    lat
-                    ,@"lat"
-                    ,lon
-                    ,@"lon", nil];
+                                     lat
+                                     ,@"lat"
+                                     ,lon
+                                     ,@"lon", nil];
         
         NSData *data = [NSKeyedArchiver archivedDataWithRootObject:newLocation];
         
@@ -848,6 +877,9 @@ describe(@"Testing CRUD on an Entity with a SMGeoPoint attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
+        
     });
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -859,6 +891,9 @@ describe(@"Testing CRUD on an Entity with a SMGeoPoint attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
+        
     });
     it(@"Will successfully read", ^{
         
@@ -955,7 +990,7 @@ describe(@"Testing CRUD on an Entity with a SMGeoPoint attribute", ^{
         neCoordinate.longitude = -122.418167;
         
         SMGeoPoint *neGeoPoint = [SMGeoPoint geoPointWithCoordinate:neCoordinate];
-    
+        
         SMPredicate *predicate = [SMPredicate predicateWhere:@"geopoint" isWithinBoundsWithSWGeoPoint:swGeoPoint andNEGeoPoint:neGeoPoint];
         [fetchRequest setPredicate:predicate];
         
