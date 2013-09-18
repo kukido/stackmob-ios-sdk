@@ -19,45 +19,38 @@
 #import "SMIntegrationTestHelpers.h"
 #import "SMCoreDataIntegrationTestHelpers.h"
 #import "Person.h"
+#import "SMTestProperties.h"
 
 SPEC_BEGIN(SMUpdateObjectsOptimizationSpec)
 
 describe(@"updating an object only persists changed fields", ^{
-    __block NSManagedObjectContext *moc = nil;
+    __block SMTestProperties *testProperties = nil;
     __block Person *person = nil;
-    __block SMClient *client = nil;
-    __block SMCoreDataStore *cds = nil;
     beforeEach(^{
-        client = [SMIntegrationTestHelpers defaultClient];
-        [SMClient setDefaultClient:client];
-        NSBundle *classBundle = [NSBundle bundleForClass:[self class]];
-        NSURL *modelURL = [classBundle URLForResource:@"SMCoreDataIntegrationTest" withExtension:@"momd"];
-        NSManagedObjectModel *aModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-        cds = [client coreDataStoreWithManagedObjectModel:aModel];
-        moc = [cds contextForCurrentThread];
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
+        testProperties = [[SMTestProperties alloc] init];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person setValue:@"bob" forKey:@"first_name"];
         [person setValue:@"jean" forKey:@"first_name"];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        [person assignObjectId];
         NSDictionary *personDict = [person SMDictionarySerialization:NO sendLocalTimestamps:NO cacheMap:nil];
         
         // Add 1 for default values
         [[theValue([[[personDict objectForKey:@"SerializedDict"] allKeys] count]) should] equal:theValue(3)];
         
-        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
+        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
     });
     afterEach(^{
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [moc deleteObject:person];
-        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        [testProperties.moc deleteObject:person];
+        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
     });
     it(@"should only persist the updated fields", ^{
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         [person setValue:@"joe" forKey:@"first_name"];
         NSDictionary *personDict = [person SMDictionarySerialization:NO sendLocalTimestamps:NO cacheMap:nil];
         [[[personDict objectForKey:@"SerializedDict"] objectForKey:@"first_name"] shouldNotBeNil];
@@ -65,7 +58,7 @@ describe(@"updating an object only persists changed fields", ^{
         
         // Add 1 for default values
         [[theValue([[[personDict objectForKey:@"SerializedDict"] allKeys] count]) should] equal:theValue(2)];
-        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
+        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
     });

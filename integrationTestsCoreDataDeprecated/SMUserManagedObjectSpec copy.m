@@ -53,6 +53,8 @@ describe(@"SMUserManagedObject", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"should have deleted the entry from the keychain", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -112,7 +114,7 @@ describe(@"SMUserManagedObject", ^{
             }];
         });
     });
-
+    
 });
 
 describe(@"can set a client with different password field name and everything still works", ^{
@@ -133,13 +135,21 @@ describe(@"can set a client with different password field name and everything st
     });
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [moc deleteObject:person];
-        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
-            if (error != nil) {
-                NSLog(@"Error userInfo is %@", [error userInfo]);
-                [error shouldBeNil];
-            }
-        }];
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"User4"];
+        NSError *error = nil;
+        NSArray *results = [[cds contextForCurrentThread] executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        if (!error) {
+            [moc deleteObject:[results objectAtIndex:0]];
+            [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *theerror) {
+                if (theerror != nil) {
+                    NSLog(@"Error userInfo is %@", [theerror userInfo]);
+                    [theerror shouldBeNil];
+                }
+            }];
+        }
+        
     });
     it(@"works", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -307,7 +317,7 @@ describe(@"should be able to create a user, relate to other object, and save eve
                 [error shouldBeNil];
             }
         }];
-
+        
         [todo setValue:person forKey:@"user3"];
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             if (error != nil) {
@@ -315,7 +325,7 @@ describe(@"should be able to create a user, relate to other object, and save eve
                 [error shouldBeNil];
             }
         }];
-
+        
         
         
     });
@@ -374,7 +384,7 @@ describe(@"userPrimaryKeyField works", ^{
             }
         }];
     });
-
+    
     
 });
 
@@ -409,7 +419,7 @@ describe(@"testing someting", ^{
             }
         }];
     });
-
+    
     it(@"should save", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"User3" inManagedObjectContext:moc];

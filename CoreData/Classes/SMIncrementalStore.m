@@ -875,7 +875,23 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         
         options.isSecure ? [secureOperations addObject:op] : [regularOperations addObject:op];
         
+        /*
+        if (!updatedObjectID) {
+            if (error != NULL && error == nil) {
+                NSError *errorToSet = [NSError errorWithDomain:SMErrorDomain code:SMErrorCoreDataSave userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"nil value for primary key. Object in question is %@", managedObject], NSLocalizedDescriptionKey, nil]];
+                *error = (__bridge id)(__bridge_retained CFTypeRef)errorToSet;
+            }
+            *stop = YES;
+        } else {
+            // add code here
+        }
+        */
+        
     }];
+    
+    if (*error) {
+        return NO;
+    }
     
     success = [self SM_enqueueRegularOperations:regularOperations secureOperations:secureOperations withGroup:group callbackGroup:callbackGroup queue:queue options:options refreshAndRetryUnauthorizedRequests:failedRequestsWithUnauthorizedResponse failedRequests:failedRequests errorListName:SMUpdatedObjectFailures error:error];
     
@@ -884,6 +900,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     if (options.cacheResults) {
         [self SM_serializeAndCacheObjects:objectsToBeCached];
     }
+    
+    
     
 #if !OS_OBJECT_USE_OBJC
     dispatch_release(group);

@@ -24,16 +24,18 @@ SPEC_BEGIN(SMCoreDataStoreTest)
 describe(@"can set a field to nil, string", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
+        
         testProperties = [[SMTestProperties alloc] init];
         // Create todo
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
         [todoObject setValue:@"title" forKey:@"title"];
-        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        [todoObject assignObjectId];
         
         NSError *error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error];
         
         [[theValue(success) should] beYes];
+        
     });
     afterEach(^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -49,8 +51,11 @@ describe(@"can set a field to nil, string", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"sets field to nil correctly", ^{
+        
         // Read Todo
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         NSError *error = nil;
@@ -67,6 +72,8 @@ describe(@"can set a field to nil, string", ^{
         
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Read todo
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         error = nil;
@@ -75,6 +82,7 @@ describe(@"can set a field to nil, string", ^{
         [[results should] haveCountOf:1];
         
         [[[results objectAtIndex:0] valueForKey:@"title"] shouldBeNil];
+        
     });
 });
 
@@ -108,6 +116,8 @@ describe(@"can set a field to nil, date", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"sets field to nil correctly", ^{
         // Read Todo
@@ -126,6 +136,8 @@ describe(@"can set a field to nil, date", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Read todo
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
@@ -168,6 +180,8 @@ describe(@"can set a field to nil, int", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"sets field to nil correctly", ^{
         // Read Todo
@@ -185,6 +199,8 @@ describe(@"can set a field to nil, int", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Read todo
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
@@ -231,6 +247,8 @@ describe(@"can set a field to nil, binary", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"sets field to nil correctly", ^{
         // Read Todo
@@ -248,6 +266,8 @@ describe(@"can set a field to nil, binary", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Read todo
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
@@ -298,6 +318,8 @@ describe(@"using the cache, binary field set to nil propogates, binary", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"sets field to nil correctly", ^{
         
@@ -335,17 +357,21 @@ describe(@"using the cache, binary field set to nil propogates, binary", ^{
         }];
         
         [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
-            [NSException raise:@"Something Wrong" format:@"Failed update"];
+            NSLog(@"FAILED UPDATE: %@", objects);
+            dispatch_group_leave(group);
         }];
         
         [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
-            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+            NSLog(@"FAILED INSERT: %@", objects);
+            dispatch_group_leave(group);
         }];
         dispatch_group_enter(group);
         
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME_MIN);
         
         // Read todo
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
@@ -391,6 +417,8 @@ describe(@"using the cache, binary field not set, doesn't propogates", ^{
         [error shouldBeNil];
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"sets field to nil correctly", ^{
         
@@ -428,17 +456,21 @@ describe(@"using the cache, binary field not set, doesn't propogates", ^{
         }];
         
         [testProperties.cds setSyncCallbackForFailedUpdates:^(NSArray *objects) {
-            [NSException raise:@"Something Wrong" format:@"Failed update"];
+            NSLog(@"FAILED UPDATE: %@", objects);
+            dispatch_group_leave(group);
         }];
         
         [testProperties.cds setSyncCallbackForFailedInserts:^(NSArray *objects) {
-            [NSException raise:@"Something Wrong" format:@"Failed insert"];
+            NSLog(@"FAILED INSERT: %@", objects);
+            dispatch_group_leave(group);
         }];
         dispatch_group_enter(group);
         
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME_MIN);
         
         // Read todo
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
@@ -482,6 +514,8 @@ describe(@"can set a field to nil, geopoint", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"sets field to nil correctly", ^{
         // Read Todo
@@ -503,6 +537,8 @@ describe(@"can set a field to nil, geopoint", ^{
         
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Read todo
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         error = nil;
@@ -513,8 +549,7 @@ describe(@"can set a field to nil, geopoint", ^{
         [[[results objectAtIndex:0] valueForKey:@"geopoint"] shouldBeNil];
     });
 });
-
-
+ 
 describe(@"create an instance of SMCoreDataStore from SMClient", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
@@ -543,6 +578,8 @@ describe(@"with a managedObjectContext from SMCoreDataStore", ^{
             error = nil;
             [testProperties.moc saveAndWait:&error];
         }
+        
+        sleep(SLEEP_TIME);
     });
     it(@"a call to save should not fail", ^{
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -558,6 +595,8 @@ describe(@"with a managedObjectContext from SMCoreDataStore", ^{
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
         [[theValue([[testProperties.moc insertedObjects] count]) should] equal:theValue(0)];
+        
+        sleep(SLEEP_TIME);
     });
 });
 
@@ -569,10 +608,12 @@ describe(@"with a managedObjectContext from SMCoreDataStore", ^{
         NSManagedObject *aPerson = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [aPerson setValue:@"the" forKey:@"first_name"];
         [aPerson setValue:@"dude" forKey:@"last_name"];
-        [aPerson setValue:[aPerson assignObjectId] forKey:[aPerson primaryKeyField]];
+        [aPerson assignObjectId];
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -587,6 +628,8 @@ describe(@"with a managedObjectContext from SMCoreDataStore", ^{
             error = nil;
             [testProperties.moc saveAndWait:&error];
         }
+        
+        sleep(SLEEP_TIME);
     });
     it(@"reads the object", ^{
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -620,6 +663,8 @@ describe(@"with a managedObjectContext from SMCoreDataStore", ^{
             error = nil;
             [testProperties.moc saveAndWait:&error];
         }
+        
+        sleep(SLEEP_TIME);
     });
     it(@"updates the object", ^{
         NSManagedObject *aPerson = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
@@ -637,6 +682,8 @@ describe(@"with a managedObjectContext from SMCoreDataStore", ^{
         error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
 });
 
@@ -695,6 +742,8 @@ describe(@"Writing Default Values Online, Strings", ^{
             error = nil;
             [testProperties.moc saveAndWait:&error];
         }
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Works when online", ^{
         NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
@@ -703,6 +752,8 @@ describe(@"Writing Default Values Online, Strings", ^{
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"todoId == '1234'"]];
@@ -734,6 +785,8 @@ describe(@"Writing Default Values Online with Update, Integers", ^{
             error = nil;
             [testProperties.moc saveAndWait:&error];
         }
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Works when online", ^{
         
@@ -745,6 +798,8 @@ describe(@"Writing Default Values Online with Update, Integers", ^{
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"person_id == '1234'"]];
@@ -764,6 +819,8 @@ describe(@"Writing Default Values Online with Update, Integers", ^{
         error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Fetch should still return original armor class, default value should not overwrite
         
@@ -797,6 +854,8 @@ describe(@"Writing Default Values Online with Update, Boolean", ^{
             error = nil;
             [testProperties.moc saveAndWait:&error];
         }
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Works when online", ^{
         
@@ -808,6 +867,8 @@ describe(@"Writing Default Values Online with Update, Boolean", ^{
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"randomId == '1234'"]];
@@ -827,6 +888,8 @@ describe(@"Writing Default Values Online with Update, Boolean", ^{
         error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Fetch should still return original done value, default value should not overwrite
         
@@ -860,6 +923,8 @@ describe(@"Writing Default Values Online, Integers", ^{
             error = nil;
             [testProperties.moc saveAndWait:&error];
         }
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Works when online", ^{
         NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
@@ -868,6 +933,8 @@ describe(@"Writing Default Values Online, Integers", ^{
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"person_id == '1234'"]];
@@ -899,6 +966,8 @@ describe(@"Writing Default Values Online, Boolean", ^{
             error = nil;
             [testProperties.moc saveAndWait:&error];
         }
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Works when online", ^{
         NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:testProperties.moc];
@@ -907,6 +976,8 @@ describe(@"Writing Default Values Online, Boolean", ^{
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         [fetch setPredicate:[NSPredicate predicateWithFormat:@"randomId == '1234'"]];
@@ -940,6 +1011,8 @@ describe(@"Writing Default Values Offline, Strings", ^{
             [testProperties.moc saveAndWait:&error];
         }
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Works before and after sync", ^{
         
@@ -953,7 +1026,7 @@ describe(@"Writing Default Values Offline, Strings", ^{
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
-        
+                
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
         
         [[theValue([testProperties.cds isDirtyObject:[todo objectID]]) should] beYes];
@@ -988,6 +1061,8 @@ describe(@"Writing Default Values Offline, Strings", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME_MIN);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -1028,6 +1103,8 @@ describe(@"Writing Default Values Offline, Integer", ^{
             [testProperties.moc saveAndWait:&error];
         }
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Works before and after sync", ^{
         
@@ -1041,7 +1118,7 @@ describe(@"Writing Default Values Offline, Integer", ^{
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
-        
+                
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
         
         [[theValue([testProperties.cds isDirtyObject:[todo objectID]]) should] beYes];
@@ -1076,6 +1153,8 @@ describe(@"Writing Default Values Offline, Integer", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME_MIN);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -1116,6 +1195,8 @@ describe(@"Writing Default Values Offline with Update, Integer", ^{
             [testProperties.moc saveAndWait:&error];
         }
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Works before and after sync", ^{
         
@@ -1151,7 +1232,7 @@ describe(@"Writing Default Values Offline with Update, Integer", ^{
         error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
-        
+                
         [[theValue([testProperties.cds isDirtyObject:[todo objectID]]) should] beYes];
         
         NSFetchRequest *fetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
@@ -1187,6 +1268,8 @@ describe(@"Writing Default Values Offline with Update, Integer", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME_MIN);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -1227,6 +1310,8 @@ describe(@"Writing Default Values Offline, Boolean", ^{
             [testProperties.moc saveAndWait:&error];
         }
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Works before and after sync", ^{
         
@@ -1240,7 +1325,7 @@ describe(@"Writing Default Values Offline, Boolean", ^{
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
         [error shouldBeNil];
-        
+                
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
         
         [[theValue([testProperties.cds isDirtyObject:[todo objectID]]) should] beYes];
@@ -1275,6 +1360,8 @@ describe(@"Writing Default Values Offline, Boolean", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME_MIN);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -1315,6 +1402,8 @@ describe(@"Writing Default Values Offline with Udpate, Boolean", ^{
             [testProperties.moc saveAndWait:&error];
         }
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Works before and after sync", ^{
         
@@ -1386,6 +1475,8 @@ describe(@"Writing Default Values Offline with Udpate, Boolean", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME_MIN);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];

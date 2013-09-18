@@ -27,10 +27,10 @@ describe(@"Count query for network status", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
     });
     afterEach(^{
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:testProperties.moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:[NSPredicate predicateWithFormat:@"first_name == 'Bob'"] context:testProperties.moc] andBlock:^(NSArray *results, NSError *error) {
             [error shouldBeNil];
             [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -40,20 +40,25 @@ describe(@"Count query for network status", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *saveError) {
                 [saveError shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         }];
         SM_CACHE_ENABLED = NO;
     });
     it(@"A simple save works", ^{
-      // Add another Matt
-      Person *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
-      NSString *objectID = [person assignObjectId];
-      [person setValue:objectID forKey:[person primaryKeyField]];
-      [person setValue:@"Bob" forKey:@"first_name"];
-      
-      // save them to the server
-      [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
-          [error shouldBeNil];
-      }];
+        // Add another Matt
+        Person *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        NSString *objectID = [person assignObjectId];
+        [person setValue:objectID forKey:[person primaryKeyField]];
+        [person setValue:@"Bob" forKey:@"first_name"];
+        
+        // save them to the server
+        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
+            [error shouldBeNil];
+        }];
+        
+        
+        sleep(SLEEP_TIME);
     });
 });
 
@@ -63,10 +68,10 @@ describe(@"Write-through of successfully inserted objects, online", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
     });
     afterEach(^{
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:testProperties.moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:[NSPredicate predicateWithFormat:@"first_name == 'Bob'"] context:testProperties.moc] andBlock:^(NSArray *results, NSError *error) {
             [error shouldBeNil];
             [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -76,6 +81,8 @@ describe(@"Write-through of successfully inserted objects, online", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *saveError) {
                 [saveError shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         }];
         SM_CACHE_ENABLED = NO;
     });
@@ -91,8 +98,10 @@ describe(@"Write-through of successfully inserted objects, online", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
         // Cache should now contain object
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [cacheFetch setPredicate:[NSPredicate predicateWithFormat:@"first_name == 'Bob'"]];
         NSError *error = nil;
@@ -102,7 +111,7 @@ describe(@"Write-through of successfully inserted objects, online", ^{
         [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Bob"];
         
         // Server should have the same object
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [serverFetch setPredicate:[NSPredicate predicateWithFormat:@"first_name == 'Bob'"]];
         error = nil;
@@ -137,6 +146,8 @@ describe(@"Write-through of successfully inserted objects, online", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
         __block NSDictionary *lcMapResults = nil;
         NSURL *cacheMapURL = [SMCoreDataIntegrationTestHelpers SM_getStoreURLForCacheMapTableWithPublicKey:testProperties.client.publicKey];
         lcMapResults = [SMCoreDataIntegrationTestHelpers getContentsOfFileAtPath:[cacheMapURL path]];
@@ -159,6 +170,8 @@ describe(@"Write-through of successfully inserted objects, online", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
         // Should show up in cache
         __block NSDictionary *lcMapResults = nil;
         NSURL *cacheMapURL = [SMCoreDataIntegrationTestHelpers SM_getStoreURLForCacheMapTableWithPublicKey:testProperties.client.publicKey];
@@ -177,11 +190,13 @@ describe(@"Write-through of successfully inserted objects, online", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
         // Should be deleted from cache
         lcMapResults = [SMCoreDataIntegrationTestHelpers getContentsOfFileAtPath:[cacheMapURL path]];
         [lcMapResults shouldNotBeNil];
         [[lcMapResults should] haveCountOf:0];
-                
+        
     });
 });
 
@@ -191,10 +206,10 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
     });
     afterEach(^{
-        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
         [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:testProperties.moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:testProperties.moc] andBlock:^(NSArray *results, NSError *error) {
             [error shouldBeNil];
             [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -204,6 +219,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *saveError) {
                 [saveError shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         }];
         
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -219,6 +236,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *saveError) {
                 [saveError shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         }
         SM_CACHE_ENABLED = NO;
     });
@@ -243,6 +262,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
         __block NSDictionary *lcMapResults = nil;
         NSURL *cacheMapURL = [SMCoreDataIntegrationTestHelpers SM_getStoreURLForCacheMapTableWithPublicKey:testProperties.client.publicKey];
         
@@ -265,6 +286,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
         
         lcMapResults = [SMCoreDataIntegrationTestHelpers getContentsOfFileAtPath:[cacheMapURL path]];
         
@@ -321,6 +344,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
         __block NSDictionary *lcMapResults = nil;
         NSURL *cacheMapURL = [SMCoreDataIntegrationTestHelpers SM_getStoreURLForCacheMapTableWithPublicKey:testProperties.client.publicKey];
         
@@ -362,6 +387,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
         
         lcMapResults = [SMCoreDataIntegrationTestHelpers getContentsOfFileAtPath:[cacheMapURL path]];
         

@@ -37,6 +37,9 @@ describe(@"with fixtures", ^{
     beforeAll(^{
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
+        
+        sleep(SLEEP_TIME);
+        
         client = [SMIntegrationTestHelpers defaultClient];
         [SMClient setDefaultClient:client];
         NSBundle *classBundle = [NSBundle bundleForClass:[self class]];
@@ -56,7 +59,7 @@ describe(@"with fixtures", ^{
                 predicate = [NSCompoundPredicate andPredicateWithSubpredicates:
                              [NSArray arrayWithObjects:
                               [NSPredicate predicateWithFormat:@"company == %@", @"Carbon Five"],
-                              [NSPredicate predicateWithFormat:@"last_name == %@", @"Williams"], 
+                              [NSPredicate predicateWithFormat:@"last_name == %@", @"Williams"],
                               nil]];
             });
             it(@"works correctly", ^{
@@ -64,7 +67,7 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
                     [[results should] haveCountOf:1];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jonah"];  
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jonah"];
                 }];
             });
         });
@@ -78,14 +81,14 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [[error should] beNonNil];
                 }];
-            });    
+            });
         });
         describe(@"OR predicate", ^{
             beforeEach(^{
                 predicate = [NSCompoundPredicate orPredicateWithSubpredicates:
                              [NSArray arrayWithObjects:
                               [NSPredicate predicateWithFormat:@"company == %@", @"Carbon Five"],
-                              [NSPredicate predicateWithFormat:@"last_name == %@", @"Williams"], 
+                              [NSPredicate predicateWithFormat:@"last_name == %@", @"Williams"],
                               nil]];
             });
             it(@"works correctly", ^{
@@ -135,7 +138,7 @@ describe(@"with fixtures", ^{
                                       nil]];
             
             NSPredicate *secondAnd = [NSPredicate predicateWithFormat:@"first_name == %@", @"Jon"];
-                                      
+            
             NSPredicate *thirdAnd = [NSPredicate predicateWithFormat:@"company == %@", @"Carbon Five"];
             NSPredicate *allOrs = [NSCompoundPredicate orPredicateWithSubpredicates:[NSArray arrayWithObjects:firstAnd, secondAnd, thirdAnd, nil]];
             
@@ -243,7 +246,7 @@ describe(@"with fixtures", ^{
                 [error shouldBeNil];
                 [[[results objectAtIndex:0] should] haveValue:@"Vaznaian" forKey:@"last_name"];
                 [[[results objectAtIndex:1] should] haveValue:@"Cooper" forKey:@"last_name"];
-                [[[results objectAtIndex:2] should] haveValue:@"Williams" forKey:@"last_name"]; 
+                [[[results objectAtIndex:2] should] haveValue:@"Williams" forKey:@"last_name"];
             }];
         });
     });
@@ -306,9 +309,9 @@ describe(@"with fixtures", ^{
     });
     
     //describe(@"NSIncrementalStore implementation guide says we must implement", ^{
-        //pending(@"shouldRefreshFetchedObjects", nil);
-        //pending(@"propertiesToGroupBy", nil);
-        //pending(@"havingPredicate", nil);
+    //pending(@"shouldRefreshFetchedObjects", nil);
+    //pending(@"propertiesToGroupBy", nil);
+    //pending(@"havingPredicate", nil);
     //});
     
     describe(@"queries", ^{
@@ -333,10 +336,10 @@ describe(@"with fixtures", ^{
                     [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
                     [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                         [[error should] beNonNil];
-                        [results shouldBeNil];  
+                        [results shouldBeNil];
                     }];
                     
-                });    
+                });
             });
         });
         describe(@"==", ^{
@@ -348,7 +351,7 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
                     [[results should] haveCountOf:1];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];   
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];
                 }];
             });
         });
@@ -361,7 +364,7 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
                     [[results should] haveCountOf:1];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];   
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];
                 }];
             });
         });
@@ -374,8 +377,8 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
                     [[results should] haveCountOf:2];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];   
-                    [[[[results objectAtIndex:1] valueForKey:@"first_name"] should] equal:@"Matt"];                  
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];
+                    [[[[results objectAtIndex:1] valueForKey:@"first_name"] should] equal:@"Matt"];
                 }];
             });
         });
@@ -388,10 +391,10 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
                     [[results should] haveCountOf:2];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];   
-                    [[[[results objectAtIndex:1] valueForKey:@"first_name"] should] equal:@"Matt"];                  
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];
+                    [[[[results objectAtIndex:1] valueForKey:@"first_name"] should] equal:@"Matt"];
                 }];
-            });   
+            });
         });
         describe(@"<", ^{
             beforeEach(^{
@@ -404,7 +407,7 @@ describe(@"with fixtures", ^{
                     [[results should] haveCountOf:1];
                     [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];
                 }];
-            });        
+            });
         });
         describe(@">", ^{
             beforeEach(^{
@@ -415,9 +418,9 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
                     [[results should] haveCountOf:1];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Matt"];                    
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Matt"];
                 }];
-            });        
+            });
         });
         describe(@"<=", ^{
             beforeEach(^{
@@ -428,7 +431,7 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
                     [[results should] haveCountOf:2];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];   
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];
                     [[[[results objectAtIndex:1] valueForKey:@"first_name"] should] equal:@"Jonah"];
                 }];
             });
@@ -442,7 +445,7 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
                     [[results should] haveCountOf:2];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];   
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];
                     [[[[results objectAtIndex:1] valueForKey:@"first_name"] should] equal:@"Jonah"];
                 }];
             });
@@ -456,10 +459,10 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
                     [[results should] haveCountOf:2];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Matt"];   
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Matt"];
                     [[[[results objectAtIndex:1] valueForKey:@"first_name"] should] equal:@"Jonah"];
                 }];
-            });       
+            });
         });
         describe(@"=>", ^{
             beforeEach(^{
@@ -470,10 +473,10 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
                     [[results should] haveCountOf:2];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Matt"];   
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Matt"];
                     [[[[results objectAtIndex:1] valueForKey:@"first_name"] should] equal:@"Jonah"];
                 }];
-            });        
+            });
         });
         
         describe(@"BETWEEN", ^{
@@ -485,7 +488,7 @@ describe(@"with fixtures", ^{
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
                     [[results should] haveCountOf:2];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];   
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Jon"];
                     [[[[results objectAtIndex:1] valueForKey:@"first_name"] should] equal:@"Jonah"];
                 }];
             });
@@ -501,7 +504,7 @@ describe(@"with fixtures", ^{
                 [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
                     [error shouldBeNil];
-                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Matt"];   
+                    [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Matt"];
                 }];
             });
         });
@@ -610,7 +613,7 @@ describe(@"OR query from network should return same as cache", ^{
         testProperties = [[SMTestProperties alloc] init];
         [testProperties.client setUserSchema:@"User3"];
         //[[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
         
         user1 = [[User3 alloc] initWithEntity:[NSEntityDescription entityForName:@"User3" inManagedObjectContext:testProperties.moc] insertIntoManagedObjectContext:testProperties.moc];
         user1ID = [NSString stringWithFormat:@"matt%d", arc4random() / 10000];
@@ -636,10 +639,12 @@ describe(@"OR query from network should return same as cache", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         //[[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         NSError *fetchError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&fetchError];
@@ -653,9 +658,11 @@ describe(@"OR query from network should return same as cache", ^{
             }
         }];
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"simple query", ^{
-        [testProperties.client.coreDataStore setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.client.coreDataStore setFetchPolicy:SMFetchPolicyNetworkOnly];
         // Should only call the network once
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
         
@@ -676,7 +683,7 @@ describe(@"OR query from network should return same as cache", ^{
             [[array should] contain:user2ID];
         }
         
-        [testProperties.client.coreDataStore setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.client.coreDataStore setFetchPolicy:SMFetchPolicyCacheOnly];
         // Second fetch from cache should yeild same results
         NSFetchRequest *secondFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         [secondFetch setPredicate:predicate];
@@ -704,12 +711,16 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
         [[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
+        
+        sleep(SLEEP_TIME);
     });
     
     afterEach(^{
         [SMIntegrationTestHelpers destroyAllForFixturesNamed:fixturesToLoad];
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"single or", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
@@ -886,6 +897,8 @@ describe(@"Fetch request on User which inherits from the SMUserManagedObject", ^
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -901,6 +914,8 @@ describe(@"Fetch request on User which inherits from the SMUserManagedObject", ^
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Should correctly fetch", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -975,6 +990,8 @@ describe(@"fetch requests for managed objects", ^{
             }
         }];
         
+        sleep(SLEEP_TIME);
+        
     });
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -986,6 +1003,8 @@ describe(@"fetch requests for managed objects", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Should correctly fetch", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -1029,6 +1048,8 @@ describe(@"empty string", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -1044,6 +1065,8 @@ describe(@"empty string", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"equal to empty string", ^{
         

@@ -40,6 +40,8 @@ describe(@"Count query for network status", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *saveError) {
                 [saveError shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         }];
         SM_CACHE_ENABLED = NO;
     });
@@ -54,6 +56,9 @@ describe(@"Count query for network status", ^{
       [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
           [error shouldBeNil];
       }];
+        
+        
+        sleep(SLEEP_TIME);
     });
 });
 
@@ -76,6 +81,8 @@ describe(@"Write-through of successfully inserted objects, online", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *saveError) {
                 [saveError shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         }];
         SM_CACHE_ENABLED = NO;
     });
@@ -90,6 +97,8 @@ describe(@"Write-through of successfully inserted objects, online", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
         
         // Cache should now contain object
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -137,6 +146,8 @@ describe(@"Write-through of successfully inserted objects, online", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
         __block NSDictionary *lcMapResults = nil;
         NSURL *cacheMapURL = [SMCoreDataIntegrationTestHelpers SM_getStoreURLForCacheMapTableWithPublicKey:testProperties.client.publicKey];
         lcMapResults = [SMCoreDataIntegrationTestHelpers getContentsOfFileAtPath:[cacheMapURL path]];
@@ -159,6 +170,8 @@ describe(@"Write-through of successfully inserted objects, online", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
         // Should show up in cache
         __block NSDictionary *lcMapResults = nil;
         NSURL *cacheMapURL = [SMCoreDataIntegrationTestHelpers SM_getStoreURLForCacheMapTableWithPublicKey:testProperties.client.publicKey];
@@ -176,6 +189,8 @@ describe(@"Write-through of successfully inserted objects, online", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
         
         // Should be deleted from cache
         lcMapResults = [SMCoreDataIntegrationTestHelpers getContentsOfFileAtPath:[cacheMapURL path]];
@@ -204,6 +219,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *saveError) {
                 [saveError shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         }];
         
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -219,6 +236,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *saveError) {
                 [saveError shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         }
         SM_CACHE_ENABLED = NO;
     });
@@ -243,6 +262,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
         __block NSDictionary *lcMapResults = nil;
         NSURL *cacheMapURL = [SMCoreDataIntegrationTestHelpers SM_getStoreURLForCacheMapTableWithPublicKey:testProperties.client.publicKey];
         
@@ -265,6 +286,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
         
         lcMapResults = [SMCoreDataIntegrationTestHelpers getContentsOfFileAtPath:[cacheMapURL path]];
         
@@ -321,6 +344,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
         __block NSDictionary *lcMapResults = nil;
         NSURL *cacheMapURL = [SMCoreDataIntegrationTestHelpers SM_getStoreURLForCacheMapTableWithPublicKey:testProperties.client.publicKey];
         
@@ -362,6 +387,8 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
         
         lcMapResults = [SMCoreDataIntegrationTestHelpers getContentsOfFileAtPath:[cacheMapURL path]];
         

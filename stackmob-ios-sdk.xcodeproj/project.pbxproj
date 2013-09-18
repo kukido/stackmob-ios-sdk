@@ -181,11 +181,6 @@
 		DE288A3117CC1DD300CFB8A3 /* SMMergePolicyMiscSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2A17CC1DD100CFB8A3 /* SMMergePolicyMiscSpec copy.m */; };
 		DE288A3217CC1DD300CFB8A3 /* SMMergePolicyUpdatesSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2B17CC1DD200CFB8A3 /* SMMergePolicyUpdatesSpec copy.m */; };
 		DE288A3317CC1DD300CFB8A3 /* SMSavePolicySpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2C17CC1DD200CFB8A3 /* SMSavePolicySpec copy.m */; };
-		DE288A3517CC27D900CFB8A3 /* LocalReadCacheSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE5B5CA717C6CF380051905F /* LocalReadCacheSpec.m */; };
-		DE288A3617CC27DC00CFB8A3 /* LocalWriteCacheSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE5B5CA817C6CF380051905F /* LocalWriteCacheSpec.m */; };
-		DE288A3717CC27DF00CFB8A3 /* SMMergePolicyDeletesSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A617C6B0CA004417A5 /* SMMergePolicyDeletesSpec.m */; };
-		DE288A3817CC27E500CFB8A3 /* SMMergePolicyMiscSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A817C6B0CA004417A5 /* SMMergePolicyMiscSpec.m */; };
-		DE288A3917CC27EA00CFB8A3 /* SMMergePolicyUpdatesSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A917C6B0CA004417A5 /* SMMergePolicyUpdatesSpec.m */; };
 		DE288A3A17CD4A9A00CFB8A3 /* Superpower.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0CC7AF15CB605900E491C4 /* Superpower.m */; };
 		DE288A3B17CD4A9E00CFB8A3 /* Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D8351CE16C08D6F00814C71 /* Random.m */; };
 		DE288A4117CD4FD700CFB8A3 /* person.json in Resources */ = {isa = PBXBuildFile; fileRef = DE0CC79F15CB5DED00E491C4 /* person.json */; };
@@ -228,6 +223,7 @@
 		DE64D6021623777900237570 /* SMUserManagedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DE64D6001623777900237570 /* SMUserManagedObject.m */; };
 		DE64D61C1623BAE800237570 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE64D61B1623BAE800237570 /* Security.framework */; };
 		DE64D61D1623BB0A00237570 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE64D61B1623BAE800237570 /* Security.framework */; };
+		DE72503D17EA21D000EFE13F /* SMSavePolicySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE5B5CAC17C6CFA00051905F /* SMSavePolicySpec.m */; };
 		DE8D501B1636101E0067B1C2 /* SMRequestOptionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE8D501A1636101E0067B1C2 /* SMRequestOptionsSpec.m */; };
 		DE8D51CF15E2CB11002F582A /* NSDictionary+AtomicCounter.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DE05E14315E2C02200224E4E /* NSDictionary+AtomicCounter.h */; };
 		DE8D51D215E2CB11002F582A /* SMBinaryDataConversion.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DE05E14915E2C02200224E4E /* SMBinaryDataConversion.h */; };
@@ -1820,13 +1816,7 @@
 				DE5B5CAF17C6CFC30051905F /* Random.m in Sources */,
 				DE5B5CB517C6D0900051905F /* SMCoreDataIntegrationTestHelpers.m in Sources */,
 				DE5B5CB617C6D0980051905F /* SMIntegrationTestHelpers.m in Sources */,
-				DE2889E617C8207A00CFB8A3 /* SMMergePolicyInsertsSpec.m in Sources */,
-				DE2889EA17CBEBA600CFB8A3 /* SMSavePolicySpec.m in Sources */,
-				DE288A3517CC27D900CFB8A3 /* LocalReadCacheSpec.m in Sources */,
-				DE288A3617CC27DC00CFB8A3 /* LocalWriteCacheSpec.m in Sources */,
-				DE288A3717CC27DF00CFB8A3 /* SMMergePolicyDeletesSpec.m in Sources */,
-				DE288A3817CC27E500CFB8A3 /* SMMergePolicyMiscSpec.m in Sources */,
-				DE288A3917CC27EA00CFB8A3 /* SMMergePolicyUpdatesSpec.m in Sources */,
+				DE72503D17EA21D000EFE13F /* SMSavePolicySpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

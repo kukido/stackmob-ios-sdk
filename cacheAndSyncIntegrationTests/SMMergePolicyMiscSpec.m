@@ -51,6 +51,8 @@ describe(@"many-to-many relationships being serialized correctly on sync", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"serialized the to-many relationships to their correct IDs when syncing", ^{
         
@@ -71,6 +73,8 @@ describe(@"many-to-many relationships being serialized correctly on sync", ^{
         
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Create Superpower, Offline
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
@@ -84,6 +88,8 @@ describe(@"many-to-many relationships being serialized correctly on sync", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
@@ -127,6 +133,8 @@ describe(@"many-to-many relationships being serialized correctly on sync", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
@@ -205,6 +213,8 @@ describe(@"many-to-one relationships being serialized correctly on sync", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"serialized the to-many and to-one relationships to their correct IDs when syncing", ^{
         
@@ -225,6 +235,8 @@ describe(@"many-to-one relationships being serialized correctly on sync", ^{
         
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Create Superpower, Offline
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
@@ -238,6 +250,8 @@ describe(@"many-to-one relationships being serialized correctly on sync", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
@@ -281,6 +295,8 @@ describe(@"many-to-one relationships being serialized correctly on sync", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
@@ -358,6 +374,8 @@ describe(@"one-to-one relationships being serialized correctly on sync", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"serialized the to-one relationships to their correct IDs when syncing", ^{
         
@@ -378,6 +396,8 @@ describe(@"one-to-one relationships being serialized correctly on sync", ^{
         
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Create Superpower, Offline
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
@@ -391,6 +411,8 @@ describe(@"one-to-one relationships being serialized correctly on sync", ^{
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
@@ -434,6 +456,8 @@ describe(@"one-to-one relationships being serialized correctly on sync", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
@@ -511,6 +535,8 @@ describe(@"With User Object: many-to-many relationships being serialized correct
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"serialized the to-many relationships to their correct IDs when syncing", ^{
         
@@ -532,6 +558,8 @@ describe(@"With User Object: many-to-many relationships being serialized correct
         
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Create Superpower, Offline
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
@@ -545,6 +573,8 @@ describe(@"With User Object: many-to-many relationships being serialized correct
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
@@ -588,6 +618,8 @@ describe(@"With User Object: many-to-many relationships being serialized correct
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
@@ -666,6 +698,8 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"serialized the to-many and to-one relationships to their correct IDs when syncing", ^{
         
@@ -687,6 +721,8 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Create Superpower, Offline
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
@@ -700,6 +736,8 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
@@ -743,6 +781,8 @@ describe(@"With User Object: many-to-one relationships being serialized correctl
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
@@ -820,6 +860,8 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"serialized the to-one relationships to their correct IDs when syncing", ^{
         
@@ -841,6 +883,8 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Create Superpower, Offline
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
@@ -854,6 +898,8 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Read from and check the cache
         NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
@@ -897,6 +943,8 @@ describe(@"With User Object: one-to-one relationships being serialized correctly
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Relationships should be all good
         NSFetchRequest *personFetch2 = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
@@ -967,6 +1015,8 @@ describe(@"Sync Errors, Inserting offline to a forbidden schema with POST perms"
         __block NSError *saveError = nil;
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
         
@@ -1040,6 +1090,8 @@ describe(@"Sync Errors, Inserting offline to a forbidden schema with GET perms",
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
         
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
@@ -1108,6 +1160,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         [[theValue(success) should] beYes];
         SM_CACHE_ENABLED = NO;
         
+        sleep(SLEEP_TIME);
+        
     });
     it(@"Server Mod wins, 3 should delete from server, 2 should update cache", ^{
         
@@ -1129,6 +1183,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Delete 5 offline at T1
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
@@ -1149,7 +1205,6 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         [saveError shouldBeNil];
         
         // Update 2 Online at T2
-        //sleep(3);
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
         
@@ -1163,6 +1218,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         dispatch_group_enter(group);
         [testProperties.cds updateObjectWithId:@"5678" inSchema:@"todo" update:[NSDictionary dictionaryWithObjectsAndKeys:@"T2 server update", @"title", nil] options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
             dispatch_group_leave(group);
@@ -1172,6 +1229,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         }];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Sync with server
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
@@ -1188,6 +1247,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -1255,6 +1316,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Update 5 offline at T1
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
@@ -1274,8 +1337,9 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
+        sleep(SLEEP_TIME_MIN);
+        
         // Update 2 Online at T2
-        //sleep(3);
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
         
@@ -1289,6 +1353,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         dispatch_group_enter(group);
         [testProperties.cds updateObjectWithId:@"5678" inSchema:@"todo" update:[NSDictionary dictionaryWithObjectsAndKeys:@"T2 server update", @"title", nil] options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
             dispatch_group_leave(group);
@@ -1298,6 +1364,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         }];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Sync with server
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
@@ -1314,6 +1382,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -1382,6 +1452,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Update 5 offline at T1
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
@@ -1402,7 +1474,6 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         [saveError shouldBeNil];
         
         // Update 2 Online at T2
-        //sleep(3);
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
         
@@ -1416,6 +1487,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         dispatch_group_enter(group);
         [testProperties.cds updateObjectWithId:@"5678" inSchema:@"todo" update:[NSDictionary dictionaryWithObjectsAndKeys:@"T2 server update", @"title", nil] options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
             dispatch_group_leave(group);
@@ -1425,6 +1498,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         }];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Sync with server
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
@@ -1441,6 +1516,8 @@ describe(@"Insert 5 Online, Go offline and delete 5, T2 update 2 Online", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -1510,6 +1587,8 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         [[theValue(success) should] beYes];
         SM_CACHE_ENABLED = NO;
         
+        sleep(SLEEP_TIME);
+        
     });
     it(@"Server Mod wins, 3 should delete from server, 2 should update cache", ^{
         
@@ -1531,6 +1610,8 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Update 2 Online at T1
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
@@ -1545,6 +1626,8 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         dispatch_group_enter(group);
         [testProperties.cds updateObjectWithId:@"5678" inSchema:@"todo" update:[NSDictionary dictionaryWithObjectsAndKeys:@"T2 server update", @"title", nil] options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
             dispatch_group_leave(group);
@@ -1555,8 +1638,9 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Delete 5 offline at T2
-        //sleep(3);
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
@@ -1590,6 +1674,8 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -1657,7 +1743,7 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
-        [NSThread sleepForTimeInterval:0.5];
+        sleep(SLEEP_TIME);
         
         // Update 2 Online at T1
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
@@ -1673,6 +1759,8 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         dispatch_group_enter(group);
         [testProperties.cds updateObjectWithId:@"5678" inSchema:@"todo" update:[NSDictionary dictionaryWithObjectsAndKeys:@"T2 server update", @"title", nil] options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
             dispatch_group_leave(group);
@@ -1682,6 +1770,8 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         }];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Delete 5 offline at T2
         [NSThread sleepForTimeInterval:0.5];
@@ -1720,6 +1810,8 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -1788,6 +1880,8 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         // Update 2 Online at T1
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
@@ -1802,6 +1896,8 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         dispatch_group_enter(group);
         [testProperties.cds updateObjectWithId:@"5678" inSchema:@"todo" update:[NSDictionary dictionaryWithObjectsAndKeys:@"T2 server update", @"title", nil] options:[SMRequestOptions options] successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
             dispatch_group_leave(group);
@@ -1812,8 +1908,9 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Delete 5 offline at T2
-        //sleep(3);
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
@@ -1848,6 +1945,8 @@ describe(@"Insert 5 Online, Update 2 Online T1, Go offline and delete 5 T2", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -1919,6 +2018,8 @@ describe(@"Sync Errors, Updating offline to a forbidden schema with PUT perms", 
         BOOL success = [testProperties.moc saveAndWait:&saveError];
         [[theValue(success) should] beYes];
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Error callback should get called", ^{
         // Insert online
@@ -1929,6 +2030,8 @@ describe(@"Sync Errors, Updating offline to a forbidden schema with PUT perms", 
         __block NSError *saveError = nil;
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Update offline
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
@@ -1963,6 +2066,8 @@ describe(@"Sync Errors, Updating offline to a forbidden schema with PUT perms", 
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         dispatch_queue_t newQueue = dispatch_queue_create("newQueue", NULL);
         
@@ -2027,6 +2132,8 @@ describe(@"Sync Errors, Updating offline to a forbidden schema with GET perms", 
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Error callback should get called", ^{
         // Insert online
@@ -2037,6 +2144,8 @@ describe(@"Sync Errors, Updating offline to a forbidden schema with GET perms", 
         __block NSError *saveError = nil;
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
+        
+        sleep(SLEEP_TIME);
         
         // Update offline
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
@@ -2071,6 +2180,8 @@ describe(@"Sync Errors, Updating offline to a forbidden schema with GET perms", 
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         dispatch_queue_t newQueue = dispatch_queue_create("newQueue", NULL);
         
@@ -2139,6 +2250,8 @@ describe(@"Sync Global request options with HTTPS", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -2186,6 +2299,8 @@ describe(@"Syncing with user objects, Inserts", ^{
         BOOL success = [testProperties.moc saveAndWait:&saveError];
         [[theValue(success) should] beYes];
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Succeeds without error", ^{
         
@@ -2219,6 +2334,8 @@ describe(@"Syncing with user objects, Inserts", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -2260,6 +2377,8 @@ describe(@"Syncing with user objects, Updates", ^{
         BOOL success = [testProperties.moc saveAndWait:&saveError];
         [[theValue(success) should] beYes];
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Succeeds without error", ^{
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"User3" inManagedObjectContext:testProperties.moc];
@@ -2271,7 +2390,8 @@ describe(@"Syncing with user objects, Updates", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
-        //sleep(3);
+        sleep(SLEEP_TIME);
+        
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
@@ -2299,6 +2419,8 @@ describe(@"Syncing with user objects, Updates", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -2342,7 +2464,8 @@ describe(@"Syncing with user objects, Deletes", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
-        //sleep(3);
+        sleep(SLEEP_TIME);
+        
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
@@ -2370,6 +2493,8 @@ describe(@"Syncing with user objects, Deletes", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -2405,6 +2530,8 @@ describe(@"syncInProgress", ^{
         BOOL success = [testProperties.moc saveAndWait:&saveError];
         [[theValue(success) should] beYes];
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"works properly", ^{
         
@@ -2443,6 +2570,8 @@ describe(@"syncInProgress", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -2500,6 +2629,8 @@ describe(@"syncInProgress", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];

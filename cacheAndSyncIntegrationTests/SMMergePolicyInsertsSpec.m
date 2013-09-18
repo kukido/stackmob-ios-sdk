@@ -43,6 +43,8 @@ describe(@"Insert 1 Offline, should send as an insert no merge, NO CONFLICT", ^{
         [[theValue(success) should] beYes];
         SM_CACHE_ENABLED = NO;
         
+        sleep(SLEEP_TIME);
+        
     });
     
     it(@"Should send object as an update, no merge policy should get called", ^{
@@ -82,6 +84,8 @@ describe(@"Insert 1 Offline, should send as an insert no merge, NO CONFLICT", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -107,7 +111,7 @@ describe(@"Insert 1 Offline, should send as an insert no merge, NO CONFLICT", ^{
     
 });
 
-describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
+describe(@"Insert 1 Offline at T1, Insert 1 Online at T2", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
@@ -124,6 +128,8 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         BOOL success = [testProperties.moc saveAndWait:&saveError];
         [[theValue(success) should] beYes];
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
         
     });
     
@@ -147,7 +153,6 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         [[theValue([testProperties.cds isDirtyObject:[todo objectID]]) should] beYes];
         
         // Insert 1 online
-        //sleep(3);
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
         
@@ -160,6 +165,8 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         }];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Sync
         
@@ -178,6 +185,8 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -214,12 +223,13 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
+        sleep(SLEEP_TIME_MIN);
+        
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
         
         [[theValue([testProperties.cds isDirtyObject:[todo objectID]]) should] beYes];
         
         // Insert 1 online
-        //sleep(3);
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
         
@@ -232,6 +242,8 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         }];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Sync
         
@@ -250,6 +262,8 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -291,7 +305,6 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         [[theValue([testProperties.cds isDirtyObject:[todo objectID]]) should] beYes];
         
         // Insert 1 online
-        //sleep(3);
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
         
@@ -304,6 +317,8 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         }];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Sync
         
@@ -322,6 +337,8 @@ describe(@"Insert 1 Offline at T1, Insert 1 Offline at T2", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -364,6 +381,8 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         [[theValue(success) should] beYes];
         SM_CACHE_ENABLED = NO;
         
+        sleep(SLEEP_TIME);
+        
     });
     
     it(@"Client Wins MP, Should send object as an update", ^{
@@ -382,8 +401,9 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Insert 1 offline
-        //sleep(3);
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
@@ -417,6 +437,8 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -454,6 +476,8 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Insert 1 offline
         [NSThread sleepForTimeInterval:0.5];
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
@@ -489,6 +513,8 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -526,8 +552,9 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+        sleep(SLEEP_TIME);
+        
         // Insert 1 offline
-        //sleep(3);
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
@@ -561,6 +588,8 @@ describe(@"While offline, Insert 1 Online at T1, Insert 1 Offline at T2", ^{
         [testProperties.cds syncWithServer];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         // Check cache
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];

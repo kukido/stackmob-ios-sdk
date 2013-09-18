@@ -69,19 +69,19 @@ describe(@"Cache Results option", ^{
     it(@"default is YES works saves", ^{
         for (int i=0; i < 10; i++) {
             NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
-            [todo setValue:[todo assignObjectId] forKey:[todo primaryKeyField]];
+            [todo assignObjectId];
         }
         NSError *error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error];
         [[theValue(success) should] beYes];
         [error shouldBeNil];
         
+        sleep(SLEEP_TIME);
+        
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
         error = nil;
         NSArray *array = [testProperties.moc executeFetchRequestAndWait:request returnManagedObjectIDs:YES error:&error];
-        
-        
         
         [error shouldBeNil];
         [[array should] haveCountOf:10];
@@ -90,7 +90,7 @@ describe(@"Cache Results option", ^{
     it(@"setting cacheResults to NO works saves", ^{
         for (int i=0; i < 10; i++) {
             NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
-            [todo setValue:[todo assignObjectId] forKey:[todo primaryKeyField]];
+            [todo assignObjectId];
         }
         SMRequestOptions *options = [SMRequestOptions optionsWithCacheResults:NO];
         [[theValue(options.fetchPolicySet) should] beNo];
@@ -123,6 +123,8 @@ describe(@"Cache Results option", ^{
         }
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         NSFetchRequest *request1 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
@@ -157,6 +159,8 @@ describe(@"Cache Results option", ^{
         }
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         NSFetchRequest *request1 = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
@@ -302,6 +306,8 @@ describe(@"Successful fetching replaces equivalent results of fetching from cach
         testProperties = [[SMTestProperties alloc] init];
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
@@ -377,6 +383,8 @@ describe(@"Fetch with Cache", ^{
         testProperties = [[SMTestProperties alloc] init];
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
@@ -503,6 +511,8 @@ describe(@"Fetch with Cache", ^{
                 }];
             });
             
+            sleep(SLEEP_TIME);
+            
             
             __block NSString *smFirstName = nil;
             
@@ -570,6 +580,8 @@ describe(@"Fetch with Cache", ^{
                 [error shouldBeNil];
             }];
             
+            sleep(SLEEP_TIME + SLEEP_TIME);
+            
             // relate and save
             [jonObject setValue:superpower forKey:@"superpower"];
             [jonObject setValue:[NSSet setWithObjects:interest1, interest2, nil] forKey:@"interests"];
@@ -577,6 +589,8 @@ describe(@"Fetch with Cache", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME + SLEEP_TIME);
             
             // fetch all that stuff
             [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:testProperties.moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:[NSPredicate predicateWithFormat:@"first_name == 'Jon'"] context:testProperties.moc] andBlock:^(NSArray *results, NSError *error) {
@@ -597,6 +611,8 @@ describe(@"Fetch with Cache", ^{
                     syncReturn(semaphore);
                 }];
             });
+            
+            sleep(SLEEP_TIME + SLEEP_TIME);
             
             
             __block NSString *smFirstName = nil;
@@ -807,12 +823,16 @@ describe(@"Fetch with Cache", ^{
                 [error shouldBeNil];
             }];
             
+            sleep(SLEEP_TIME);
+            
             // relate and save
             [jonObject setValue:superpower forKey:@"superpower"];
             
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
             
             [testProperties.moc reset];
             [testProperties.moc.parentContext reset];
@@ -842,6 +862,8 @@ describe(@"Fetch with Cache", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         });
         
         it(@"to-one relationship fault fill without internet when related object has been previously fetched returns properly", ^{
@@ -868,12 +890,16 @@ describe(@"Fetch with Cache", ^{
                 [error shouldBeNil];
             }];
             
+            sleep(SLEEP_TIME);
+            
             // relate and save
             [jonObject setValue:superpower forKey:@"superpower"];
             
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
             
             [testProperties.moc reset];
             
@@ -908,6 +934,8 @@ describe(@"Fetch with Cache", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         });
         
         it(@"to-one relationship fault fill with internet returns related object and caches correctly", ^{
@@ -934,12 +962,16 @@ describe(@"Fetch with Cache", ^{
                 [error shouldBeNil];
             }];
             
+            sleep(SLEEP_TIME);
+            
             // relate and save
             [jonObject setValue:superpower forKey:@"superpower"];
             
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
             
             [testProperties.moc reset];
             
@@ -984,6 +1016,8 @@ describe(@"Fetch with Cache", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         });
          
     });
@@ -1032,12 +1066,16 @@ describe(@"Fetch with Cache", ^{
                 [error shouldBeNil];
             }];
             
+            sleep(SLEEP_TIME);
+            
             // relate and save
             [jonObject addInterests:[NSSet setWithObjects:interest1, interest2, nil]];
             
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testContext withBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
             
             [testContext reset];
             [[testContext parentContext] reset];
@@ -1073,6 +1111,8 @@ describe(@"Fetch with Cache", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testContext withBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         });
         
         it(@"To-Many relationship fault fill with internet returns related object and caches correctly", ^{
@@ -1102,12 +1142,16 @@ describe(@"Fetch with Cache", ^{
                 [error shouldBeNil];
             }];
             
+            sleep(SLEEP_TIME);
+            
             // relate and save
             [jonObject addInterests:[NSSet setWithObjects:interest1, interest2, nil]];
             
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
             
             [testProperties.moc reset];
             
@@ -1150,6 +1194,8 @@ describe(@"Fetch with Cache", ^{
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         });
      
     });
@@ -1203,6 +1249,8 @@ describe(@"Purging the Cache", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
         
         lcMapResults = nil;
         cacheMapURL = [SMCoreDataIntegrationTestHelpers SM_getStoreURLForCacheMapTableWithPublicKey:client.publicKey];
@@ -1299,6 +1347,8 @@ describe(@"purging cache of multiple objects at a time", ^{
         moc = [cds contextForCurrentThread];
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         [cds setFetchPolicy:SMFetchPolicyNetworkOnly];
@@ -1329,6 +1379,8 @@ describe(@"purging cache of multiple objects at a time", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
         
     });
     it(@"interface for purging the cache of objects by entity name", ^{
@@ -1369,6 +1421,8 @@ describe(@"purging cache of multiple objects at a time", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
     });
 });
 
@@ -1392,6 +1446,8 @@ describe(@"cache references should not be returned during fetches", ^{
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
         
+        sleep(SLEEP_TIME);
+        
         // Fetch all persons
         __block NSArray *resultsOfFetch = nil;
         [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
@@ -1414,11 +1470,15 @@ describe(@"cache references should not be returned during fetches", ^{
             [error shouldBeNil];
         }];
         
+        sleep(SLEEP_TIME);
+        
         [[resultsOfFetch objectAtIndex:0] addInterests:[NSSet setWithObjects:interest1, interest2, nil]];
         
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
         
         // Fetch all persons again to create nil references
         [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
@@ -1438,6 +1498,8 @@ describe(@"cache references should not be returned during fetches", ^{
         }];
         [SMIntegrationTestHelpers destroyAllForFixturesNamed:fixturesToLoad];
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"works", ^{
         
@@ -1514,6 +1576,8 @@ describe(@"Testing cache using Entity with a GeoPoint attribute", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         [cds setFetchPolicy:SMFetchPolicyNetworkOnly];
