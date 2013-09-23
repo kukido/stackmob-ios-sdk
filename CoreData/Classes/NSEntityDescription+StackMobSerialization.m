@@ -30,7 +30,7 @@
     NSString *objectIdField = nil;
      
     // Search for schemanameId
-    objectIdField = [[self SMSchema] stringByAppendingFormat:@"Id"];
+    objectIdField = [NSString stringWithFormat:@"%@Id", [self SMSchema]];
     if ([[self propertiesByName] objectForKey:objectIdField] != nil) {
         return objectIdField;
     }
@@ -38,7 +38,7 @@
     objectIdField = nil;
     
     // Search for schemaname_id
-    objectIdField = [[self SMSchema] stringByAppendingFormat:@"_id"];
+    objectIdField = [NSString stringWithFormat:@"%@_id", [self SMSchema]];
     if ([[self propertiesByName] objectForKey:objectIdField] != nil) {
         return objectIdField;
     }
