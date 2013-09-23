@@ -1805,7 +1805,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         return nil;
     }
     
-    return [NSArray arrayWithObject:[NSNumber numberWithUnsignedInt:localCacheCount]];
+    return [NSArray arrayWithObject:[NSNumber numberWithUnsignedLong:localCacheCount]];
 }
 
 - (BOOL)containsSMPredicate:(NSPredicate *)predicate {
@@ -3411,7 +3411,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                     }
                         break;
                     default:
-                        [NSException raise:SMExceptionCacheError format:@"Case %d for merge policy object winner not supported.", objectToUse];
+                        [NSException raise:SMExceptionCacheError format:@"Specified merge policy not supported."];
                         break;
                 }
                 
@@ -3596,7 +3596,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                         }
                             break;
                         default:
-                            [NSException raise:SMExceptionCacheError format:@"Case %d for merge policy object winner not supported.", objectToUse];
+                            [NSException raise:SMExceptionCacheError format:@"Specified merge policy not supported."];
                             break;
                     }
 
@@ -3755,7 +3755,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                         }
                             break;
                         default:
-                            [NSException raise:SMExceptionCacheError format:@"Case %d for merge policy object winner not supported.", objectToUse];
+                            [NSException raise:SMExceptionCacheError format:@"Specified merge policy not supported."];
                             break;
                     }
                     

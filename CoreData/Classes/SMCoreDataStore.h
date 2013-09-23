@@ -44,11 +44,11 @@ typedef NS_ENUM(NSInteger, SMSavePolicy) {
 };
 
 typedef NS_ENUM(NSInteger, SMMergeObjectKey) {
-    SMClientObject = 0,
-    SMServerObject = 1,
+    SMClientObject,
+    SMServerObject,
 };
 
-typedef int (^SMMergePolicy)(NSDictionary *clientObject, NSDictionary *serverObject, NSDate *serverBaseLastModDate);
+typedef SMMergeObjectKey (^SMMergePolicy)(NSDictionary *clientObject, NSDictionary *serverObject, NSDate *serverBaseLastModDate);
 typedef void (^SMSyncCallback)(NSArray *objects);
 
 extern SMMergePolicy const SMMergePolicyClientWins;

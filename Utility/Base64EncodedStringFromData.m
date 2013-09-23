@@ -89,7 +89,7 @@ NSString * Base64EncodedStringFromData(NSData *data)
 
 NSData * Base64DecodedDataFromString(NSString *strBase64) {
 	const char * objPointer = [strBase64 cStringUsingEncoding:NSASCIIStringEncoding];
-	int intLength = strlen(objPointer);
+	NSInteger intLength = strlen(objPointer);
 	int intCurrent;
 	int i = 0, j = 0, k;
     
