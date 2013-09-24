@@ -1,1 +1,1 @@
-../../Kiwi/Kiwi/KWReporting.h
+../../Kiwi/Classes/Core/KWReporting.h

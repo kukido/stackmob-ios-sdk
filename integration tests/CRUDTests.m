@@ -53,6 +53,8 @@ describe(@"CRUD", ^{
             });
             
             [newBook shouldNotBeNil];
+            
+            sleep(SLEEP_TIME);
         });
         afterEach(^{
             [dataStore deleteObjectId:[newBook objectForKey:@"book_id"] inSchema:@"book" onSuccess:^(NSString *objectId, NSString *schema) {
@@ -61,6 +63,8 @@ describe(@"CRUD", ^{
                 NSLog(@"Failed to delete %@", [newBook objectForKey:@"book_id"]);
             }];
             newBook = nil;
+            
+            sleep(SLEEP_TIME);
         });
         it(@"creates a new book object", ^{
             [newBook shouldNotBeNil];
@@ -108,6 +112,7 @@ describe(@"CRUD", ^{
                 
                 [updatedBook shouldNotBeNil];
                 
+                sleep(SLEEP_TIME);
                  
             });
             it(@"updates the object's attributes", ^{
@@ -139,15 +144,17 @@ describe(@"CRUD", ^{
             });
             
             [newBook shouldNotBeNil];
+            
+            sleep(SLEEP_TIME);
         });
         
-        __block BOOL deleteSucceeded = NO;
+        __block int deleteSucceeded = 0;
         it(@"deletes the object", ^{
-            deleteSucceeded = NO;
+            deleteSucceeded = 0;
             syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
                 [dataStore deleteObjectId:[newBook objectForKey:@"book_id"] inSchema:@"book" onSuccess:^(NSString *objectId, NSString *schema) {
                     NSLog(@"deleted %@", objectId);
-                    deleteSucceeded = YES;
+                    deleteSucceeded = 1;
                     syncReturn(semaphore);
                 } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
                     NSLog(@"failed to delete the object with error: %@", error);
@@ -156,7 +163,9 @@ describe(@"CRUD", ^{
             });
             
             [theValue(deleteSucceeded) shouldNotBeNil];
-            [[theValue(deleteSucceeded) should] beYes];
+            [[theValue(deleteSucceeded) should] equal:theValue(1)];
+            
+            sleep(SLEEP_TIME);
         });
     });
     context(@"CRUD with non-lowercase schema name", ^{
@@ -191,6 +200,8 @@ describe(@"CRUD", ^{
             });
             [newBook shouldNotBeNil];
             [[returnedSchema should] equal:@"Book"];
+            
+            sleep(SLEEP_TIME);
         });
         it(@"Should read given non-lowercase schema name", ^{
             [[dataStore.session.regularOAuthClient operationQueue] shouldNotBeNil];
@@ -229,6 +240,8 @@ describe(@"CRUD", ^{
             });
             [newBook shouldNotBeNil];
             [[returnedSchema should] equal:@"Book"];
+            
+            sleep(SLEEP_TIME);
         });
         it(@"Should delete given non-lowercase schema name", ^{
             [[dataStore.session.regularOAuthClient operationQueue] shouldNotBeNil];
@@ -243,6 +256,8 @@ describe(@"CRUD", ^{
                 }];
             });
             [[returnedSchema should] equal:@"Book"];
+            
+            sleep(SLEEP_TIME);
         });
 
     });
@@ -272,6 +287,8 @@ describe(@"CRUD with GeoPoints", ^{
                 syncReturn(semaphore);
             }];
         });
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -282,6 +299,8 @@ describe(@"CRUD with GeoPoints", ^{
             }];
         });
         anObject = nil;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Saves SMGeoPoint without error", ^{
         [anObject shouldNotBeNil];
@@ -314,6 +333,8 @@ describe(@"read value containing special chartacters", ^{
                 syncReturn(semaphore);
             }];
         });
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -324,6 +345,8 @@ describe(@"read value containing special chartacters", ^{
                 syncReturn(semaphore);
             }];
         });
+        
+        sleep(SLEEP_TIME);
     });
     it(@"reads and updates the value with special characters", ^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -345,6 +368,8 @@ describe(@"read value containing special chartacters", ^{
                 syncReturn(semaphore);
             }];
         });
+        
+        sleep(SLEEP_TIME);
     });
     
 });
@@ -370,6 +395,8 @@ describe(@"read value containing special chartacters in schema with permissions"
             }];
         });
         
+        sleep(SLEEP_TIME);
+        
         // login user3
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
             [client loginWithUsername:objId password:@"1234" onSuccess:^(NSDictionary *result) {
@@ -391,6 +418,8 @@ describe(@"read value containing special chartacters in schema with permissions"
                 syncReturn(semaphore);
             }];
         });
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         
@@ -414,6 +443,8 @@ describe(@"read value containing special chartacters in schema with permissions"
             }];
         });
         
+        sleep(SLEEP_TIME);
+        
         // delete user3
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
             [[client dataStore] deleteObjectId:objId inSchema:@"user3" onSuccess:^(NSString *objectId, NSString *schema) {
@@ -423,6 +454,8 @@ describe(@"read value containing special chartacters in schema with permissions"
                 syncReturn(semaphore);
             }];
         });
+        
+        sleep(SLEEP_TIME);
     });
     it(@"reads and updates the value with special characters", ^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -444,6 +477,8 @@ describe(@"read value containing special chartacters in schema with permissions"
                 syncReturn(semaphore);
             }];
         });
+        
+        sleep(SLEEP_TIME);
     });
     
 });
@@ -458,7 +493,11 @@ describe(@"setExpandDepth", ^{
             SMRequestOptions *options = [SMRequestOptions optionsWithExpandDepth:1];
             [[client dataStore] readObjectWithId:@"1234" inSchema:@"expanddepthtest" options:options onSuccess:^(NSDictionary *object, NSString *schema)
              {
-                 [[theValue([[[object objectForKey:@"child"] class] isSubclassOfClass:[NSDictionary class]]) should] beYes];
+                 int value = 0;
+                 if ([[[object objectForKey:@"child"] class] isSubclassOfClass:[NSDictionary class]]) {
+                     value = 1;
+                 }
+                 [[theValue(value) should] equal:theValue(1)];
                  [[[[object objectForKey:@"child"] objectForKey:@"name"] should] equal:@"bob"];
                  syncReturn(semaphore);
              } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
@@ -475,8 +514,16 @@ describe(@"setExpandDepth", ^{
              {
                 NSLog(@"the object is %@", object);
                  [[theValue([[object objectForKey:@"children"] count]) should] equal:theValue(3)];
-                 [[theValue([[[object objectForKey:@"children"] class] isSubclassOfClass:[NSArray class]]) should] beYes];
-                 [[theValue([[[[object objectForKey:@"children"] objectAtIndex:0] class] isSubclassOfClass:[NSDictionary class]]) should] beYes];
+                 int value = 0;
+                 if ([[[object objectForKey:@"children"] class] isSubclassOfClass:[NSArray class]]) {
+                     value = 1;
+                 }
+                 [[theValue(value) should] equal:theValue(1)];
+                 value = 0;
+                 if ([[[[object objectForKey:@"children"] objectAtIndex:0] class] isSubclassOfClass:[NSDictionary class]]) {
+                     value = 1;
+                 }
+                 [[theValue(value) should] equal:theValue(1)];
                  syncReturn(semaphore);
              } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
                  [error shouldBeNil];
@@ -494,14 +541,26 @@ describe(@"setExpandDepth", ^{
              {
                  for(NSDictionary *dictionary in results) {
                      if([dictionary objectForKey:@"child"]){
-                         [[theValue([[[dictionary objectForKey:@"child"] class] isSubclassOfClass:[NSDictionary class]]) should] beYes];
+                         int value = 0;
+                         if ([[[dictionary objectForKey:@"child"] class] isSubclassOfClass:[NSDictionary class]]) {
+                             value = 1;
+                         }
+                         [[theValue(value) should] equal:theValue(1)];
                          [[[[dictionary objectForKey:@"child"] objectForKey:@"name"] should] equal:@"bob"];
                          
                      }
                      else if ([dictionary objectForKey:@"children"]){
                          [[theValue([[dictionary objectForKey:@"children"] count]) should] equal:theValue(3)];
-                         [[theValue([[[dictionary objectForKey:@"children"] class] isSubclassOfClass:[NSArray class]]) should] beYes];
-                         [[theValue([[[[dictionary objectForKey:@"children"] objectAtIndex:0] class] isSubclassOfClass:[NSDictionary class]]) should] beYes];
+                         int value = 0;
+                         if ([[[dictionary objectForKey:@"children"] class] isSubclassOfClass:[NSArray class]]) {
+                             value = 1;
+                         }
+                         [[theValue(value) should] equal:theValue(1)];
+                         value = 0;
+                         if ([[[[dictionary objectForKey:@"children"] objectAtIndex:0] class] isSubclassOfClass:[NSDictionary class]]) {
+                             value = 1;
+                         }
+                         [[theValue(value) should] equal:theValue(1)];
                      }
                  }
                   syncReturn(semaphore);
@@ -520,7 +579,11 @@ describe(@"setExpandDepth", ^{
              [[client dataStore] performQuery:query options:options onSuccess:^(NSArray *results)
               {
                   NSDictionary *dictionary = [results objectAtIndex:0];
-                  [[theValue([[[dictionary objectForKey:@"child"] class] isSubclassOfClass:[NSDictionary class]]) should] beYes];
+                  int value = 0;
+                  if ([[[dictionary objectForKey:@"child"] class] isSubclassOfClass:[NSDictionary class]]) {
+                      value = 1;
+                  }
+                  [[theValue(value) should] equal:theValue(1)];
                   [[[[dictionary objectForKey:@"child"] objectForKey:@"name"] should] equal:@"bob"];
                   syncReturn(semaphore);
               } onFailure:^(NSError *error) {
@@ -539,8 +602,17 @@ describe(@"setExpandDepth", ^{
              {
                  NSDictionary *dictionary = [results objectAtIndex:0];
                  [[theValue([[dictionary objectForKey:@"children"] count]) should] equal:theValue(3)];
-                 [[theValue([[[dictionary objectForKey:@"children"] class] isSubclassOfClass:[NSArray class]]) should] beYes];
-                 [[theValue([[[[dictionary objectForKey:@"children"] objectAtIndex:0] class] isSubclassOfClass:[NSDictionary class]]) should] beYes];
+                 int value = 0;
+                 if ([[[dictionary objectForKey:@"children"] class] isSubclassOfClass:[NSArray class]]) {
+                     value = 1;
+                 }
+                 [[theValue(value) should] equal:theValue(1)];
+                 
+                 value = 0;
+                 if ([[[[dictionary objectForKey:@"children"] objectAtIndex:0] class] isSubclassOfClass:[NSDictionary class]]) {
+                     value = 1;
+                 }
+                 [[theValue(value) should] equal:theValue(1)];
                  syncReturn(semaphore);
              } onFailure:^(NSError *error) {
                  

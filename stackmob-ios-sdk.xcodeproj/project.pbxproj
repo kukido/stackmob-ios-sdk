@@ -67,6 +67,15 @@
 		8CD0DEEA1592409D0087801F /* StackMobCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CD0DEE91592409D0087801F /* StackMobCredentials.plist */; };
 		98370AD3EB434211AE6072C4 /* libPods-cacheAndSyncIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA04C13E09164D2A9F9AFB08 /* libPods-cacheAndSyncIntegrationTests.a */; };
 		C5D09E3636254F06947D27B1 /* libPods-integrationTestsCoreDataDeprecated.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9DA6654A454471392E98D71 /* libPods-integrationTestsCoreDataDeprecated.a */; };
+		C641C81C17F213280027F7C2 /* SMPushClientIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9ED78164B1D43006B7326 /* SMPushClientIntegrationSpec.m */; };
+		C6624F7517F2196100324DC1 /* CRUDTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C33B0641591355A00BE2570 /* CRUDTests.m */; };
+		C6624F7617F2196400324DC1 /* SMClientIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB8474D159A74D000FF37A3 /* SMClientIntegrationSpec.m */; };
+		C6624F7717F2196700324DC1 /* QueryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 619EDF11159292AC0075BB93 /* QueryTests.m */; };
+		C6624F7817F2196900324DC1 /* QueryTestsWithPermissionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1BDE2D1682BFEC009282BA /* QueryTestsWithPermissionsSpec.m */; };
+		C6624F7917F2196C00324DC1 /* SMCusCodeReqIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB16BCB15DC606300893EE5 /* SMCusCodeReqIntegrationSpec.m */; };
+		C6624F7A17F2197200324DC1 /* RelationshipsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4FBFCE177E741D00E13A22 /* RelationshipsSpec.m */; };
+		C6624F7B17F2197500324DC1 /* SMNetworkReachabilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9EEBE164B4F24006B7326 /* SMNetworkReachabilitySpec.m */; };
+		C6624F7C17F21D7A00324DC1 /* SMIncrementalStoreFetchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0CC7A615CB5EA200E491C4 /* SMIncrementalStoreFetchTest.m */; };
 		C6D9482317EBC37E00D170B8 /* SMUpdateObjectsOptimizationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE585271631F3C40009A1DE /* SMUpdateObjectsOptimizationSpec.m */; };
 		C6D9482417EBC38100D170B8 /* IncrementalStoreBatchOperationsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0837A5167FE65B00872116 /* IncrementalStoreBatchOperationsSpec.m */; };
 		C6D9482C17EBE03C00D170B8 /* LocalWriteCacheSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE5B5CA817C6CF380051905F /* LocalWriteCacheSpec.m */; };
@@ -202,13 +211,6 @@
 		DE5B5C9D17C6C2CC0051905F /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE0C76151641D8F900DDF7D3 /* MobileCoreServices.framework */; };
 		DE5B5C9E17C6C2D00051905F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9227EC161E37EA00DA0D00 /* SystemConfiguration.framework */; };
 		DE5B5C9F17C6C2DE0051905F /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE64D61B1623BAE800237570 /* Security.framework */; };
-		DE5B5CA017C6CECE0051905F /* CRUDTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C33B0641591355A00BE2570 /* CRUDTests.m */; };
-		DE5B5CA117C6CED10051905F /* SMClientIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB8474D159A74D000FF37A3 /* SMClientIntegrationSpec.m */; };
-		DE5B5CA217C6CED40051905F /* QueryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 619EDF11159292AC0075BB93 /* QueryTests.m */; };
-		DE5B5CA317C6CED70051905F /* SMCusCodeReqIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB16BCB15DC606300893EE5 /* SMCusCodeReqIntegrationSpec.m */; };
-		DE5B5CA417C6CED90051905F /* SMPushClientIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9ED78164B1D43006B7326 /* SMPushClientIntegrationSpec.m */; };
-		DE5B5CA517C6CEDC0051905F /* RelationshipsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4FBFCE177E741D00E13A22 /* RelationshipsSpec.m */; };
-		DE5B5CA617C6CEDF0051905F /* SMNetworkReachabilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9EEBE164B4F24006B7326 /* SMNetworkReachabilitySpec.m */; };
 		DE5B5CAB17C6CF4D0051905F /* SMTestProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1D1F3D172F44EF00B60EB0 /* SMTestProperties.m */; };
 		DE5B5CAE17C6CFBD0051905F /* Superpower.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0CC7AF15CB605900E491C4 /* Superpower.m */; };
 		DE5B5CAF17C6CFC30051905F /* Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D8351CE16C08D6F00814C71 /* Random.m */; };
@@ -293,7 +295,6 @@
 		DEC5F9FB169B979B00A44722 /* SMIncrementalStoreNode.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC5F9F9169B979B00A44722 /* SMIncrementalStoreNode.m */; };
 		DEC6351717A1CBCB00EC678D /* SMHTTPRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = DEC6351517A1CBCB00EC678D /* SMHTTPRequestOperation.h */; };
 		DEC6351817A1CBCB00EC678D /* SMHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC6351617A1CBCB00EC678D /* SMHTTPRequestOperation.m */; };
-		DEC6352E17A1ECEF00EC678D /* QueryTestsWithPermissionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1BDE2D1682BFEC009282BA /* QueryTestsWithPermissionsSpec.m */; };
 		DEC6353317A333F400EC678D /* SMHTTPRequestOperation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEC6351517A1CBCB00EC678D /* SMHTTPRequestOperation.h */; };
 		DED7D2A81655749900FBAF06 /* SMNetworkReachability.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DE079B9A16499B0900C8AAA0 /* SMNetworkReachability.h */; };
 		DED7D2A91655749900FBAF06 /* SystemInformation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEA9ED94164B2BAB006B7326 /* SystemInformation.h */; };
@@ -1676,19 +1677,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6624F7717F2196700324DC1 /* QueryTests.m in Sources */,
 				619EDF16159292CF0075BB93 /* SMIntegrationTestHelpers.m in Sources */,
 				DE0CC7B115CB605900E491C4 /* Superpower.m in Sources */,
+				C6624F7917F2196C00324DC1 /* SMCusCodeReqIntegrationSpec.m in Sources */,
+				C6624F7617F2196400324DC1 /* SMClientIntegrationSpec.m in Sources */,
+				C6624F7B17F2197500324DC1 /* SMNetworkReachabilitySpec.m in Sources */,
+				C6624F7517F2196100324DC1 /* CRUDTests.m in Sources */,
+				C641C81C17F213280027F7C2 /* SMPushClientIntegrationSpec.m in Sources */,
+				C6624F7817F2196900324DC1 /* QueryTestsWithPermissionsSpec.m in Sources */,
 				1DDAE4691656EF15001DFAEF /* SMNetworkReachabilityHelper.m in Sources */,
 				1D8351CF16C08D7000814C71 /* Random.m in Sources */,
+				C6624F7A17F2197200324DC1 /* RelationshipsSpec.m in Sources */,
 				1D8351DF16C0969900814C71 /* SMCoreDataIntegrationTest.xcdatamodeld in Sources */,
-				DEC6352E17A1ECEF00EC678D /* QueryTestsWithPermissionsSpec.m in Sources */,
-				DE5B5CA017C6CECE0051905F /* CRUDTests.m in Sources */,
-				DE5B5CA117C6CED10051905F /* SMClientIntegrationSpec.m in Sources */,
-				DE5B5CA217C6CED40051905F /* QueryTests.m in Sources */,
-				DE5B5CA317C6CED70051905F /* SMCusCodeReqIntegrationSpec.m in Sources */,
-				DE5B5CA417C6CED90051905F /* SMPushClientIntegrationSpec.m in Sources */,
-				DE5B5CA517C6CEDC0051905F /* RelationshipsSpec.m in Sources */,
-				DE5B5CA617C6CEDF0051905F /* SMNetworkReachabilitySpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1772,6 +1773,7 @@
 				C6D9482317EBC37E00D170B8 /* SMUpdateObjectsOptimizationSpec.m in Sources */,
 				DE0CC7CB15CB6ADF00E491C4 /* Superpower.m in Sources */,
 				DE0CC7CF15CB6B1F00E491C4 /* SMIntegrationTestHelpers.m in Sources */,
+				C6624F7C17F21D7A00324DC1 /* SMIncrementalStoreFetchTest.m in Sources */,
 				1D8351A316B9D4D000814C71 /* SMCoreDataIntegrationTestHelpers.m in Sources */,
 				1D8351D016C08D7000814C71 /* Random.m in Sources */,
 				1D8351E016C0969A00814C71 /* SMCoreDataIntegrationTest.xcdatamodeld in Sources */,
@@ -1882,6 +1884,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9FC525CBE9284EC88F303CAD /* Pods-integration tests.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
@@ -1899,6 +1902,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9FC525CBE9284EC88F303CAD /* Pods-integration tests.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
