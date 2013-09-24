@@ -54,7 +54,7 @@ describe(@"CRUD", ^{
             
             [newBook shouldNotBeNil];
             
-            sleep(3);
+            sleep(SLEEP_TIME);
         });
         afterEach(^{
             [dataStore deleteObjectId:[newBook objectForKey:@"book_id"] inSchema:@"book" onSuccess:^(NSString *objectId, NSString *schema) {
@@ -64,7 +64,7 @@ describe(@"CRUD", ^{
             }];
             newBook = nil;
             
-            sleep(3);
+            sleep(SLEEP_TIME);
         });
         it(@"creates a new book object", ^{
             [newBook shouldNotBeNil];
@@ -112,7 +112,7 @@ describe(@"CRUD", ^{
                 
                 [updatedBook shouldNotBeNil];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                  
             });
             it(@"updates the object's attributes", ^{
@@ -145,7 +145,7 @@ describe(@"CRUD", ^{
             
             [newBook shouldNotBeNil];
             
-            sleep(3);
+            sleep(SLEEP_TIME);
         });
         
         __block int deleteSucceeded = 0;
@@ -165,7 +165,7 @@ describe(@"CRUD", ^{
             [theValue(deleteSucceeded) shouldNotBeNil];
             [[theValue(deleteSucceeded) should] equal:theValue(1)];
             
-            sleep(3);
+            sleep(SLEEP_TIME);
         });
     });
     context(@"CRUD with non-lowercase schema name", ^{
@@ -201,7 +201,7 @@ describe(@"CRUD", ^{
             [newBook shouldNotBeNil];
             [[returnedSchema should] equal:@"Book"];
             
-            sleep(3);
+            sleep(SLEEP_TIME);
         });
         it(@"Should read given non-lowercase schema name", ^{
             [[dataStore.session.regularOAuthClient operationQueue] shouldNotBeNil];
@@ -241,7 +241,7 @@ describe(@"CRUD", ^{
             [newBook shouldNotBeNil];
             [[returnedSchema should] equal:@"Book"];
             
-            sleep(3);
+            sleep(SLEEP_TIME);
         });
         it(@"Should delete given non-lowercase schema name", ^{
             [[dataStore.session.regularOAuthClient operationQueue] shouldNotBeNil];
@@ -257,7 +257,7 @@ describe(@"CRUD", ^{
             });
             [[returnedSchema should] equal:@"Book"];
             
-            sleep(3);
+            sleep(SLEEP_TIME);
         });
 
     });
@@ -288,7 +288,7 @@ describe(@"CRUD with GeoPoints", ^{
             }];
         });
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -300,7 +300,7 @@ describe(@"CRUD with GeoPoints", ^{
         });
         anObject = nil;
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     it(@"Saves SMGeoPoint without error", ^{
         [anObject shouldNotBeNil];
@@ -334,7 +334,7 @@ describe(@"read value containing special chartacters", ^{
             }];
         });
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -346,7 +346,7 @@ describe(@"read value containing special chartacters", ^{
             }];
         });
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     it(@"reads and updates the value with special characters", ^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -369,7 +369,7 @@ describe(@"read value containing special chartacters", ^{
             }];
         });
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     
 });
@@ -395,7 +395,7 @@ describe(@"read value containing special chartacters in schema with permissions"
             }];
         });
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         // login user3
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -419,7 +419,7 @@ describe(@"read value containing special chartacters in schema with permissions"
             }];
         });
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         
@@ -443,7 +443,7 @@ describe(@"read value containing special chartacters in schema with permissions"
             }];
         });
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         // delete user3
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -455,7 +455,7 @@ describe(@"read value containing special chartacters in schema with permissions"
             }];
         });
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     it(@"reads and updates the value with special characters", ^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -478,7 +478,7 @@ describe(@"read value containing special chartacters in schema with permissions"
             }];
         });
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     
 });

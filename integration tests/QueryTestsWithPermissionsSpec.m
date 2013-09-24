@@ -45,6 +45,8 @@ describe(@"with a prepopulated database of people", ^{
         BOOL createSuccess = [SMIntegrationTestHelpers createUser:@"dude" password:@"sweet" dataStore:client.dataStore];
         [[theValue(createSuccess) should] beYes];
         
+        sleep(SLEEP_TIME);
+        
         // Log in user
         __block BOOL loggedIn = NO;
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -64,10 +66,14 @@ describe(@"with a prepopulated database of people", ^{
         
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixtureNames];
         [fixtures shouldNotBeNil];
+        
+        sleep(SLEEP_TIME);
     });
     
     afterAll(^{
         [SMIntegrationTestHelpers destroyAllForFixturesNamed:fixtureNames];
+        
+        sleep(SLEEP_TIME);
         
         // Logout
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -82,6 +88,8 @@ describe(@"with a prepopulated database of people", ^{
         
         BOOL deleteSuccess = [SMIntegrationTestHelpers deleteUser:@"dude" dataStore:client.dataStore];
         [[theValue(deleteSuccess) should] beYes];
+        
+        sleep(SLEEP_TIME);
         
     });
     
@@ -555,6 +563,9 @@ describe(@"with a prepopulated database of people", ^{
                     syncReturn(semaphore);
                 }];
             });
+            
+            sleep(SLEEP_TIME);
+            
             NSDictionary *nonEmptyStringDict = [NSDictionary dictionaryWithObjectsAndKeys:@"full", @"first_name", @"5678", @"personpermissions_id", nil];
             syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
                 [sm createObject:nonEmptyStringDict inSchema:@"personpermissions" onSuccess:^(NSDictionary *object, NSString *schema) {
@@ -564,6 +575,8 @@ describe(@"with a prepopulated database of people", ^{
                     syncReturn(semaphore);
                 }];
             });
+            
+            sleep(SLEEP_TIME);
             
         });
         afterEach(^{
@@ -576,6 +589,9 @@ describe(@"with a prepopulated database of people", ^{
                     syncReturn(semaphore);
                 }];
             });
+            
+            sleep(SLEEP_TIME);
+            
             syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
                 [sm deleteObjectId:@"5678" inSchema:@"personpermissions" onSuccess:^(NSString *objectId, NSString *schema) {
                     syncReturn(semaphore);
@@ -584,6 +600,9 @@ describe(@"with a prepopulated database of people", ^{
                     syncReturn(semaphore);
                 }];
             });
+            
+            sleep(SLEEP_TIME);
+            
         });
         it(@"-whereFieldIsEqualToEmptyString", ^{
             __block NSArray *theResults = nil;

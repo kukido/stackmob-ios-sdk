@@ -47,7 +47,7 @@ describe(@"refresh token fail block", ^{
                 NSLog(@"Failure with error: %@", error);
             }];
             
-            sleep(3);
+            sleep(SLEEP_TIME);
         });
         
         [[theValue(tokenFailure) should] beYes];
@@ -70,7 +70,7 @@ describe(@"refresh token fail block", ^{
                 NSLog(@"Failure with error: %@", error);
             }];
             
-            sleep(3);
+            sleep(SLEEP_TIME);
         });
         
         [[theValue(tokenFailure) should] beYes];
@@ -91,7 +91,7 @@ describe(@"refresh token fail block", ^{
                 NSLog(@"Failure with error: %@", error);
             }];
             
-            sleep(3);
+            sleep(SLEEP_TIME);
         });
         
         [[theValue(tokenFailure) should] beYes];
@@ -112,14 +112,14 @@ describe(@"basic auth", ^{
         BOOL createSuccess = [SMIntegrationTestHelpers createUser:@"bob" password:@"1234" dataStore:dataStore];
         [[theValue(createSuccess) should] beYes];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
 
     });
     afterEach(^{
         BOOL deleteSuccess = [SMIntegrationTestHelpers deleteUser:@"bob" dataStore:dataStore];
         [[theValue(deleteSuccess) should] beYes];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     describe(@"being logged in", ^{
         __block NSDictionary *loginObj;
@@ -192,7 +192,7 @@ describe(@"basic auth", ^{
             [[theValue(createSuccess) should] beYes];
             [objID shouldNotBeNil];
             
-            sleep(3);
+            sleep(SLEEP_TIME);
             
             __block BOOL readSuccess = NO;
             syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -220,7 +220,7 @@ describe(@"basic auth", ^{
             
             [[theValue(deleteSuccess) should] beYes];
             
-            sleep(3);
+            sleep(SLEEP_TIME);
  
         });
         
@@ -326,7 +326,7 @@ describe(@"basic auth", ^{
                 [[theValue(createSuccess) should] beYes];
                 [objID shouldNotBeNil];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                 
                 __block BOOL readSuccess = NO;
                 syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -354,7 +354,7 @@ describe(@"basic auth", ^{
                 [[theValue(deleteSuccess) should] beYes];
                 [[userSession.refreshToken shouldNot] equal:oldToken];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
             });
             
         });
@@ -384,7 +384,7 @@ describe(@"basic auth", ^{
                 [[theValue(createSuccess) should] beYes];
                 [objID shouldNotBeNil];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
                 
                 __block BOOL readSuccess = NO;
                 syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -413,7 +413,7 @@ describe(@"basic auth", ^{
                 [[theValue(deleteSuccess) should] beYes];
                 [[userSession.refreshToken shouldNot] equal:oldToken];
                 
-                sleep(3);
+                sleep(SLEEP_TIME);
             });
             
         });
@@ -585,7 +585,7 @@ describe(@"forgotPassword", ^{
         
         [[theValue(createSuccess) should] beYes];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         createSuccess = NO;
         NSDictionary *createObjectDict = [NSDictionary dictionaryWithObjectsAndKeys:@"bob", @"username", @"1234", @"password", @"1234", @"email", nil];
@@ -602,7 +602,7 @@ describe(@"forgotPassword", ^{
         
         [[theValue(createSuccess) should] beYes];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         
     });
@@ -625,7 +625,7 @@ describe(@"forgotPassword", ^{
         
         [[theValue(deleteSuccess) should] beYes];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
         
     });
@@ -684,14 +684,14 @@ describe(@"authentication with permissions", ^{
         BOOL createSuccess = [SMIntegrationTestHelpers createUser:@"dude" password:@"sweet" dataStore:client.dataStore];
         [[theValue(createSuccess) should] beYes];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
         
     });
     afterAll(^{
         BOOL deleteSuccess = [SMIntegrationTestHelpers deleteUser:@"dude" dataStore:client.dataStore];
         [[theValue(deleteSuccess) should] beYes];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     context(@"not logged in", ^{
         it(@"should not allow to read from a schema with permissions set", ^{
@@ -768,13 +768,13 @@ describe(@"basic login/logout works as it should", ^{
         BOOL createSuccess = [SMIntegrationTestHelpers createUser:@"dude" password:@"sweet" dataStore:client.dataStore];
         [[theValue(createSuccess) should] beYes];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         BOOL deleteSuccess = [SMIntegrationTestHelpers deleteUser:@"dude" dataStore:client.dataStore];
         [[theValue(deleteSuccess) should] beYes];
         
-        sleep(3);
+        sleep(SLEEP_TIME);
     });
     it(@"login/logout", ^{
         // login
