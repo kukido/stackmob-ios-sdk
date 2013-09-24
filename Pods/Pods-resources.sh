@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-RESOURCES_TO_COPY=./resources-to-copy-${TARGETNAME}.txt
+RESOURCES_TO_COPY=${PODS_ROOT}/resources-to-copy-${TARGETNAME}.txt
 > "$RESOURCES_TO_COPY"
 
 install_resource()
