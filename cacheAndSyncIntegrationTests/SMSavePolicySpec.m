@@ -52,7 +52,7 @@ describe(@"Save policy works with syncing", ^{
     });
     it(@"Can save locally a few times, sync, and all is well", ^{
         
-        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
+        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
         
         [[[SMClient defaultClient] coreDataStore] setSavePolicy:SMSavePolicyCacheOnly];
         [[[SMClient defaultClient] coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
@@ -944,7 +944,7 @@ describe(@"Per Request Save Policy", ^{
     });
     it(@"not setting policy works, sync", ^{
         
-        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
         [testProperties.cds setSavePolicy:SMSavePolicyCacheOnly];
         
@@ -961,7 +961,7 @@ describe(@"Per Request Save Policy", ^{
         
         [testProperties.cds setSavePolicy:SMSavePolicyNetworkOnly];
         
-        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
         SMRequestOptions *options = [SMRequestOptions optionsWithSavePolicy:SMSavePolicyCacheOnly];
         [[theValue(options.savePolicySet) should] beYes];
@@ -978,7 +978,7 @@ describe(@"Per Request Save Policy", ^{
         
         [testProperties.cds setSavePolicy:SMSavePolicyCacheOnly];
         
-        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
+        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
         
         SMRequestOptions *options = [SMRequestOptions optionsWithSavePolicy:SMSavePolicyNetworkOnly];
         [[theValue(options.savePolicySet) should] beYes];

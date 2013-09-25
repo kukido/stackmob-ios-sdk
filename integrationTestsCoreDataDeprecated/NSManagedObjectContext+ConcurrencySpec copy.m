@@ -461,8 +461,10 @@ describe(@"Returning managed object vs. ids", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+#if !OS_OBJECT_USE_OBJC
         dispatch_release(group);
         dispatch_release(queue);
+#endif
         
     });
     it(@"Properly returns managed objects ids, async method", ^{
@@ -485,8 +487,10 @@ describe(@"Returning managed object vs. ids", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+#if !OS_OBJECT_USE_OBJC
         dispatch_release(group);
         dispatch_release(queue);
+#endif
         
     });
     it(@"Properly returns managed objects, sync method", ^{

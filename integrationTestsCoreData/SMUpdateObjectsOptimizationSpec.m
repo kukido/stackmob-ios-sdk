@@ -41,6 +41,8 @@ describe(@"updating an object only persists changed fields", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -48,6 +50,8 @@ describe(@"updating an object only persists changed fields", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"should only persist the updated fields", ^{
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];

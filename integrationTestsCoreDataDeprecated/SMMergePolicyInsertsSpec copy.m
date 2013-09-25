@@ -223,7 +223,7 @@ describe(@"Insert 1 Offline at T1, Insert 1 Online at T2", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
-        sleep(SLEEP_TIME_MIN);
+        sleep(SLEEP_TIME);
         
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
         
