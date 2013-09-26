@@ -21,6 +21,74 @@
 
 SPEC_BEGIN(SMCoreDataStoreTest)
 
+describe(@"objects can be properly refreshed after save", ^{
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        testProperties = [[SMTestProperties alloc] init];
+    });
+    afterEach(^{
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        NSError *error = nil;
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        error = nil;
+        [testProperties.moc saveAndWait:&error];
+        
+        [error shouldBeNil];
+        
+        sleep(SLEEP_TIME);
+    });
+    it(@"refreshes correctly with cache fetch", ^{
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        [todoObject setValue:@"title" forKey:@"title"];
+        [todoObject assignObjectId];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
+        
+        [[[todoObject valueForKey:@"createddate"] should] beNil];
+        [[[todoObject valueForKey:@"lastmoddate"] should] beNil];
+        
+        NSFetchRequest *todoFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        SMRequestOptions *options = [SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly];
+        error = nil;
+        
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:todoFetch returnManagedObjectIDs:NO options:options error:&error];
+        
+        [[error should] beNil];
+        [[results should] haveCountOf:1];
+        
+        NSManagedObject *todoFromFetch = [results lastObject];
+        [[[todoFromFetch valueForKey:@"createddate"] shouldNot] beNil];
+        [[[todoFromFetch valueForKey:@"lastmoddate"] shouldNot] beNil];
+        
+    });
+    pending(@"refreshes correctly with refreshObject:mergeChanges", ^{
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        [todoObject setValue:@"title" forKey:@"title"];
+        [todoObject assignObjectId];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
+        
+        [[[todoObject valueForKey:@"createddate"] should] beNil];
+        [[[todoObject valueForKey:@"lastmoddate"] should] beNil];
+    });
+});
+
 describe(@"can set a field to nil, string", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
