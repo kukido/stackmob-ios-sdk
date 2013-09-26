@@ -41,9 +41,13 @@ describe(@"with a prepopulated database of people", ^{
         sm = [SMIntegrationTestHelpers dataStore];
         [SMIntegrationTestHelpers destroyAllForFixturesNamed:fixtureNames];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixtureNames];
+        
+        sleep(SLEEP_TIME);
     });
     afterAll(^{
         [SMIntegrationTestHelpers destroyAllForFixturesNamed:fixtureNames];
+        
+        sleep(SLEEP_TIME);
     });
     describe(@"-query with initWithSchema", ^{
         beforeEach(^{
@@ -556,6 +560,9 @@ describe(@"empty string", ^{
                 syncReturn(semaphore);
             }];
         });
+        
+        sleep(SLEEP_TIME);
+        
         NSDictionary *nonEmptyStringDict = [NSDictionary dictionaryWithObjectsAndKeys:@"full", @"title", @"5678", @"todo_id", nil];
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
             [sm createObject:nonEmptyStringDict inSchema:@"todo" onSuccess:^(NSDictionary *object, NSString *schema) {
@@ -565,6 +572,8 @@ describe(@"empty string", ^{
                 syncReturn(semaphore);
             }];
         });
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
@@ -575,6 +584,9 @@ describe(@"empty string", ^{
                 syncReturn(semaphore);
             }];
         });
+        
+        sleep(SLEEP_TIME);
+        
         syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
             [sm deleteObjectId:@"5678" inSchema:@"todo" onSuccess:^(NSString *objectId, NSString *schema) {
                 syncReturn(semaphore);
@@ -583,6 +595,8 @@ describe(@"empty string", ^{
                 syncReturn(semaphore);
             }];
         });
+        
+        sleep(SLEEP_TIME);
         
     });
     it(@"-whereFieldIsEqualToEmptyString", ^{

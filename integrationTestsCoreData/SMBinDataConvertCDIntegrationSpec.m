@@ -47,7 +47,7 @@ describe(@"SMBinDataConvertCDIntegration", ^{
             [dataString shouldNotBeNil];
             [superpower setName:@"cool"];
             [superpower setValue:dataString forKey:@"pic"];
-            [superpower setSuperpower_id:[superpower assignObjectId]];
+            [superpower assignObjectId];
         });
         it(@"should persist to StackMob and update after a refresh call", ^{
              [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -57,6 +57,9 @@ describe(@"SMBinDataConvertCDIntegration", ^{
                 NSString *picString = [superpower valueForKey:@"pic"];
                 [[[picString substringToIndex:4] should] equal:@"http"];
             }];
+            
+            sleep(SLEEP_TIME);
+            
             [SMCoreDataIntegrationTestHelpers executeSynchronousDelete:testProperties.moc withObject:[superpower objectID] andBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
@@ -70,15 +73,24 @@ describe(@"SMBinDataConvertCDIntegration", ^{
                 [testProperties.moc refreshObject:superpower mergeChanges:YES];
                 picURL = [superpower valueForKey:@"pic"];
             }];
+            
+            sleep(SLEEP_TIME);
+            
             [superpower setName:@"the coolest"];
+            
             [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
                 NSString *picString = [superpower valueForKey:@"pic"];
                 [[picString should] equal:picURL];
             }];
+            
+            sleep(SLEEP_TIME);
+            
             [SMCoreDataIntegrationTestHelpers executeSynchronousDelete:testProperties.moc withObject:[superpower objectID] andBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         });
     });
 });

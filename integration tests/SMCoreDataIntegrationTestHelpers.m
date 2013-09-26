@@ -100,7 +100,7 @@ static SMCoreDataIntegrationTestHelpers *_singletonInstance;
                                               errorDescription:&errorDesc];
         
         if (!temp) {
-            [NSException raise:SMExceptionCacheError format:@"Error reading cachemap: %@, format: %d", errorDesc, format];
+            [NSException raise:SMExceptionCacheError format:@"Error reading cachemap: %@, format: %lu", errorDesc, format];
         } else {
             return [temp mutableCopy];
         }

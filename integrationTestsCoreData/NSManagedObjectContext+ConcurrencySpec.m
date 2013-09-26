@@ -35,7 +35,7 @@ describe(@"countForFetchRequest, network", ^{
         for (int i=0; i < 10; i++) {
             NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
             [newManagedObject setValue:@"bob" forKey:@"title"];
-            [newManagedObject setValue:[newManagedObject assignObjectId] forKey:[newManagedObject primaryKeyField]];
+            [newManagedObject assignObjectId];
             
             [arrayOfObjects addObject:newManagedObject];
         }
@@ -157,7 +157,7 @@ describe(@"countForFetchRequest, cache", ^{
         for (int i=0; i < 10; i++) {
             NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
             [newManagedObject setValue:@"bob" forKey:@"title"];
-            [newManagedObject setValue:[newManagedObject assignObjectId] forKey:[newManagedObject primaryKeyField]];
+            [newManagedObject assignObjectId];
             
             [arrayOfObjects addObject:newManagedObject];
         }
@@ -461,8 +461,10 @@ describe(@"Returning managed object vs. ids", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+#if !OS_OBJECT_USE_OBJC
         dispatch_release(group);
         dispatch_release(queue);
+#endif
         
     });
     it(@"Properly returns managed objects ids, async method", ^{
@@ -485,8 +487,10 @@ describe(@"Returning managed object vs. ids", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+#if !OS_OBJECT_USE_OBJC
         dispatch_release(group);
         dispatch_release(queue);
+#endif
         
     });
     it(@"Properly returns managed objects, sync method", ^{

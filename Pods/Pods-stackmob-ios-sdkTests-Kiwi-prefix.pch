@@ -3,3 +3,7 @@
 #endif
 
 #import "Pods-stackmob-ios-sdkTests-environment.h"
+
+
+#import <SenTestingKit/SenTestingKit.h>
+

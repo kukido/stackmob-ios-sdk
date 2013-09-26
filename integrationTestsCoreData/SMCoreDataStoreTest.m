@@ -36,6 +36,8 @@ describe(@"can set a field to nil, string", ^{
         
         [[theValue(success) should] beYes];
         
+        sleep(SLEEP_TIME);
+        
     });
     afterEach(^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -95,12 +97,14 @@ describe(@"can set a field to nil, date", ^{
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:testProperties.moc];
         date = [NSDate date];
         [todoObject setValue:date forKey:@"time"];
-        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        [todoObject assignObjectId];
         
         NSError *error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error];
         
         [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
@@ -159,12 +163,14 @@ describe(@"can set a field to nil, int", ^{
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:testProperties.moc];
         born = [NSNumber numberWithInt:1980];
         [todoObject setValue:born forKey:@"yearBorn"];
-        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        [todoObject assignObjectId];
         
         NSError *error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error];
         
         [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
@@ -226,12 +232,14 @@ describe(@"can set a field to nil, binary", ^{
         [error shouldBeNil];
         NSString *dataString = [SMBinaryDataConversion stringForBinaryData:theData name:@"whatever" contentType:@"image/jpeg"];
         [todoObject setValue:dataString forKey:@"pic"];
-        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        [todoObject assignObjectId];
         
         error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error];
         
         [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
@@ -400,6 +408,8 @@ describe(@"using the cache, binary field not set, doesn't propogates", ^{
         BOOL success = [testProperties.moc saveAndWait:&error];
         
         [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Superpower"];
@@ -493,12 +503,14 @@ describe(@"can set a field to nil, geopoint", ^{
         geo = [SMGeoPoint geoPointWithLatitude:[NSNumber numberWithDouble:30.5] longitude:[NSNumber numberWithDouble:30.5]];
         //geo = [SMGeoPoint geoPointWithLatitude:[NSNumber numberWithInt:30] longitude:[NSNumber numberWithInt:30]];
         [todoObject setValue:[NSKeyedArchiver archivedDataWithRootObject:geo] forKey:@"geopoint"];
-        [todoObject setValue:[todoObject assignObjectId] forKey:[todoObject primaryKeyField]];
+        [todoObject assignObjectId];
         
         NSError *error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error];
         
         [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
@@ -587,7 +599,7 @@ describe(@"with a managedObjectContext from SMCoreDataStore", ^{
         NSManagedObject *aPerson = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [aPerson setValue:@"the" forKey:@"first_name"];
         [aPerson setValue:@"dude" forKey:@"last_name"];
-        [aPerson setValue:[aPerson assignObjectId] forKey:[aPerson primaryKeyField]];
+        [aPerson assignObjectId];
         
         [[theValue([[testProperties.moc insertedObjects] count]) should] beGreaterThan:theValue(0)];
         
@@ -713,7 +725,7 @@ describe(@"after sending a request for a field that doesn't exist", ^{
         
         NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Oauth2test" inManagedObjectContext:testProperties.moc];
         [newManagedObject setValue:@"fail" forKey:@"name"];
-        [newManagedObject setValue:[newManagedObject assignObjectId] forKey:[newManagedObject primaryKeyField]];
+        [newManagedObject assignObjectId];
         
         __block BOOL saveSuccess = NO;
         

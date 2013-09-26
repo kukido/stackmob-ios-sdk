@@ -3,3 +3,7 @@
 #endif
 
 #import "Pods-integration tests-environment.h"
+
+
+#import <SenTestingKit/SenTestingKit.h>
+
