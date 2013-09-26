@@ -167,10 +167,6 @@
 		DE288A0C17CC1A3400CFB8A3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3E7067158AA67400E22505 /* CoreData.framework */; };
 		DE288A0D17CC1A3900CFB8A3 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3E7071158AEBB000E22505 /* CoreLocation.framework */; };
 		DE288A0E17CC1ADC00CFB8A3 /* libstackmob-ios-sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CCCE4E61580389800C38962 /* libstackmob-ios-sdk.a */; };
-		DE288A1617CC1B5900CFB8A3 /* CoreDataPropertyTypesSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A0F17CC1B5900CFB8A3 /* CoreDataPropertyTypesSpec copy.m */; };
-		DE288A1717CC1B5900CFB8A3 /* IncrementalStoreBatchOperationsSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1017CC1B5900CFB8A3 /* IncrementalStoreBatchOperationsSpec copy.m */; };
-		DE288A1917CC1B5900CFB8A3 /* SMBinDataConvertCDIntegrationSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1217CC1B5900CFB8A3 /* SMBinDataConvertCDIntegrationSpec copy.m */; };
-		DE288A1A17CC1B5900CFB8A3 /* SMCoreDataStoreTest copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1317CC1B5900CFB8A3 /* SMCoreDataStoreTest copy.m */; };
 		DE288A1B17CC1B5900CFB8A3 /* SMUpdateObjectsOptimizationSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1417CC1B5900CFB8A3 /* SMUpdateObjectsOptimizationSpec copy.m */; };
 		DE288A1C17CC1B5900CFB8A3 /* SMUserManagedObjectSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1517CC1B5900CFB8A3 /* SMUserManagedObjectSpec copy.m */; };
 		DE288A1D17CC1B8700CFB8A3 /* SMTestProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1D1F3D172F44EF00B60EB0 /* SMTestProperties.m */; };
@@ -180,8 +176,6 @@
 		DE288A2117CC1C5000CFB8A3 /* StackMobCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CD0DEE91592409D0087801F /* StackMobCredentials.plist */; };
 		DE288A2417CC1D9E00CFB8A3 /* SMIncrementalStoreFetchTest copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2217CC1D9D00CFB8A3 /* SMIncrementalStoreFetchTest copy.m */; };
 		DE288A2517CC1D9E00CFB8A3 /* SMIncrementalStoreTest copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2317CC1D9E00CFB8A3 /* SMIncrementalStoreTest copy.m */; };
-		DE288A2D17CC1DD300CFB8A3 /* LocalReadCacheSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2617CC1DD000CFB8A3 /* LocalReadCacheSpec copy.m */; };
-		DE288A2E17CC1DD300CFB8A3 /* LocalWriteCacheSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2717CC1DD000CFB8A3 /* LocalWriteCacheSpec copy.m */; };
 		DE288A2F17CC1DD300CFB8A3 /* SMMergePolicyDeletesSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2817CC1DD100CFB8A3 /* SMMergePolicyDeletesSpec copy.m */; };
 		DE288A3017CC1DD300CFB8A3 /* SMMergePolicyInsertsSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2917CC1DD100CFB8A3 /* SMMergePolicyInsertsSpec copy.m */; };
 		DE288A3117CC1DD300CFB8A3 /* SMMergePolicyMiscSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2A17CC1DD100CFB8A3 /* SMMergePolicyMiscSpec copy.m */; };
@@ -1778,10 +1772,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE288A1617CC1B5900CFB8A3 /* CoreDataPropertyTypesSpec copy.m in Sources */,
-				DE288A1717CC1B5900CFB8A3 /* IncrementalStoreBatchOperationsSpec copy.m in Sources */,
-				DE288A1917CC1B5900CFB8A3 /* SMBinDataConvertCDIntegrationSpec copy.m in Sources */,
-				DE288A1A17CC1B5900CFB8A3 /* SMCoreDataStoreTest copy.m in Sources */,
 				DE288A1B17CC1B5900CFB8A3 /* SMUpdateObjectsOptimizationSpec copy.m in Sources */,
 				DE288A1C17CC1B5900CFB8A3 /* SMUserManagedObjectSpec copy.m in Sources */,
 				DE288A1D17CC1B8700CFB8A3 /* SMTestProperties.m in Sources */,
@@ -1790,8 +1780,6 @@
 				DE288A2017CC1C4B00CFB8A3 /* SMCoreDataIntegrationTest.xcdatamodeld in Sources */,
 				DE288A2417CC1D9E00CFB8A3 /* SMIncrementalStoreFetchTest copy.m in Sources */,
 				DE288A2517CC1D9E00CFB8A3 /* SMIncrementalStoreTest copy.m in Sources */,
-				DE288A2D17CC1DD300CFB8A3 /* LocalReadCacheSpec copy.m in Sources */,
-				DE288A2E17CC1DD300CFB8A3 /* LocalWriteCacheSpec copy.m in Sources */,
 				DE288A2F17CC1DD300CFB8A3 /* SMMergePolicyDeletesSpec copy.m in Sources */,
 				DE288A3017CC1DD300CFB8A3 /* SMMergePolicyInsertsSpec copy.m in Sources */,
 				DE288A3117CC1DD300CFB8A3 /* SMMergePolicyMiscSpec copy.m in Sources */,
