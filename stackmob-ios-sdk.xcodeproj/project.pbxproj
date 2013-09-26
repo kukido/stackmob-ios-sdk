@@ -2092,7 +2092,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D56AD6E0A6D94C02B2D62C21 /* Pods-integrationTestsCoreData.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2102,7 +2102,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "integrationTestsCoreData/integrationTestsCoreData-Prefix.pch";
 				INFOPLIST_FILE = "integrationTestsCoreData/integrationTestsCoreData-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_AFTER_BUILD = YES;
 				WRAPPER_EXTENSION = octest;
@@ -2113,7 +2113,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D56AD6E0A6D94C02B2D62C21 /* Pods-integrationTestsCoreData.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2123,7 +2123,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "integrationTestsCoreData/integrationTestsCoreData-Prefix.pch";
 				INFOPLIST_FILE = "integrationTestsCoreData/integrationTestsCoreData-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_AFTER_BUILD = YES;
 				WRAPPER_EXTENSION = octest;

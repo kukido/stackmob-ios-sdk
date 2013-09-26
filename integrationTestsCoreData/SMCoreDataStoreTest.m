@@ -24,6 +24,7 @@ SPEC_BEGIN(SMCoreDataStoreTest)
 describe(@"objects can be properly refreshed after save", ^{
     __block SMTestProperties *testProperties = nil;
     beforeEach(^{
+        SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
     });
     afterEach(^{
@@ -36,14 +37,35 @@ describe(@"objects can be properly refreshed after save", ^{
             [testProperties.moc deleteObject:obj];
         }];
         
+        NSFetchRequest *catfetch = [[NSFetchRequest alloc] initWithEntityName:@"Category"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:catfetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
+        NSFetchRequest *personfetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        error = nil;
+        results = [testProperties.moc executeFetchRequestAndWait:personfetch error:&error];
+        [error shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [testProperties.moc deleteObject:obj];
+        }];
+        
         error = nil;
         [testProperties.moc saveAndWait:&error];
         
         [error shouldBeNil];
         
+        SM_CACHE_ENABLED = NO;
+        
         sleep(SLEEP_TIME);
     });
     it(@"refreshes correctly with cache fetch", ^{
+        // Create todo
         NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
         [todoObject setValue:@"title" forKey:@"title"];
         [todoObject assignObjectId];
@@ -58,6 +80,7 @@ describe(@"objects can be properly refreshed after save", ^{
         [[[todoObject valueForKey:@"createddate"] should] beNil];
         [[[todoObject valueForKey:@"lastmoddate"] should] beNil];
         
+        // Refresh Todo
         NSFetchRequest *todoFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         SMRequestOptions *options = [SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly];
         error = nil;
@@ -72,10 +95,11 @@ describe(@"objects can be properly refreshed after save", ^{
         [[[todoFromFetch valueForKey:@"lastmoddate"] shouldNot] beNil];
         
     });
-    pending(@"refreshes correctly with refreshObject:mergeChanges", ^{
-        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
-        [todoObject setValue:@"title" forKey:@"title"];
-        [todoObject assignObjectId];
+    it(@"refreshes correctly with cache fetch and to-one relationship", ^{
+        // Create Cat
+        NSManagedObject *catObject = [NSEntityDescription insertNewObjectForEntityForName:@"Category" inManagedObjectContext:testProperties.moc];
+        [catObject setValue:@"name" forKey:@"name"];
+        [catObject assignObjectId];
         
         NSError *error = nil;
         BOOL success = [testProperties.moc saveAndWait:&error];
@@ -84,9 +108,118 @@ describe(@"objects can be properly refreshed after save", ^{
         
         sleep(SLEEP_TIME);
         
+        // Create and relate todo
+        NSManagedObject *todoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        [todoObject setValue:@"title" forKey:@"title"];
+        [todoObject assignObjectId];
+        [todoObject setValue:catObject forKey:@"category"];
+        
+        error = nil;
+        success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
+        
         [[[todoObject valueForKey:@"createddate"] should] beNil];
         [[[todoObject valueForKey:@"lastmoddate"] should] beNil];
+        [[[catObject valueForKey:@"createddate"] should] beNil];
+        [[[catObject valueForKey:@"lastmoddate"] should] beNil];
+        
+        // Refresh Todo
+        NSFetchRequest *todoFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+        SMRequestOptions *options = [SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly];
+        error = nil;
+        
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:todoFetch returnManagedObjectIDs:NO options:options error:&error];
+        
+        [[error should] beNil];
+        [[results should] haveCountOf:1];
+        
+        NSManagedObject *todoFromFetch = [results lastObject];
+        [[[todoFromFetch valueForKey:@"createddate"] shouldNot] beNil];
+        [[[todoFromFetch valueForKey:@"lastmoddate"] shouldNot] beNil];
+        
+        // When you pull related object should be refreshed
+        NSManagedObject *relatedCategory = [todoFromFetch valueForKey:@"category"];
+        NSFetchRequest *categoryFetch = [[NSFetchRequest alloc] initWithEntityName:@"Category"];
+        NSString *primaryKeyField = [relatedCategory primaryKeyField];
+        [categoryFetch setPredicate:[NSPredicate predicateWithFormat:@"%K == %@", primaryKeyField, [relatedCategory valueForKey:primaryKeyField]]];
+        NSError *innerError = nil;
+        SMRequestOptions *inneroptions = [SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly];
+        NSArray *innerResults = [testProperties.moc executeFetchRequestAndWait:todoFetch returnManagedObjectIDs:NO options:inneroptions error:&innerError];
+        NSManagedObject *category = [innerResults lastObject];
+        [[[category valueForKey:@"createddate"] shouldNot] beNil];
+        [[[category valueForKey:@"lastmoddate"] shouldNot] beNil];
+        
     });
+    it(@"refreshes correctly with cache fetch and to-many relationship", ^{
+        // Create Todos
+        NSManagedObject *todoObject1 = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        [todoObject1 setValue:@"title1" forKey:@"title"];
+        [todoObject1 assignObjectId];
+        
+        NSManagedObject *todoObject2 = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        [todoObject2 setValue:@"title2" forKey:@"title"];
+        [todoObject2 assignObjectId];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
+        
+        // Create and relate todo
+        NSManagedObject *personObject = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
+        [personObject setValue:@"name" forKey:@"first_name"];
+        [personObject assignObjectId];
+        [personObject setValue:[NSSet setWithObjects:todoObject1, todoObject2, nil] forKey:@"todos"];
+        
+        error = nil;
+        success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
+        
+        [[[todoObject1 valueForKey:@"createddate"] should] beNil];
+        [[[todoObject1 valueForKey:@"lastmoddate"] should] beNil];
+        [[[todoObject2 valueForKey:@"createddate"] should] beNil];
+        [[[todoObject2 valueForKey:@"lastmoddate"] should] beNil];
+        [[[personObject valueForKey:@"createddate"] should] beNil];
+        [[[personObject valueForKey:@"lastmoddate"] should] beNil];
+        
+        // Refresh Todo
+        NSFetchRequest *personFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
+        SMRequestOptions *options = [SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly];
+        error = nil;
+        
+        NSArray *results = [testProperties.moc executeFetchRequestAndWait:personFetch returnManagedObjectIDs:NO options:options error:&error];
+        
+        [[error should] beNil];
+        [[results should] haveCountOf:1];
+        
+        NSManagedObject *personFromFetch = [results lastObject];
+        [[[personFromFetch valueForKey:@"createddate"] shouldNot] beNil];
+        [[[personFromFetch valueForKey:@"lastmoddate"] shouldNot] beNil];
+        
+        // For now, to get refreshed related objects, fetch from the cache
+        NSSet *relatedPeople = [personFromFetch valueForKey:@"todos"];
+        [relatedPeople enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+            NSFetchRequest *todoFetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
+            NSString *primaryKeyField = [obj primaryKeyField];
+            [todoFetch setPredicate:[NSPredicate predicateWithFormat:@"%K == %@", primaryKeyField, [obj valueForKey:primaryKeyField]]];
+            NSError *innerError = nil;
+            SMRequestOptions *inneroptions = [SMRequestOptions optionsWithFetchPolicy:SMFetchPolicyCacheOnly];
+            NSArray *innerResults = [testProperties.moc executeFetchRequestAndWait:todoFetch returnManagedObjectIDs:NO options:inneroptions error:&innerError];
+            NSManagedObject *todo = [innerResults lastObject];
+            [[[todo valueForKey:@"createddate"] shouldNot] beNil];
+            [[[todo valueForKey:@"lastmoddate"] shouldNot] beNil];
+        }];
+        
+    });
+    
 });
 
 describe(@"can set a field to nil, string", ^{
@@ -1597,6 +1730,5 @@ describe(@"inserting to a schema with permission Allow any logged in user when w
         [[theValue(saveSuccess) should] beNo];
     });
 });
-
 
 SPEC_END
