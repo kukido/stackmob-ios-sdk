@@ -100,7 +100,9 @@
         <relationship name="user3" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="User3" inverseName="todos" inverseEntity="User3" syncable="YES"/>
     </entity>
     <entity name="User3" representedClassName="User3" syncable="YES">
+        <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="favorites" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Favorite" inverseName="user3s" inverseEntity="Favorite" syncable="YES"/>
         <relationship name="interests" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Interest" inverseName="user3" inverseEntity="Interest" syncable="YES"/>
