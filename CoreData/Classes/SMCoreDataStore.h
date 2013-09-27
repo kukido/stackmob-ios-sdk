@@ -17,6 +17,10 @@
 #import "SMDataStore.h"
 #import "SMSyncedObject.h"
 
+#ifndef NS_ENUM
+#define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
+#endif
+
 extern NSString *const SMSetFetchPolicyNotification;
 extern NSString *const SMSetCachePolicyNotification;
 extern NSString *const SMDirtyQueueNotification;

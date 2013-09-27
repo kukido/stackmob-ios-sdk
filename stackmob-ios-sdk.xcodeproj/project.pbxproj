@@ -1249,7 +1249,6 @@
 				DE0CC7B415CB6A9000E491C4 /* Frameworks */,
 				DE0CC7B515CB6A9000E491C4 /* Resources */,
 				7CB96158B4014E0E936262FF /* Copy Pods Resources */,
-				DE0CC7B615CB6A9000E491C4 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1500,20 +1499,6 @@
 		8CCCE4F41580389800C38962 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ \"${CONFIGURATION}\" = \"Release\" ]; then\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		DE0CC7B615CB6A9000E491C4 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
