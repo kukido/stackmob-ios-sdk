@@ -20,6 +20,7 @@
 @implementation Random
 
 @dynamic createddate;
+@dynamic lastmoddate;
 @dynamic done;
 @dynamic geopoint;
 @dynamic name;

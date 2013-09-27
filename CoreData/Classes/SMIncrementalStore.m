@@ -1714,6 +1714,19 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             // Allows us to always return object, faulted or not
             NSManagedObject *sm_managedObject = [context objectWithID:sm_managedObjectID];
             
+            if (![sm_managedObject isFault]) {
+                
+                // Populate object with possibly updated cache values
+                NSMutableDictionary *objectDict = [NSMutableDictionary dictionary];
+                NSArray *attrKeys = [[[sm_managedObject entity] attributesByName] allKeys];
+                NSDictionary *attrDict = [obj dictionaryWithValuesForKeys:attrKeys];
+                [objectDict addEntriesFromDictionary:attrDict];
+                
+                [objectDict addEntriesFromDictionary:[self SM_translateCacheRelationshipsFromCacheObject:obj callingContext:context inMemoryEntity:[sm_managedObject entity]]];
+                
+                [self SM_populateManagedObject:sm_managedObject withDictionary:objectDict entity:[sm_managedObject entity]];
+            }
+            
             [results addObject:sm_managedObject];
         }
     }];
@@ -2824,6 +2837,38 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         }
         [self SM_saveCacheMap];
     }
+}
+
+- (NSDictionary *)SM_translateCacheRelationshipsFromCacheObject:(NSManagedObject *)object callingContext:(NSManagedObjectContext *)context inMemoryEntity:(NSEntityDescription *)entity
+{
+    NSMutableDictionary *translatedRelationships = [NSMutableDictionary dictionary];
+    NSArray *relKeys = [[[object entity] relationshipsByName] allKeys];
+    NSDictionary *relDict = [object dictionaryWithValuesForKeys:relKeys];
+    [relDict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        if (obj != [NSNull null]) {
+            NSRelationshipDescription *relDescription = [[entity propertiesByName] valueForKey:key];
+            if ([relDescription isToMany]) {
+                NSMutableArray *translatedToManyObjects = [NSMutableArray array];
+                [(NSSet *)obj enumerateObjectsUsingBlock:^(id value, BOOL *innerStop) {
+                    NSString *relatedObjectReference = [self SM_getRemoteIDForCacheManagedObjectID:[value objectID]];
+                    NSManagedObjectID *relatedObjectID = [self newObjectIDForEntity:[relDescription destinationEntity] referenceObject:relatedObjectReference];
+                    NSManagedObject *relatedObject = [context objectWithID:relatedObjectID];
+                    if (![relatedObject isFault]) {
+                        [context refreshObject:relatedObject mergeChanges:YES];
+                    }
+                    [translatedToManyObjects addObject:relatedObjectID];
+                }];
+                [translatedRelationships setObject:translatedToManyObjects forKey:key];
+            } else {
+                NSString *relatedObjectReference = [self SM_getRemoteIDForCacheManagedObjectID:[obj objectID]];
+                NSManagedObjectID *relatedObjectID = [self newObjectIDForEntity:[relDescription destinationEntity] referenceObject:relatedObjectReference];
+                [translatedRelationships setObject:relatedObjectID forKey:key];
+            }
+        }
+        
+    }];
+    
+    return [NSDictionary dictionaryWithDictionary:translatedRelationships];
 }
 
 - (void)SM_populateManagedObject:(NSManagedObject *)object withDictionary:(NSDictionary *)dictionary entity:(NSEntityDescription *)entity

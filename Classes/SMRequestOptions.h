@@ -257,7 +257,7 @@
  
  @since Available in iOS SDK 2.1.0 and later.
  */
-+ (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy;
++ (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy __attribute__((deprecated));
 
 /**
  Options that will define a fetch policy for the request it is passed to.
