@@ -520,7 +520,6 @@ describe(@"Returning managed object vs. ids", ^{
     });
 });
 
-
 describe(@"sending options with requests, saves", ^{
     __block SMTestProperties *testProperties = nil;
     beforeAll(^{
@@ -1165,7 +1164,7 @@ describe(@"sending options with requests, fetches", ^{
     });
 });
 
-
+#endif
 
 /*
 describe(@"testing getting 500s", ^{

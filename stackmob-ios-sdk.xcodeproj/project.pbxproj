@@ -67,7 +67,7 @@
 		8CD0DEEA1592409D0087801F /* StackMobCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CD0DEE91592409D0087801F /* StackMobCredentials.plist */; };
 		98370AD3EB434211AE6072C4 /* libPods-cacheAndSyncIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA04C13E09164D2A9F9AFB08 /* libPods-cacheAndSyncIntegrationTests.a */; };
 		C5D09E3636254F06947D27B1 /* libPods-integrationTestsCoreDataDeprecated.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9DA6654A454471392E98D71 /* libPods-integrationTestsCoreDataDeprecated.a */; };
-		C63A581C17F50FE7007E79C1 /* SMBinDataConvertCDIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE05E19515E2C0BF00224E4E /* SMBinDataConvertCDIntegrationSpec.m */; };
+		C63B769617F657BC001B6889 /* NSManagedObjectContext+ConcurrencySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB68FBF169F95EE00CC45F4 /* NSManagedObjectContext+ConcurrencySpec.m */; };
 		C641C81C17F213280027F7C2 /* SMPushClientIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9ED78164B1D43006B7326 /* SMPushClientIntegrationSpec.m */; };
 		C661658A17F50432001159B5 /* SMMergePolicyDeletesSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A617C6B0CA004417A5 /* SMMergePolicyDeletesSpec.m */; };
 		C661658B17F50436001159B5 /* SMMergePolicyInsertsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A717C6B0CA004417A5 /* SMMergePolicyInsertsSpec.m */; };
@@ -1749,8 +1749,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C63B769617F657BC001B6889 /* NSManagedObjectContext+ConcurrencySpec.m in Sources */,
 				DE0CC7CB15CB6ADF00E491C4 /* Superpower.m in Sources */,
-				C63A581C17F50FE7007E79C1 /* SMBinDataConvertCDIntegrationSpec.m in Sources */,
 				DE0CC7CF15CB6B1F00E491C4 /* SMIntegrationTestHelpers.m in Sources */,
 				1D8351A316B9D4D000814C71 /* SMCoreDataIntegrationTestHelpers.m in Sources */,
 				1D8351D016C08D7000814C71 /* Random.m in Sources */,
