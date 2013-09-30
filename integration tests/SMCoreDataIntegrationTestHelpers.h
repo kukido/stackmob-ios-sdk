@@ -22,6 +22,7 @@
 #define SLEEP_TIME_MIN 1
 
 #define CHECK_RECEIVE_SELECTORS 0
+#define TESTING_MIN_VERSION_USER_TESTS SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")
 
 typedef void (^SynchronousFetchBlock)(NSArray *results, NSError *error);
 typedef void (^SynchronousErrorBlock)(NSError *error);
