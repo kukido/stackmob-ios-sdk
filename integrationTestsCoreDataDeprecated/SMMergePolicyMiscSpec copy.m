@@ -28,6 +28,7 @@ describe(@"many-to-many relationships being serialized correctly on sync", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setUserSchema:@"user3"];
         
     });
     afterEach(^{
@@ -351,7 +352,7 @@ describe(@"one-to-one relationships being serialized correctly on sync", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        
+        [testProperties.client setUserSchema:@"user3"];
     });
     afterEach(^{
         NSError *error = nil;
@@ -2216,9 +2217,10 @@ describe(@"Sync Global request options with HTTPS", ^{
     it(@"Only makes HTTPS calls", ^{
         
         testProperties.cds.globalRequestOptions = [SMRequestOptions optionsWithHTTPS];
-        
-        //[[testProperties.cds.session.regularOAuthClient should] receive:@selector(requestWithMethod:path:parameters:) withCount:0];
-        //[[testProperties.cds.session.secureOAuthClient should] receive:@selector(requestWithMethod:path:parameters:) withCount:5];
+#if CHECK_RECEIVE_SELECTORS
+        [[testProperties.cds.session.regularOAuthClient should] receive:@selector(requestWithMethod:path:parameters:) withCount:0];
+        [[testProperties.cds.session.secureOAuthClient should] receive:@selector(requestWithMethod:path:parameters:) withCount:5];
+#endif
         
         NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
@@ -2561,9 +2563,9 @@ describe(@"syncInProgress", ^{
             }
             dispatch_group_leave(group);
         }];
-        
-        //[[store should] receive:@selector(syncWithServer) withCount:1];
-        
+#if CHECK_RECEIVE_SELECTORS
+        [[store should] receive:@selector(syncWithServer) withCount:1];
+#endif
         dispatch_group_enter(group);
         
         [testProperties.cds syncWithServer];
@@ -2614,9 +2616,9 @@ describe(@"syncInProgress", ^{
         [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
             dispatch_group_leave(group);
         }];
-        
-        //[[store should] receive:@selector(syncWithServer) withCount:2];
-        
+#if CHECK_RECEIVE_SELECTORS
+        [[store should] receive:@selector(syncWithServer) withCount:2];
+#endif
         dispatch_group_enter(group);
         
         [testProperties.cds syncWithServer];

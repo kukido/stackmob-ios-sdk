@@ -1116,6 +1116,7 @@ describe(@"Insert 5 Online, Go offline and update 5, T2 update 2 Online", ^{
         sleep(SLEEP_TIME);
         
     });
+    
     it(@"Server Mod wins, 3 should update server, 2 should update cache", ^{
         
         // Insert 5 online
@@ -1288,6 +1289,8 @@ describe(@"Insert 5 Online, Go offline and update 5, T2 update 2 Online", ^{
         saveError = nil;
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
+        
+        sleep(SLEEP_TIME_MIN);
         
         // Update 2 Online at T2
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);

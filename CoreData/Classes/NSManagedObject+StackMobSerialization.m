@@ -22,6 +22,11 @@
 
 @implementation NSManagedObject (StackMobSerialization)
 
++ (void)SM_throwExceptionNoPrimaryKeyField:(NSManagedObject *)managedObject
+{
+    [NSException raise:SMExceptionIncompatibleObject format:@"Unable to locate a primary key field for %@.  If this object has an Entity which describes user objects, and your managed object subclass inherits from SMUserManagedObject, make sure to include an attribute that matches the value returned by your SMClient's userPrimaryKeyField property.", [managedObject description]];
+}
+
 - (NSString *)SMSchema
 {
     return [[self entity] SMSchema];
@@ -30,8 +35,8 @@
 - (NSString *)SMObjectId
 {
     NSString *objectIdField = [self primaryKeyField];
-    if ([[[self entity] attributesByName] objectForKey:objectIdField] == nil) {
-        [NSException raise:SMExceptionIncompatibleObject format:@"Unable to locate a primary key field for %@, expected %@.  If this is an Entity which describes user objects, and your managed object subclass inherits from SMUserManagedObject, make sure to include an attribute that matches the value returned by your SMClient's userPrimaryKeyField property.", [self description], objectIdField];
+    if (objectIdField == nil || [[[self entity] attributesByName] objectForKey:objectIdField] == nil) {
+        [NSManagedObject SM_throwExceptionNoPrimaryKeyField:self];
     }
     return [self valueForKey:objectIdField];
 }
@@ -41,7 +46,11 @@
     id objectId = nil;
     CFUUIDRef uuid = CFUUIDCreate(CFAllocatorGetDefault());
     objectId = (__bridge_transfer NSString *)CFUUIDCreateString(CFAllocatorGetDefault(), uuid);
-    [self setValue:objectId forKey:[self primaryKeyField]];
+    NSString *primaryKeyField = [self primaryKeyField];
+    if (!primaryKeyField) {
+        [NSManagedObject SM_throwExceptionNoPrimaryKeyField:self];
+    }
+    [self setValue:objectId forKey:primaryKeyField];
     CFRelease(uuid);
     return objectId;
 }
@@ -63,17 +72,17 @@
     if ([[[self entity] propertiesByName] objectForKey:objectIdField] != nil) {
         return objectIdField;
     }
-    
-    objectIdField = nil;
-    
-    // Raise an exception and return nil
-    [NSException raise:SMExceptionIncompatibleObject format:@"No Attribute found for entity %@ which maps to the primary key on StackMob. The Attribute name should match one of the following formats: lowercasedEntityNameId or lowercasedEntityName_id.  If the managed object subclass for %@ inherits from SMUserManagedObject, meaning it is intended to define user objects, you may return either of the above formats or whatever lowercase string with optional underscores matches the primary key field on StackMob.", [[self entity] name], [[self entity] name]];
+
     return nil;
 }
 
 - (NSString *)SMPrimaryKeyField
 {
-    return [[self entity] SMFieldNameForProperty:[[[self entity] propertiesByName] objectForKey:[self primaryKeyField]]];
+    NSString *primaryKeyField = [self primaryKeyField];
+    if (!primaryKeyField) {
+        [NSManagedObject SM_throwExceptionNoPrimaryKeyField:self];
+    }
+    return [[self entity] SMFieldNameForProperty:[[[self entity] propertiesByName] objectForKey:primaryKeyField]];
 }
 
 - (NSDictionary *)SMDictionarySerialization:(BOOL)serializeFullObjects sendLocalTimestamps:(BOOL)sendLocalTimestamps cacheMap:(NSDictionary *)cacheMap
@@ -216,7 +225,11 @@
                     
                     [*values addObject:[NSString stringWithFormat:@"%@=%@", relationshipKeyPath, [[relationship destinationEntity] SMSchema]]];
                     
-                    NSPropertyDescription *primaryKeyProperty = [[[relationship destinationEntity] propertiesByName] objectForKey:[propertyValue primaryKeyField]];
+                    NSString *propertyValuePrimaryKeyField = [propertyValue primaryKeyField];
+                    if (!propertyValuePrimaryKeyField) {
+                        [NSManagedObject SM_throwExceptionNoPrimaryKeyField:self];
+                    }
+                    NSPropertyDescription *primaryKeyProperty = [[[relationship destinationEntity] propertiesByName] objectForKey:propertyValuePrimaryKeyField];
                     [objectDictionary setObject:[NSDictionary dictionaryWithObject:[propertyValue SMObjectId] forKey:[[relationship destinationEntity] SMFieldNameForProperty:primaryKeyProperty]] forKey:[selfEntity SMFieldNameForProperty:property]];
                 }
                 else {

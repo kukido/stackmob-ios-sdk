@@ -21,6 +21,8 @@
  */
 @interface NSManagedObject (StackMobSerialization)
 
++ (void)SM_throwExceptionNoPrimaryKeyField:(NSManagedObject *)managedObject;
+
 ///-------------------------------
 /// @name Getting the Primary Key Field
 ///-------------------------------

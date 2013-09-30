@@ -32,8 +32,9 @@ describe(@"URLRedirect datastore api", ^{
         
     });
     it(@"redicrects successfully on read, datastore", ^{
-        
+#if CHECK_RECEIVE_SELECTORS
         [[client should] receive:@selector(setApiHost:) withCount:1];
+#endif
         
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
@@ -80,9 +81,9 @@ describe(@"URLRedirect datastore api", ^{
         NSArray *persistentStores = [cds.persistentStoreCoordinator persistentStores];
         SMIncrementalStore *store = [persistentStores lastObject];
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
-        
+#if CHECK_RECEIVE_SELECTORS
         [[client should] receive:@selector(setApiHost:) withCount:1];
-        
+#endif
         NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:context];
         [todo setValue:[todo assignObjectId] forKey:[todo primaryKeyField]];
         [todo setValue:@"title" forKey:@"title"];

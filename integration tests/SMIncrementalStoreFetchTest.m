@@ -664,7 +664,9 @@ describe(@"OR query from network should return same as cache", ^{
     it(@"simple query", ^{
         [testProperties.client.coreDataStore setFetchPolicy:SMFetchPolicyNetworkOnly];
         // Should only call the network once
-        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#if CHECK_RECEIVE_SELECTORS
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#endif
         
         [[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -723,7 +725,9 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         sleep(SLEEP_TIME);
     });
     it(@"single or", ^{
-        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#if CHECK_RECEIVE_SELECTORS
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#endif
         // Person where:
         // armor_class = 17 || first_name == "Jonah"
         // Should return Matt and Jonah
@@ -755,7 +759,9 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         }
     });
     it(@"multiple ors", ^{
-        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#if CHECK_RECEIVE_SELECTORS
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#endif
         // Person where:
         // armor_class < 17 && ((first_name == "Jonah" && last_name == "Williams) || first_name == "Jon" || company == "Carbon Five")
         // Should return Jon and Jonah
@@ -801,7 +807,9 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         
     });
     it(@"multiple ands in or", ^{
-        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#if CHECK_RECEIVE_SELECTORS
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#endif
         // Person where:
         // armor_class < 17 && ((first_name == "Jonah" && last_name == "Williams) || (first_name == "Jon" && last_name == "Cooper") || company == "Carbon Five")
         // Should return Jon and Jonah
