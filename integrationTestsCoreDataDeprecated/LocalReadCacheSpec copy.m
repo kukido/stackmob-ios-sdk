@@ -219,9 +219,9 @@ describe(@"Per Request Cache Policy", ^{
         SM_CACHE_ENABLED = NO;
     });
     it(@"not setting policy works, sync", ^{
-        
-        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
-        
+#if CHECK_RECEIVE_SELECTORS
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+#endif
         [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         NSError *error = nil;
@@ -233,9 +233,9 @@ describe(@"Per Request Cache Policy", ^{
     it(@"setting request policy works, sync", ^{
         
         [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
-        
-        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
-        
+#if CHECK_RECEIVE_SELECTORS
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+#endif
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         SMRequestOptions *options = [SMRequestOptions optionsWithCachePolicy:SMCachePolicyTryCacheOnly];
         
@@ -250,9 +250,9 @@ describe(@"Per Request Cache Policy", ^{
         
         dispatch_group_t group = dispatch_group_create();
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
-        
-        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
-        
+#if CHECK_RECEIVE_SELECTORS
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+#endif
         [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         
@@ -274,9 +274,9 @@ describe(@"Per Request Cache Policy", ^{
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         
         [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
-        
-        //[[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
-        
+#if CHECK_RECEIVE_SELECTORS
+        [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
+#endif
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
         SMRequestOptions *options = [SMRequestOptions options];
         options.cachePolicy = SMCachePolicyTryCacheOnly;
@@ -395,9 +395,9 @@ describe(@"Fetch with Cache", ^{
         it(@"behaves properly", ^{
             __block NSArray *fetchResults = nil;
             [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
-            
-            //[[testProperties.cds should] receive:@selector(performQuery:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:) withCount:1];
-            
+#if CHECK_RECEIVE_SELECTORS
+            [[testProperties.cds should] receive:@selector(performQuery:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:) withCount:1];
+#endif
             [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:testProperties.moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:testProperties.moc] andBlock:^(NSArray *results, NSError *error) {
                 fetchResults = results;
                 [error shouldBeNil];
@@ -1508,7 +1508,9 @@ describe(@"cache references should not be returned during fetches", ^{
         [cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
         
         // No longer hold because of cache writing
-        //[[cds should] receive:@selector(performQuery:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:) withCount:1];
+#if CHECK_RECEIVE_SELECTORS
+        [[cds should] receive:@selector(performQuery:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:) withCount:1];
+#endif
         
         // Fetch that entity, should not throw an exception
         [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makeInterestFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {

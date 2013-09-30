@@ -1289,6 +1289,8 @@ describe(@"Insert 5 Online, Go offline and update 5, T2 update 2 Online", ^{
         [testProperties.moc saveAndWait:&saveError];
         [saveError shouldBeNil];
         
+        sleep(SLEEP_TIME_MIN);
+        
         // Update 2 Online at T2
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
         dispatch_group_t group = dispatch_group_create();
