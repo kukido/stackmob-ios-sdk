@@ -25,8 +25,6 @@
 
 SPEC_BEGIN(SMUserManagedObjectSpec)
 
-#if TESTING_MIN_VERSION_USER_TESTS
-
 describe(@"SMUserManagedObject", ^{
     __block SMClient *client = nil;
     __block NSManagedObjectContext *moc = nil;
@@ -469,6 +467,5 @@ describe(@"testing someting", ^{
     
 });
 
-#endif
 
 SPEC_END
