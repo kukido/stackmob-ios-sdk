@@ -1429,7 +1429,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             case SMFetchPolicyTryCacheElseNetwork:
                 if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheElseNetwork") }
                 resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
-                if (*error) {
+                if (error != NULL && *error) {
                     return nil;
                 }
                 if ([resultsToReturn count] == 0) {
@@ -1445,7 +1445,12 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 break;
         }
         
-        if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch results to return are %@ with error %@", resultsToReturn, *error) }
+        if (SM_CORE_DATA_DEBUG) {
+            DLog(@"Fetch results to return are %@ with", resultsToReturn)
+            if (error != NULL && *error) {
+                DLog(@"Error to be returned is %@", *error);
+            }
+        }
         return resultsToReturn;
     } else {
         id resultsToReturn = nil;
@@ -1469,7 +1474,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     NSArray *objects = [self SM_fetchObjects:fetchCopy withContext:context options:options error:error];
     
     // Error check
-    if (*error != nil) {
+    if (error != NULL && *error != nil) {
         return nil;
     }
     
@@ -1578,7 +1583,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     dispatch_release(queue);
 #endif
     
-    if (*error != nil) {
+    if (error != NULL && *error != nil) {
         return nil;
     }
     

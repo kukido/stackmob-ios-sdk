@@ -76,6 +76,21 @@
 		C63B76A417FA549C001B6889 /* SMUpdateObjectsOptimizationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE585271631F3C40009A1DE /* SMUpdateObjectsOptimizationSpec.m */; };
 		C63B76A517FA549F001B6889 /* IncrementalStoreBatchOperationsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0837A5167FE65B00872116 /* IncrementalStoreBatchOperationsSpec.m */; };
 		C63B76A617FA54A3001B6889 /* NSManagedObjectContext+ConcurrencySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB68FBF169F95EE00CC45F4 /* NSManagedObjectContext+ConcurrencySpec.m */; };
+		C63B76A817FB912C001B6889 /* LocalReadCacheSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2617CC1DD000CFB8A3 /* LocalReadCacheSpec copy.m */; };
+		C63B76A917FB912F001B6889 /* LocalWriteCacheSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2717CC1DD000CFB8A3 /* LocalWriteCacheSpec copy.m */; };
+		C63B76AA17FB9132001B6889 /* SMMergePolicyDeletesSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2817CC1DD100CFB8A3 /* SMMergePolicyDeletesSpec copy.m */; };
+		C63B76AB17FB9135001B6889 /* SMMergePolicyInsertsSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2917CC1DD100CFB8A3 /* SMMergePolicyInsertsSpec copy.m */; };
+		C63B76AC17FB9138001B6889 /* SMMergePolicyMiscSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2A17CC1DD100CFB8A3 /* SMMergePolicyMiscSpec copy.m */; };
+		C63B76AD17FB913D001B6889 /* SMSavePolicySpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2C17CC1DD200CFB8A3 /* SMSavePolicySpec copy.m */; };
+		C63B76AE17FB9140001B6889 /* SMIncrementalStoreFetchTest copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2217CC1D9D00CFB8A3 /* SMIncrementalStoreFetchTest copy.m */; };
+		C63B76AF17FB9143001B6889 /* SMIncrementalStoreTest copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2317CC1D9E00CFB8A3 /* SMIncrementalStoreTest copy.m */; };
+		C63B76B017FB9146001B6889 /* CoreDataPropertyTypesSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A0F17CC1B5900CFB8A3 /* CoreDataPropertyTypesSpec copy.m */; };
+		C63B76B117FB9149001B6889 /* IncrementalStoreBatchOperationsSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1017CC1B5900CFB8A3 /* IncrementalStoreBatchOperationsSpec copy.m */; };
+		C63B76B217FB914C001B6889 /* NSManagedObjectContext+ConcurrencySpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1117CC1B5900CFB8A3 /* NSManagedObjectContext+ConcurrencySpec copy.m */; };
+		C63B76B317FB914F001B6889 /* SMBinDataConvertCDIntegrationSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1217CC1B5900CFB8A3 /* SMBinDataConvertCDIntegrationSpec copy.m */; };
+		C63B76B417FB9152001B6889 /* SMCoreDataStoreTest copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1317CC1B5900CFB8A3 /* SMCoreDataStoreTest copy.m */; };
+		C63B76B517FB9155001B6889 /* SMUpdateObjectsOptimizationSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1417CC1B5900CFB8A3 /* SMUpdateObjectsOptimizationSpec copy.m */; };
+		C63B76B617FB9158001B6889 /* SMUserManagedObjectSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1517CC1B5900CFB8A3 /* SMUserManagedObjectSpec copy.m */; };
 		C641C81C17F213280027F7C2 /* SMPushClientIntegrationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA9ED78164B1D43006B7326 /* SMPushClientIntegrationSpec.m */; };
 		C661658A17F50432001159B5 /* SMMergePolicyDeletesSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A617C6B0CA004417A5 /* SMMergePolicyDeletesSpec.m */; };
 		C661658B17F50436001159B5 /* SMMergePolicyInsertsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A717C6B0CA004417A5 /* SMMergePolicyInsertsSpec.m */; };
@@ -1713,12 +1728,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C63B76B217FB914C001B6889 /* NSManagedObjectContext+ConcurrencySpec copy.m in Sources */,
 				DE288A1D17CC1B8700CFB8A3 /* SMTestProperties.m in Sources */,
 				DE288A1E17CC1B8D00CFB8A3 /* SMCoreDataIntegrationTestHelpers.m in Sources */,
 				DE288A1F17CC1BDC00CFB8A3 /* SMIntegrationTestHelpers.m in Sources */,
+				C63B76AE17FB9140001B6889 /* SMIncrementalStoreFetchTest copy.m in Sources */,
+				C63B76B517FB9155001B6889 /* SMUpdateObjectsOptimizationSpec copy.m in Sources */,
+				C63B76AF17FB9143001B6889 /* SMIncrementalStoreTest copy.m in Sources */,
+				C63B76A917FB912F001B6889 /* LocalWriteCacheSpec copy.m in Sources */,
+				C63B76AD17FB913D001B6889 /* SMSavePolicySpec copy.m in Sources */,
+				C63B76B417FB9152001B6889 /* SMCoreDataStoreTest copy.m in Sources */,
 				DE288A2017CC1C4B00CFB8A3 /* SMCoreDataIntegrationTest.xcdatamodeld in Sources */,
+				C63B76B117FB9149001B6889 /* IncrementalStoreBatchOperationsSpec copy.m in Sources */,
+				C63B76AC17FB9138001B6889 /* SMMergePolicyMiscSpec copy.m in Sources */,
+				C63B76AB17FB9135001B6889 /* SMMergePolicyInsertsSpec copy.m in Sources */,
+				C63B76B617FB9158001B6889 /* SMUserManagedObjectSpec copy.m in Sources */,
 				DE288A3217CC1DD300CFB8A3 /* SMMergePolicyUpdatesSpec copy.m in Sources */,
+				C63B76AA17FB9132001B6889 /* SMMergePolicyDeletesSpec copy.m in Sources */,
+				C63B76B017FB9146001B6889 /* CoreDataPropertyTypesSpec copy.m in Sources */,
+				C63B76A817FB912C001B6889 /* LocalReadCacheSpec copy.m in Sources */,
 				DE288A3A17CD4A9A00CFB8A3 /* Superpower.m in Sources */,
+				C63B76B317FB914F001B6889 /* SMBinDataConvertCDIntegrationSpec copy.m in Sources */,
 				DE288A3B17CD4A9E00CFB8A3 /* Random.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1913,6 +1943,7 @@
 			baseConfigurationReference = 1C66BB747CC543ECA80B6D69 /* Pods.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				CLANG_WARN_EMPTY_BODY = NO;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DSTROOT = /tmp/stackmob_ios_sdk.dst;
@@ -1941,6 +1972,7 @@
 			baseConfigurationReference = 1C66BB747CC543ECA80B6D69 /* Pods.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				CLANG_WARN_EMPTY_BODY = NO;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = /tmp/stackmob_ios_sdk.dst;
@@ -2076,6 +2108,7 @@
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_STATIC_ANALYZER_MODE = shallow;
 				CLANG_WARN_EMPTY_BODY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
@@ -2087,6 +2120,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = NO;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -2098,6 +2132,7 @@
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_STATIC_ANALYZER_MODE = shallow;
 				CLANG_WARN_EMPTY_BODY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
@@ -2108,6 +2143,7 @@
 				INFOPLIST_FILE = "integrationTestsCoreDataDeprecated/integrationTestsCoreDataDeprecated-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = NO;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;

@@ -28,7 +28,7 @@ describe(@"many-to-many relationships being serialized correctly on sync", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        
+        [testProperties.client setUserSchema:@"user3"];
     });
     afterEach(^{
         NSError *error = nil;
@@ -190,7 +190,6 @@ describe(@"many-to-one relationships being serialized correctly on sync", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        
     });
     afterEach(^{
         NSError *error = nil;
@@ -351,7 +350,7 @@ describe(@"one-to-one relationships being serialized correctly on sync", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        
+        [testProperties.client setUserSchema:@"user3"];
     });
     afterEach(^{
         NSError *error = nil;
