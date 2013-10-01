@@ -1192,7 +1192,6 @@
 				8C33B04415912B1F00BE2570 /* Frameworks */,
 				8C33B04515912B1F00BE2570 /* Resources */,
 				85231500DAC948FB876E0BA1 /* Copy Pods Resources */,
-				8C33B04615912B1F00BE2570 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1230,7 +1229,6 @@
 				8CCCE4F21580389800C38962 /* Frameworks */,
 				8CCCE4F31580389800C38962 /* Resources */,
 				53A8BE67F9DA45B59A60DBFE /* Copy Pods Resources */,
-				8CCCE4F41580389800C38962 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1267,7 +1265,6 @@
 				DE2889F317CC1A0C00CFB8A3 /* Sources */,
 				DE2889F417CC1A0C00CFB8A3 /* Frameworks */,
 				DE2889F517CC1A0C00CFB8A3 /* Resources */,
-				DE2889F617CC1A0C00CFB8A3 /* ShellScript */,
 				11A0609CCE8549B0A4E52F3F /* Copy Pods Resources */,
 			);
 			buildRules = (
@@ -1287,7 +1284,6 @@
 				DEAEA48E17C6AFAA004417A5 /* Sources */,
 				DEAEA48F17C6AFAA004417A5 /* Frameworks */,
 				DEAEA49017C6AFAA004417A5 /* Resources */,
-				DEAEA49117C6AFAA004417A5 /* ShellScript */,
 				E54A72C4A114467D9226113B /* Copy Pods Resources */,
 			);
 			buildRules = (
@@ -1482,47 +1478,6 @@
 			shellScript = "#\"${SRCROOT}/Pods/Pods-resources.sh\"\n\"${SRCROOT}/Pods/Pods-integration tests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		8C33B04615912B1F00BE2570 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ \"${CONFIGURATION}\" = \"Release\" ]; then\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		8CCCE4F41580389800C38962 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ \"${CONFIGURATION}\" = \"Release\" ]; then\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		DE2889F617CC1A0C00CFB8A3 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
 		DE3B0D61161134BF00854F88 /* Strip */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1536,19 +1491,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "strip -S \"${PROJECT_DIR}/build/${SDK_VERSION}/StackMob-v${SDK_VERSION}/libstackmob-v${SDK_VERSION}.a\"";
-		};
-		DEAEA49117C6AFAA004417A5 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
 		};
 		DEDDE22715DD95440055FAFF /* Merge libs */ = {
 			isa = PBXShellScriptBuildPhase;
