@@ -190,7 +190,7 @@ describe(@"countForFetchRequest, cache", ^{
         
     });
     it(@"async works", ^{
-        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         __block dispatch_group_t group = dispatch_group_create();
         __block dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
@@ -207,7 +207,7 @@ describe(@"countForFetchRequest, cache", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     });
     it(@"async with predicates works", ^{
-        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         __block dispatch_group_t group = dispatch_group_create();
         __block dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
@@ -225,7 +225,7 @@ describe(@"countForFetchRequest, cache", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     });
     it(@"sync works", ^{
-        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -235,7 +235,7 @@ describe(@"countForFetchRequest, cache", ^{
         [error shouldBeNil];
     });
     it(@"sync with predicate works", ^{
-        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -246,7 +246,7 @@ describe(@"countForFetchRequest, cache", ^{
         [error shouldBeNil];
     });
     it(@"fetch request with maually set count result type works", ^{
-        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyCacheOnly];
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheOnly];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -257,7 +257,7 @@ describe(@"countForFetchRequest, cache", ^{
         [error shouldBeNil];
     });
     it(@"cacheElseNetwork, cache filled", ^{
-        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheElseNetwork];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -327,7 +327,7 @@ describe(@"CacheElseNetwork count", ^{
         
     });
     it(@"cacheElseNetwork, cache not filled", ^{
-        [[testProperties.client coreDataStore] setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
+        [[testProperties.client coreDataStore] setCachePolicy:SMCachePolicyTryCacheElseNetwork];
         [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSError *error = nil;
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -461,8 +461,10 @@ describe(@"Returning managed object vs. ids", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+#if !OS_OBJECT_USE_OBJC
         dispatch_release(group);
         dispatch_release(queue);
+#endif
         
     });
     it(@"Properly returns managed objects ids, async method", ^{
@@ -485,8 +487,10 @@ describe(@"Returning managed object vs. ids", ^{
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
+#if !OS_OBJECT_USE_OBJC
         dispatch_release(group);
         dispatch_release(queue);
+#endif
         
     });
     it(@"Properly returns managed objects, sync method", ^{
@@ -570,6 +574,7 @@ describe(@"sending options with requests, saves", ^{
          */
         
         //SM_CORE_DATA_DEBUG = YES;
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
@@ -577,7 +582,7 @@ describe(@"sending options with requests, saves", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
-        
+#endif
         
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person assignObjectId];
@@ -621,6 +626,7 @@ describe(@"sending options with requests, saves", ^{
          1 x secure + 1 x non-secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x non-secure enqueueHTTPRequestOperation
          */
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
@@ -628,7 +634,7 @@ describe(@"sending options with requests, saves", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
-        
+#endif
         
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person assignObjectId];
@@ -670,6 +676,7 @@ describe(@"sending options with requests, saves", ^{
          2 x secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x secure enqueueHTTPRequestOperation
          */
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
@@ -677,7 +684,7 @@ describe(@"sending options with requests, saves", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
-        
+#endif
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person assignObjectId];
         [person setValue:@"bob" forKey:@"first_name"];
@@ -725,6 +732,7 @@ describe(@"sending options with requests, saves", ^{
          1 x secure + 1 x non-secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x non-secure enqueueHTTPRequestOperation
          */
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
@@ -732,7 +740,7 @@ describe(@"sending options with requests, saves", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
-        
+#endif
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person assignObjectId];
         [person setValue:@"bob" forKey:@"first_name"];
@@ -818,6 +826,7 @@ describe(@"creating global request options, saves", ^{
          3 x secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x secure enqueueHTTPRequestOperation
          */
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:3];
@@ -825,7 +834,7 @@ describe(@"creating global request options, saves", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
-        
+#endif
         [testProperties.cds setGlobalRequestOptions:[SMRequestOptions optionsWithHTTPS]];
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person assignObjectId];
@@ -861,6 +870,7 @@ describe(@"creating global request options, saves", ^{
          1 x secure + 1 x non-secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x non-secure enqueueHTTPRequestOperation
          */
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
@@ -868,7 +878,7 @@ describe(@"creating global request options, saves", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
-        
+#endif
         [testProperties.cds setGlobalRequestOptions:[SMRequestOptions options]];
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person assignObjectId];
@@ -905,6 +915,7 @@ describe(@"creating global request options, saves", ^{
          3 x secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x secure enqueueHTTPRequestOperation
          */
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:3];
@@ -912,7 +923,7 @@ describe(@"creating global request options, saves", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
-        
+#endif
         [testProperties.cds setGlobalRequestOptions:[SMRequestOptions optionsWithHTTPS]];
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person assignObjectId];
@@ -960,6 +971,7 @@ describe(@"creating global request options, saves", ^{
          1 x secure + 1 x non-secure enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock
          2 x non-secure enqueueHTTPRequestOperation
          */
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:2];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:1];
@@ -967,7 +979,7 @@ describe(@"creating global request options, saves", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:2];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
-        
+#endif
         [testProperties.cds setGlobalRequestOptions:[SMRequestOptions options]];
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
         [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
@@ -1047,7 +1059,7 @@ describe(@"sending options with requests, fetches", ^{
         
     });
     it(@"executeFetchRequestAndWait:error:, sending HTTPS", ^{
-        
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
@@ -1055,7 +1067,7 @@ describe(@"sending options with requests, fetches", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
-        
+#endif
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         
         SMRequestOptions *options = [SMRequestOptions optionsWithHeaders:[NSDictionary dictionaryWithObjectsAndKeys:@"random", @"header", nil]];
@@ -1070,7 +1082,7 @@ describe(@"sending options with requests, fetches", ^{
     });
     
     it(@"executeFetchRequestAndWait:error:, not sending HTTPS", ^{
-        
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
@@ -1078,7 +1090,7 @@ describe(@"sending options with requests, fetches", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
-        
+#endif
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         
         SMRequestOptions *options = [SMRequestOptions optionsWithHeaders:[NSDictionary dictionaryWithObjectsAndKeys:@"random", @"header", nil]];
@@ -1091,7 +1103,7 @@ describe(@"sending options with requests, fetches", ^{
     });
     
     it(@"executeFetchRequest:onSuccess, sending HTTPS", ^{
-        
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
@@ -1099,7 +1111,7 @@ describe(@"sending options with requests, fetches", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
-        
+#endif
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         
         SMRequestOptions *options = [SMRequestOptions optionsWithHeaders:[NSDictionary dictionaryWithObjectsAndKeys:@"random", @"header", nil]];
@@ -1121,7 +1133,7 @@ describe(@"sending options with requests, fetches", ^{
         
     });
     it(@"executeFetchRequest:onSuccess, not sending HTTPS", ^{
-        
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueBatchOfHTTPRequestOperations:completionBlockQueue:progressBlock:completionBlock:) withCount:0];
@@ -1130,7 +1142,7 @@ describe(@"sending options with requests, fetches", ^{
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:3];
         
         [[[testProperties.client.session oauthClientWithHTTPS:YES] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:0];
-        
+#endif
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         
         SMRequestOptions *options = [SMRequestOptions optionsWithHeaders:[NSDictionary dictionaryWithObjectsAndKeys:@"random", @"header", nil]];

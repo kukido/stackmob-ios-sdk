@@ -1,1 +1,1 @@
-../../Kiwi/Kiwi/KWExpectationType.h
+../../Kiwi/Classes/Core/KWExpectationType.h

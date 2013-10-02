@@ -613,7 +613,7 @@ describe(@"OR query from network should return same as cache", ^{
         testProperties = [[SMTestProperties alloc] init];
         [testProperties.client setUserSchema:@"User3"];
         //[[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
         
         user1 = [[User3 alloc] initWithEntity:[NSEntityDescription entityForName:@"User3" inManagedObjectContext:testProperties.moc] insertIntoManagedObjectContext:testProperties.moc];
         user1ID = [NSString stringWithFormat:@"matt%d", arc4random() / 10000];
@@ -644,7 +644,7 @@ describe(@"OR query from network should return same as cache", ^{
     });
     afterEach(^{
         //[[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         NSError *fetchError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&fetchError];
@@ -662,10 +662,11 @@ describe(@"OR query from network should return same as cache", ^{
         sleep(SLEEP_TIME);
     });
     it(@"simple query", ^{
-        [testProperties.client.coreDataStore setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.client.coreDataStore setCachePolicy:SMCachePolicyTryNetworkOnly];
         // Should only call the network once
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
-        
+#endif
         [[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"User3" inManagedObjectContext:testProperties.moc];
@@ -683,7 +684,7 @@ describe(@"OR query from network should return same as cache", ^{
             [[array should] contain:user2ID];
         }
         
-        [testProperties.client.coreDataStore setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.client.coreDataStore setCachePolicy:SMCachePolicyTryCacheOnly];
         // Second fetch from cache should yeild same results
         NSFetchRequest *secondFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         [secondFetch setPredicate:predicate];
@@ -711,7 +712,7 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
         [[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
         
         sleep(SLEEP_TIME);
     });
@@ -723,7 +724,9 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         sleep(SLEEP_TIME);
     });
     it(@"single or", ^{
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#endif
         // Person where:
         // armor_class = 17 || first_name == "Jonah"
         // Should return Matt and Jonah
@@ -755,7 +758,9 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         }
     });
     it(@"multiple ors", ^{
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#endif
         // Person where:
         // armor_class < 17 && ((first_name == "Jonah" && last_name == "Williams) || first_name == "Jon" || company == "Carbon Five")
         // Should return Jon and Jonah
@@ -801,7 +806,9 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         
     });
     it(@"multiple ands in or", ^{
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#endif
         // Person where:
         // armor_class < 17 && ((first_name == "Jonah" && last_name == "Williams) || (first_name == "Jon" && last_name == "Cooper") || company == "Carbon Five")
         // Should return Jon and Jonah

@@ -27,10 +27,10 @@ describe(@"Count query for network status", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
     });
     afterEach(^{
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:testProperties.moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:[NSPredicate predicateWithFormat:@"first_name == 'Bob'"] context:testProperties.moc] andBlock:^(NSArray *results, NSError *error) {
             [error shouldBeNil];
             [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -68,10 +68,10 @@ describe(@"Write-through of successfully inserted objects, online", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
     });
     afterEach(^{
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:testProperties.moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:[NSPredicate predicateWithFormat:@"first_name == 'Bob'"] context:testProperties.moc] andBlock:^(NSArray *results, NSError *error) {
             [error shouldBeNil];
             [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -101,7 +101,7 @@ describe(@"Write-through of successfully inserted objects, online", ^{
         sleep(SLEEP_TIME);
         
         // Cache should now contain object
-        [testProperties.cds setFetchPolicy:SMFetchPolicyCacheOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheOnly];
         NSFetchRequest *cacheFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [cacheFetch setPredicate:[NSPredicate predicateWithFormat:@"first_name == 'Bob'"]];
         NSError *error = nil;
@@ -111,7 +111,7 @@ describe(@"Write-through of successfully inserted objects, online", ^{
         [[[[results objectAtIndex:0] valueForKey:@"first_name"] should] equal:@"Bob"];
         
         // Server should have the same object
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         NSFetchRequest *serverFetch = [[NSFetchRequest alloc] initWithEntityName:@"Person"];
         [serverFetch setPredicate:[NSPredicate predicateWithFormat:@"first_name == 'Bob'"]];
         error = nil;
@@ -206,10 +206,10 @@ describe(@"Write-through of successfully inserted objects, online, Part 2", ^{
     beforeEach(^{
         SM_CACHE_ENABLED = YES;
         testProperties = [[SMTestProperties alloc] init];
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
     });
     afterEach(^{
-        [testProperties.cds setFetchPolicy:SMFetchPolicyNetworkOnly];
+        [testProperties.cds setCachePolicy:SMCachePolicyTryNetworkOnly];
         [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:testProperties.moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:testProperties.moc] andBlock:^(NSArray *results, NSError *error) {
             [error shouldBeNil];
             [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

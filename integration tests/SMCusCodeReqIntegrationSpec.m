@@ -52,7 +52,9 @@ describe(@"SMCusCodeReqIntegration", ^{
             it(@"should retry when returned a 503", ^{
                 aRequest = [[SMCustomCodeRequest alloc] initGetRequestWithMethod:CC_NO_PARAM_METHOD_NAME];
                 options = [SMRequestOptions options];
+#if CHECK_RECEIVE_SELECTORS
                 [[options should] receive:@selector(setNumberOfRetries:)];
+#endif
                 syncWithSemaphore(^(dispatch_semaphore_t semaphore) {
                     [[client dataStore] performCustomCodeRequest:aRequest options:options onSuccess:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
                         syncReturn(semaphore);

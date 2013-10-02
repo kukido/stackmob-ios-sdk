@@ -50,7 +50,7 @@ describe(@"SMRelationshipHeaders", ^{
             aPerson = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
             [aPerson setValue:@"the" forKey:@"first_name"];
             [aPerson setValue:@"dude" forKey:@"last_name"];
-            [aPerson setValue:[aPerson assignObjectId] forKey:[aPerson primaryKeyField]];
+            [aPerson assignObjectId];
         });
         
         it(@"Should contain no relationship headers", ^{

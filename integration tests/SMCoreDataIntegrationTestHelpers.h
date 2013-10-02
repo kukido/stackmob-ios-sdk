@@ -21,6 +21,8 @@
 #define SLEEP_TIME 3
 #define SLEEP_TIME_MIN 1
 
+#define CHECK_RECEIVE_SELECTORS 0
+
 typedef void (^SynchronousFetchBlock)(NSArray *results, NSError *error);
 typedef void (^SynchronousErrorBlock)(NSError *error);
 

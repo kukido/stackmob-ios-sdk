@@ -20,6 +20,11 @@
 
 @implementation NSEntityDescription (StackMobSerialization)
 
++ (void)SM_throwExceptionNoPrimaryKey:(NSEntityDescription *)entity
+{
+    [NSException raise:SMExceptionIncompatibleObject format:@"Unable to locate a primary key field for %@.  If this is an Entity which describes user objects, and your managed object subclass inherits from SMUserManagedObject, make sure to include an attribute that matches the value returned by your SMClient's userPrimaryKeyField property.", [entity description]];
+}
+
 - (NSString *)SMSchema
 {
     return [[self name] lowercaseString];
@@ -30,7 +35,7 @@
     NSString *objectIdField = nil;
      
     // Search for schemanameId
-    objectIdField = [[self SMSchema] stringByAppendingFormat:@"Id"];
+    objectIdField = [NSString stringWithFormat:@"%@Id", [self SMSchema]];
     if ([[self propertiesByName] objectForKey:objectIdField] != nil) {
         return objectIdField;
     }
@@ -38,21 +43,21 @@
     objectIdField = nil;
     
     // Search for schemaname_id
-    objectIdField = [[self SMSchema] stringByAppendingFormat:@"_id"];
+    objectIdField = [NSString stringWithFormat:@"%@_id", [self SMSchema]];
     if ([[self propertiesByName] objectForKey:objectIdField] != nil) {
         return objectIdField;
     }
     
-    objectIdField = nil;
-    
-    // Raise an exception and return nil
-    [NSException raise:SMExceptionIncompatibleObject format:@"No Attribute found for entity %@ which maps to the primary key on StackMob. The Attribute name should match one of the following formats: lowercasedEntityNameId or lowercasedEntityName_id.  If the managed object subclass for %@ inherits from SMUserManagedObject, meaning it is intended to define user objects, you may return either of the above formats or whatever lowercase string with optional underscores matches the primary key field on StackMob.", [self name], [self name]];
     return nil;
 }
 
 - (NSString *)SMPrimaryKeyField
 {
-    return [self SMFieldNameForProperty:[[self propertiesByName] objectForKey:[self primaryKeyField]]];
+    NSString *primaryKeyField = [self primaryKeyField];
+    if (!primaryKeyField) {
+        [NSEntityDescription SM_throwExceptionNoPrimaryKey:self];
+    }
+    return [self SMFieldNameForProperty:[[self propertiesByName] objectForKey:primaryKeyField]];
 }
 
 - (NSString *)SMFieldNameForProperty:(NSPropertyDescription *)property 

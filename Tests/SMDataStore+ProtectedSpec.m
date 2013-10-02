@@ -36,17 +36,17 @@ describe(@"SMFullResponseSuccessBlockForSchema:withSuccessBlock:", ^{
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:url statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
         
-        __block BOOL completionBlockDidExecute = NO;
+        __block int completionBlockDidExecute = 0;
         SMDataStoreSuccessBlock successBlock = ^(NSDictionary* object, NSString *schema) {
             [[schema should] equal:@"book"];
             [[object should] equal:responseObject];
-            completionBlockDidExecute = YES;
+            completionBlockDidExecute = 1;
         };
         
         SMFullResponseSuccessBlock success = [dataStore SMFullResponseSuccessBlockForSchema:@"book" withSuccessBlock:successBlock];
         success(request, response, responseObject);
         
-        [[theValue(completionBlockDidExecute) should] beYes];
+        [[theValue(completionBlockDidExecute) should] equal:theValue(1)];
     });
 });
 
@@ -59,18 +59,18 @@ describe(@"-SMFullResponseFailureBlockForObject:ofSchema:withFailureBlock:", ^{
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:url statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
         
-        __block BOOL completionBlockDidExecute = NO;
+        __block int completionBlockDidExecute = 0;
         SMDataStoreFailureBlock failureBlock = ^(NSError *error, NSDictionary* object, NSString *schema) {
             [[schema should] equal:@"book"];
             [[object should] equal:requestObject];
-            completionBlockDidExecute = YES;
+            completionBlockDidExecute = 1;
         };
         
         SMFullResponseFailureBlock failure = [dataStore SMFullResponseFailureBlockForObject:requestObject ofSchema:@"book" withFailureBlock:failureBlock];
         NSError *error = [NSError errorWithDomain:@"com.stackmob" code:0 userInfo:nil];
         failure(request, response, error, nil);
         
-        [[theValue(completionBlockDidExecute) should] beYes];
+        [[theValue(completionBlockDidExecute) should] equal:theValue(1)];
     });
 });
 

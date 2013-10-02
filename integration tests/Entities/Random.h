@@ -20,7 +20,6 @@
 
 @interface Random : NSManagedObject
 
-@property (nonatomic, retain) NSNumber * createddate;
 @property (nonatomic, retain) NSNumber * done;
 @property (nonatomic, retain) id geopoint;
 @property (nonatomic, retain) NSString * name;
@@ -28,5 +27,7 @@
 @property (nonatomic, retain) NSString * server_id;
 @property (nonatomic, retain) NSDate * time;
 @property (nonatomic, retain) NSNumber * yearBorn;
+@property (nonatomic, retain) NSDate * createddate;
+@property (nonatomic, retain) NSDate * lastmoddate;
 
 @end

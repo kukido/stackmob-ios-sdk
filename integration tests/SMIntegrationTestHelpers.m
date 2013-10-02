@@ -132,8 +132,10 @@ void synchronousQuery(SMDataStore *sm, SMQuery *query, SynchronousQueryBlock blo
     
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     
-    dispatch_release(queue);
+#if !OS_OBJECT_USE_OBJC
     dispatch_release(group);
+    dispatch_release(queue);
+#endif
     
     if ([_insertedObjects objectForKey:fixtureName] == nil) {
         [_insertedObjects setValue:[NSMutableArray array] forKey:fixtureName];
@@ -147,7 +149,6 @@ void synchronousQuery(SMDataStore *sm, SMQuery *query, SynchronousQueryBlock blo
     SMDataStore *smClient = [SMIntegrationTestHelpers dataStore];
     NSString *idField = [NSString stringWithFormat:@"%@_id", fixtureName];
 
-    dispatch_queue_t queue = dispatch_queue_create("fixtureQueue", NULL);
     dispatch_group_t group = dispatch_group_create();
     
     [[_insertedObjects objectForKey:fixtureName] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -164,8 +165,9 @@ void synchronousQuery(SMDataStore *sm, SMQuery *query, SynchronousQueryBlock blo
     
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     
-    dispatch_release(queue);
+#if !OS_OBJECT_USE_OBJC
     dispatch_release(group);
+#endif
     
     [_insertedObjects removeObjectForKey:fixtureName];
 }

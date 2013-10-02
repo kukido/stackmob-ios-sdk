@@ -21,6 +21,8 @@
  */
 @interface NSEntityDescription (StackMobSerialization)
 
++ (void)SM_throwExceptionNoPrimaryKey:(NSEntityDescription *)entity;
+
 /**
  Returns the StackMob equivalent schema for the entity name.
  
