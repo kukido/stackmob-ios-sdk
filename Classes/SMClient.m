@@ -24,6 +24,7 @@
 #import "SMRequestOptions.h"
 #import "SMError.h"
 #import "SMNetworkReachability.h"
+#import "FileManagement.h"
 
 #define FB_TOKEN_KEY @"fb_at"
 #define TW_TOKEN_KEY @"tw_tk"
@@ -79,7 +80,6 @@ static SMClient *defaultClient = nil;
     if (self)
     {
         self.appAPIVersion = appAPIVersion;
-        self.apiHost = apiHost;
         self.publicKey = publicKey;
         self.userSchema = [userSchema lowercaseString];
         self.userPrimaryKeyField = userPrimaryKeyField;
@@ -95,6 +95,24 @@ static SMClient *defaultClient = nil;
         // Throw an excpetion if publicKey is nil or incorrectly formatted
         if (self.publicKey == nil || [self.publicKey length] != UUID_CHAR_NUM) {
             [NSException raise:@"SMClientInitializationException" format:@"Incorrect Public Key format provided.  Please check your public key to make sure you are passing the correct one, and that you are not passing nil."];
+        }
+        
+        // Check user defaults for redirected host
+        NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
+        
+        NSString *hostRedirectPath = nil;
+        if (applicationName != nil) {
+            hostRedirectPath = [NSString stringWithFormat:@"%@-%@-%@", applicationName, self.publicKey, @"APIHost"];
+        } else {
+            hostRedirectPath = [NSString stringWithFormat:@"%@-%@", publicKey, @"APIHost"];
+        }
+        
+        NSString *hostRedirect = [[NSUserDefaults standardUserDefaults] objectForKey:hostRedirectPath];
+        if (!hostRedirect) {
+            self.apiHost = apiHost;
+        } else {
+            self.apiHost = hostRedirect;
+            [NSException raise:@"SHouldnt happen" format:@"Ahhhhhh"];
         }
         
         self.session = [[SMUserSession alloc] initWithAPIVersion:appAPIVersion apiHost:apiHost publicKey:publicKey userSchema:userSchema userPrimaryKeyField:userPrimaryKeyField userPasswordField:userPasswordField];

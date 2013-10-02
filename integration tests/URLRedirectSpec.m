@@ -113,8 +113,6 @@ describe(@"URLRedirect datastore api", ^{
         [[client.session.secureOAuthClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
         [[client.session.tokenClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
         
-        
-        
     });
 });
 

@@ -57,15 +57,14 @@
 
 + (NSURL *)SM_getStoreURLForFileComponent:(NSString *)fileComponent coreDataStore:(SMCoreDataStore *)coreDataStore
 {
-    if (SM_CORE_DATA_DEBUG) {DLog()}
+    if (SM_CORE_DATA_DEBUG) { DLog() }
     
     NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
     NSString *applicationDocumentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     NSString *applicationStorageDirectory = [[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:applicationName];
     
     NSString *fullFileName = nil;
-    if (applicationName != nil)
-    {
+    if (applicationName != nil) {
         fullFileName = [NSString stringWithFormat:@"%@-%@-%@", applicationName, coreDataStore.session.regularOAuthClient.publicKey, fileComponent];
     } else {
         fullFileName = [NSString stringWithFormat:@"%@-%@", coreDataStore.session.regularOAuthClient.publicKey, fileComponent];
@@ -79,8 +78,7 @@
     for (NSString *path in paths)
     {
         NSString *filepath = [path stringByAppendingPathComponent:fullFileName];
-        if ([fm fileExistsAtPath:filepath])
-        {
+        if ([fm fileExistsAtPath:filepath]) {
             return [NSURL fileURLWithPath:filepath];
         }
         
