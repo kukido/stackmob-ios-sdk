@@ -36,13 +36,26 @@
                   apiHost:(NSString *)apiHost 
                 publicKey:(NSString *)publicKey 
 {
-    self = [super initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", scheme, apiHost]]];
+    return [self initWithAPIVersion:version scheme:scheme port:nil apiHost:apiHost publicKey:publicKey];
+}
+
+- (id)initWithAPIVersion:(NSString *)version
+                  scheme:(NSString *)scheme
+                    port:(NSNumber *)port
+                 apiHost:(NSString *)apiHost
+               publicKey:(NSString *)publicKey
+{
+    if (port) {
+        self = [super initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", scheme, apiHost, port]]];
+    } else {
+        self = [super initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", scheme, apiHost]]];
+    }
     
     if (self) {
         self.version = version;
         self.publicKey = publicKey;
         NSString *acceptHeader = [NSString stringWithFormat:@"application/vnd.stackmob+json; version=%@", version];
-        [self setDefaultHeader:@"Accept" value:acceptHeader]; 
+        [self setDefaultHeader:@"Accept" value:acceptHeader];
         [self setDefaultHeader:@"X-StackMob-API-Key" value:self.publicKey];
         [self setDefaultHeader:@"User-Agent" value:[NSString stringWithFormat:@"StackMob/%@ (%@/%@; %@;)", SDK_VERSION, smDeviceModel(), smSystemVersion(), [[NSLocale currentLocale] localeIdentifier]]];
         self.parameterEncoding = AFJSONParameterEncoding;
@@ -50,7 +63,7 @@
     return self;
 }
 
-- (NSMutableURLRequest *)requestWithMethod:(NSString *)method 
+- (NSMutableURLRequest *)requestWithMethod:(NSString *)method
                                        path:(NSString *)path 
                                  parameters:(NSDictionary *)parameters
 {

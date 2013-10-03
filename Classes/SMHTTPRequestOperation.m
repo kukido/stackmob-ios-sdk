@@ -16,6 +16,7 @@
 
 #import "SMHTTPRequestOperation.h"
 #import "SMClient.h"
+#import "SMError.h"
 
 @implementation SMHTTPRequestOperation
 
@@ -23,9 +24,9 @@
 {
     if (response) {
         NSString *host = [[request URL] host];
-        NSLog(@"host is %@", host);
         if (![[[SMClient defaultClient] apiHost] isEqualToString:host]) {
-            [[SMClient defaultClient] setApiHost:host];
+            BOOL permanent = [(NSHTTPURLResponse *)response statusCode] == SMErrorMovedPermanently ? YES : NO;
+            [[SMClient defaultClient] setRedirectedAPIHost:host port:[[request URL] port] scheme:[[request URL] scheme] permanent:permanent];
         }
     }
     return [super connection:connection willSendRequest:request redirectResponse:response];

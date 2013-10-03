@@ -568,6 +568,22 @@
                              onSuccess:(SMResultSuccessBlock)successBlock
                              onFailure:(SMFailureBlock)failureBlock;
 
+#pragma mark API Host
+///-------------------------------
+/// @name Set Redirected API Host
+///-------------------------------
+
+/**
+ Sets a new API Host with the option to persist the host to user defaults. This is used internally when requests are sent a redirect response.
+ 
+ @param apiHost The API host to direct future requests to.
+ @param port The port to direct future requests to, or nil.
+ @param permanent Whether the host should be persisted to user defaults and used during subsequent launches.
+ 
+ @since Available in iOS SDK 2.2.0 and later.
+ */
+- (void)setRedirectedAPIHost:(NSString *)apiHost port:(NSNumber *)port scheme:(NSString *)scheme permanent:(BOOL)permanent;
+
 #pragma mark Facebook
 ///-------------------------------
 /// @name Create a User with Facebook

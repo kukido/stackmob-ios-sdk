@@ -151,6 +151,9 @@ typedef void (^SMTokenRefreshFailureBlock)(NSError *error, SMFailureBlock origin
  */
 - (id)initWithAPIVersion:(NSString *)version apiHost:(NSString *)apiHost publicKey:(NSString *)publicKey userSchema:(NSString *)userSchema userPrimaryKeyField:(NSString *)userPrimaryKeyField userPasswordField:(NSString *)userPasswordField;
 
+- (void)setHTTPPort:(NSNumber *)port;
+- (void)setHTTPSPort:(NSNumber *)port;
+
 #pragma mark Internal
 ///-------------------------------
 /// @name Refreshing Session
@@ -330,8 +333,8 @@ typedef void (^SMTokenRefreshFailureBlock)(NSError *error, SMFailureBlock origin
  
  @param apiHost The new host.
  
- @since Available in iOS SDK 1.0.0 and later.
+ @since Available in iOS SDK 2.2.0 and later.
  */
-- (void)setNewAPIHost:(NSString *)apiHost;
+- (void)setNewAPIHost:(NSString *)apiHost port:(NSNumber *)port scheme:(NSString *)scheme;
 
 @end

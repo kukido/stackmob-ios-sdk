@@ -102,7 +102,7 @@ static SMClient *defaultClient = nil;
         
         NSString *hostRedirectPath = nil;
         if (applicationName != nil) {
-            hostRedirectPath = [NSString stringWithFormat:@"%@-%@-%@", applicationName, self.publicKey, @"APIHost"];
+            hostRedirectPath = [NSString stringWithFormat:@"%@-%@-%@", applicationName, publicKey, @"APIHost"];
         } else {
             hostRedirectPath = [NSString stringWithFormat:@"%@-%@", publicKey, @"APIHost"];
         }
@@ -112,10 +112,9 @@ static SMClient *defaultClient = nil;
             self.apiHost = apiHost;
         } else {
             self.apiHost = hostRedirect;
-            [NSException raise:@"SHouldnt happen" format:@"Ahhhhhh"];
         }
         
-        self.session = [[SMUserSession alloc] initWithAPIVersion:appAPIVersion apiHost:apiHost publicKey:publicKey userSchema:userSchema userPrimaryKeyField:userPrimaryKeyField userPasswordField:userPasswordField];
+        self.session = [[SMUserSession alloc] initWithAPIVersion:appAPIVersion apiHost:self.apiHost publicKey:publicKey userSchema:userSchema userPrimaryKeyField:userPrimaryKeyField userPasswordField:userPasswordField];
         self.coreDataStore = nil;
         
         
@@ -180,11 +179,46 @@ static SMClient *defaultClient = nil;
     }
 }
 
-- (void)setApiHost:(NSString *)apiHost
+- (void)setHTTPPort:(NSNumber *)port {
+    
+}
+
+- (void)setHTTPSPort:(NSNumber *)port {
+    
+}
+
+- (void)setRedirectedAPIHost:(NSString *)apiHost port:(NSNumber *)port scheme:(NSString *)scheme permanent:(BOOL)permanent
 {
-    if (![_SM_APIHost isEqualToString:apiHost]) {
-        _SM_APIHost = apiHost;
-        [self.session setNewAPIHost:apiHost];
+    _SM_APIHost = apiHost;
+    
+    [self.session setNewAPIHost:apiHost port:port scheme:scheme];
+    
+    if (permanent) {
+        NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
+        
+        NSString *baseRedirectKey = nil;
+        if (applicationName != nil) {
+            baseRedirectKey = [NSString stringWithFormat:@"%@-%@-", applicationName, self.publicKey];
+        } else {
+            baseRedirectKey = [NSString stringWithFormat:@"%@-", self.publicKey];
+        }
+        
+        NSString *hostRedirectKey = [NSString stringWithFormat:@"%@APIHost", baseRedirectKey];
+        
+        [[NSUserDefaults standardUserDefaults] setObject:apiHost forKey:hostRedirectKey];
+        
+        if (port) {
+            __block NSString *portRedirectKey = nil;
+            if ([scheme isEqualToString:@"https"]) {
+                portRedirectKey = [NSString stringWithFormat:@"%@APIPortHTTPS", baseRedirectKey];
+            } else {
+                portRedirectKey = [NSString stringWithFormat:@"%@APIPortHTTP", baseRedirectKey];
+            }
+            
+            [[NSUserDefaults standardUserDefaults] setObject:port forKey:portRedirectKey];
+        }
+        
+        [[NSUserDefaults standardUserDefaults] synchronize];
     }
 }
 

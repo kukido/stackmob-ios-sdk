@@ -65,9 +65,39 @@
 {
     self = [super init];
     if (self) {
-        self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"http" apiHost:apiHost publicKey:publicKey];
-        self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"https" apiHost:apiHost publicKey:publicKey];
-        self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiHost]]];
+        // Check user defaults for redirected ports
+        NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
+        
+        NSString *portRedirectPathHTTP = nil;
+        if (applicationName != nil) {
+            portRedirectPathHTTP = [NSString stringWithFormat:@"%@-%@-%@", applicationName, publicKey, @"APIPortHTTP"];
+        } else {
+            portRedirectPathHTTP = [NSString stringWithFormat:@"%@-%@", publicKey, @"APIPortHTTP"];
+        }
+        
+        NSNumber *HTTPPort = [[NSUserDefaults standardUserDefaults] objectForKey:portRedirectPathHTTP];
+        if (HTTPPort) {
+            self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"http" port:HTTPPort apiHost:apiHost publicKey:publicKey];
+        } else {
+            self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"http" apiHost:apiHost publicKey:publicKey];
+        }
+        
+        NSString *portRedirectPathHTTPS = nil;
+        if (applicationName != nil) {
+            portRedirectPathHTTPS = [NSString stringWithFormat:@"%@-%@-%@", applicationName, publicKey, @"APIPortHTTPS"];
+        } else {
+            portRedirectPathHTTPS = [NSString stringWithFormat:@"%@-%@", publicKey, @"APIPortHTTPS"];
+        }
+        
+        NSNumber *HTTPSPort = [[NSUserDefaults standardUserDefaults] objectForKey:portRedirectPathHTTPS];
+        if (HTTPSPort) {
+            self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"https" port:HTTPSPort apiHost:apiHost publicKey:publicKey];
+            self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%@", apiHost, HTTPSPort]]];
+        } else {
+            self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"https" apiHost:apiHost publicKey:publicKey];
+            self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiHost]]];
+        }
+        
         NSString *acceptHeader = [NSString stringWithFormat:@"application/vnd.stackmob+json; version=%@", version];
         [self.tokenClient setDefaultHeader:@"Accept" value:acceptHeader];
         [self.tokenClient setDefaultHeader:@"X-StackMob-API-Key" value:publicKey];
@@ -82,7 +112,6 @@
         self.publicKey = publicKey;
         self.version = version;
         
-        NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
         if (!applicationName) {
             applicationName = @"nil";
         }
@@ -94,6 +123,16 @@
     }
     
     return self;
+}
+
+- (void)setHTTPPort:(NSNumber *)port
+{
+    // Do Something
+}
+
+- (void)setHTTPSPort:(NSNumber *)port
+{
+    // Do Something
 }
 
 
@@ -341,15 +380,28 @@
     _tokenRefreshFailureBlock = block;
 }
 
-- (void)setNewAPIHost:(NSString *)apiHost
+- (void)setNewAPIHost:(NSString *)apiHost port:(NSNumber *)port scheme:(NSString *)scheme
 {
-    self.regularOAuthClient = nil;
-    self.secureOAuthClient = nil;
-    self.tokenClient = nil;
+    if (port) {
+        if ([scheme isEqualToString:@"https"]) {
+            self.secureOAuthClient = nil;
+            self.tokenClient = nil;
+            self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"https" port:port apiHost:apiHost publicKey:self.publicKey];
+            self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%@", apiHost, port]]];
+        } else {
+            self.regularOAuthClient = nil;
+            self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"http" port:port apiHost:apiHost publicKey:self.publicKey];
+        }
+    } else {
+        self.regularOAuthClient = nil;
+        self.secureOAuthClient = nil;
+        self.tokenClient = nil;
+        
+        self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"http" apiHost:apiHost publicKey:self.publicKey];
+        self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"https" apiHost:apiHost publicKey:self.publicKey];
+        self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiHost]]];
+    }
     
-    self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"http" apiHost:apiHost publicKey:self.publicKey];
-    self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"https" apiHost:apiHost publicKey:self.publicKey];
-    self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiHost]]];
     NSString *acceptHeader = [NSString stringWithFormat:@"application/vnd.stackmob+json; version=%@", self.version];
     [self.tokenClient setDefaultHeader:@"Accept" value:acceptHeader];
     [self.tokenClient setDefaultHeader:@"X-StackMob-API-Key" value:self.publicKey];

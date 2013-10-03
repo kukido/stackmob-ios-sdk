@@ -91,7 +91,7 @@
 		C63B76B417FB9152001B6889 /* SMCoreDataStoreTest copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1317CC1B5900CFB8A3 /* SMCoreDataStoreTest copy.m */; };
 		C63B76B517FB9155001B6889 /* SMUpdateObjectsOptimizationSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1417CC1B5900CFB8A3 /* SMUpdateObjectsOptimizationSpec copy.m */; };
 		C63B76B617FB9158001B6889 /* SMUserManagedObjectSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A1517CC1B5900CFB8A3 /* SMUserManagedObjectSpec copy.m */; };
-		C63B76B817FBAF3E001B6889 /* CRUDTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C33B0641591355A00BE2570 /* CRUDTests.m */; };
+		C63B76B917FCA9A7001B6889 /* URLRedirectSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB05FE017A0791600781763 /* URLRedirectSpec.m */; };
 		C661658A17F50432001159B5 /* SMMergePolicyDeletesSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A617C6B0CA004417A5 /* SMMergePolicyDeletesSpec.m */; };
 		C661658B17F50436001159B5 /* SMMergePolicyInsertsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A717C6B0CA004417A5 /* SMMergePolicyInsertsSpec.m */; };
 		C661658C17F50439001159B5 /* SMMergePolicyMiscSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAEA4A817C6B0CA004417A5 /* SMMergePolicyMiscSpec.m */; };
@@ -1610,8 +1610,8 @@
 				619EDF16159292CF0075BB93 /* SMIntegrationTestHelpers.m in Sources */,
 				DE0CC7B115CB605900E491C4 /* Superpower.m in Sources */,
 				1DDAE4691656EF15001DFAEF /* SMNetworkReachabilityHelper.m in Sources */,
-				C63B76B817FBAF3E001B6889 /* CRUDTests.m in Sources */,
 				1D8351CF16C08D7000814C71 /* Random.m in Sources */,
+				C63B76B917FCA9A7001B6889 /* URLRedirectSpec.m in Sources */,
 				1D8351DF16C0969900814C71 /* SMCoreDataIntegrationTest.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
