@@ -57,7 +57,8 @@
 @synthesize version = _version;
 
 - (id)initWithAPIVersion:(NSString *)version
-                 apiHost:(NSString *)apiHost
+                httpHost:(NSString *)httpHost
+               httpsHost:(NSString *)httpsHost
                publicKey:(NSString *)publicKey
               userSchema:(NSString *)userSchema
      userPrimaryKeyField:(NSString *)userPrimaryKeyField
@@ -65,38 +66,9 @@
 {
     self = [super init];
     if (self) {
-        // Check user defaults for redirected ports
-        NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
-        
-        NSString *portRedirectPathHTTP = nil;
-        if (applicationName != nil) {
-            portRedirectPathHTTP = [NSString stringWithFormat:@"%@-%@-%@", applicationName, publicKey, @"APIPortHTTP"];
-        } else {
-            portRedirectPathHTTP = [NSString stringWithFormat:@"%@-%@", publicKey, @"APIPortHTTP"];
-        }
-        
-        NSNumber *HTTPPort = [[NSUserDefaults standardUserDefaults] objectForKey:portRedirectPathHTTP];
-        if (HTTPPort) {
-            self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"http" port:HTTPPort apiHost:apiHost publicKey:publicKey];
-        } else {
-            self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"http" apiHost:apiHost publicKey:publicKey];
-        }
-        
-        NSString *portRedirectPathHTTPS = nil;
-        if (applicationName != nil) {
-            portRedirectPathHTTPS = [NSString stringWithFormat:@"%@-%@-%@", applicationName, publicKey, @"APIPortHTTPS"];
-        } else {
-            portRedirectPathHTTPS = [NSString stringWithFormat:@"%@-%@", publicKey, @"APIPortHTTPS"];
-        }
-        
-        NSNumber *HTTPSPort = [[NSUserDefaults standardUserDefaults] objectForKey:portRedirectPathHTTPS];
-        if (HTTPSPort) {
-            self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"https" port:HTTPSPort apiHost:apiHost publicKey:publicKey];
-            self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%@", apiHost, HTTPSPort]]];
-        } else {
-            self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"https" apiHost:apiHost publicKey:publicKey];
-            self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiHost]]];
-        }
+        self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"http" apiHost:httpHost publicKey:publicKey];
+        self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"https" apiHost:httpsHost publicKey:publicKey];
+        self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", httpsHost]]];
         
         NSString *acceptHeader = [NSString stringWithFormat:@"application/vnd.stackmob+json; version=%@", version];
         [self.tokenClient setDefaultHeader:@"Accept" value:acceptHeader];
@@ -112,6 +84,8 @@
         self.publicKey = publicKey;
         self.version = version;
         
+        NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
+        
         if (!applicationName) {
             applicationName = @"nil";
         }
@@ -125,16 +99,35 @@
     return self;
 }
 
-- (void)setHTTPPort:(NSNumber *)port
+- (id)initWithAPIVersion:(NSString *)version
+                 apiHost:(NSString *)apiHost
+               publicKey:(NSString *)publicKey
+              userSchema:(NSString *)userSchema
+     userPrimaryKeyField:(NSString *)userPrimaryKeyField
+       userPasswordField:(NSString *)userPasswordField
 {
-    // Do Something
+    return [self initWithAPIVersion:version httpHost:apiHost httpsHost:apiHost publicKey:publicKey userSchema:userSchema userPrimaryKeyField:userPrimaryKeyField userPasswordField:userPasswordField];
 }
 
-- (void)setHTTPSPort:(NSNumber *)port
+- (NSString *)getHttpHost
 {
-    // Do Something
+    NSNumber *port = self.regularOAuthClient.baseURL.port;
+    if (port) {
+        return [NSString stringWithFormat:@"%@:%@", self.regularOAuthClient.baseURL.host, port];
+    } else {
+        return self.regularOAuthClient.baseURL.host;
+    }
 }
 
+- (NSString *)getHttpsHost
+{
+    NSNumber *port = self.secureOAuthClient.baseURL.port;
+    if (port) {
+        return [NSString stringWithFormat:@"%@:%@", self.secureOAuthClient.baseURL.host, port];
+    } else {
+        return self.secureOAuthClient.baseURL.host;
+    }
+}
 
 - (BOOL)accessTokenHasExpired
 {
@@ -382,31 +375,37 @@
 
 - (void)setNewAPIHost:(NSString *)apiHost port:(NSNumber *)port scheme:(NSString *)scheme
 {
+    __block BOOL resetTokenClientHeaders = NO;
     if (port) {
         if ([scheme isEqualToString:@"https"]) {
             self.secureOAuthClient = nil;
             self.tokenClient = nil;
-            self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"https" port:port apiHost:apiHost publicKey:self.publicKey];
+            self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"https" apiHost:[NSString stringWithFormat:@"%@:%@", apiHost, port] publicKey:self.publicKey];
             self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%@", apiHost, port]]];
+            resetTokenClientHeaders = YES;
         } else {
             self.regularOAuthClient = nil;
-            self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"http" port:port apiHost:apiHost publicKey:self.publicKey];
+            self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"http" apiHost:[NSString stringWithFormat:@"%@:%@", apiHost, port] publicKey:self.publicKey];
         }
-    } else {
-        self.regularOAuthClient = nil;
+    } else if ([scheme isEqualToString:@"https"]) {
         self.secureOAuthClient = nil;
         self.tokenClient = nil;
-        
-        self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"http" apiHost:apiHost publicKey:self.publicKey];
         self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"https" apiHost:apiHost publicKey:self.publicKey];
         self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiHost]]];
+        resetTokenClientHeaders = YES;
+    } else {
+        self.regularOAuthClient = nil;
+        
+        self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"http" apiHost:apiHost publicKey:self.publicKey];
     }
     
-    NSString *acceptHeader = [NSString stringWithFormat:@"application/vnd.stackmob+json; version=%@", self.version];
-    [self.tokenClient setDefaultHeader:@"Accept" value:acceptHeader];
-    [self.tokenClient setDefaultHeader:@"X-StackMob-API-Key" value:self.publicKey];
-    [self.tokenClient setDefaultHeader:@"Content-Type" value:@"application/x-www-form-urlencoded"];
-    [self.tokenClient setDefaultHeader:@"User-Agent" value:[NSString stringWithFormat:@"StackMob/%@ (%@/%@; %@;)", SDK_VERSION, smDeviceModel(), smSystemVersion(), [[NSLocale currentLocale] localeIdentifier]]];
+    if (resetTokenClientHeaders) {
+        NSString *acceptHeader = [NSString stringWithFormat:@"application/vnd.stackmob+json; version=%@", self.version];
+        [self.tokenClient setDefaultHeader:@"Accept" value:acceptHeader];
+        [self.tokenClient setDefaultHeader:@"X-StackMob-API-Key" value:self.publicKey];
+        [self.tokenClient setDefaultHeader:@"Content-Type" value:@"application/x-www-form-urlencoded"];
+        [self.tokenClient setDefaultHeader:@"User-Agent" value:[NSString stringWithFormat:@"StackMob/%@ (%@/%@; %@;)", SDK_VERSION, smDeviceModel(), smSystemVersion(), [[NSLocale currentLocale] localeIdentifier]]];
+    }
 }
 
 

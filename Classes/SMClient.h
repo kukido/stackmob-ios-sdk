@@ -29,6 +29,9 @@
 #define DEFAULT_PRIMARY_KEY_FIELD_NAME @"username"
 #define DEFAULT_PASSWORD_FIELD_NAME @"password"
 
+extern NSString *const SMDefaultHostsKey;
+extern NSString *const SMRedirectedHostsKey;
+
 /**
  `SMClient` provides a high level interface to interacting with StackMob. A new client must be given, at the very least, an API version and public key in order to communicate with your StackMob application.
  
@@ -133,7 +136,7 @@
  Default is `api.stackmob.com`.
  @since Available in iOS SDK 1.0.0 and later.
  */
-@property(nonatomic, copy) NSString *apiHost;
+@property(nonatomic, copy) NSString *apiHost __deprecated;
 
 /**
  Your StackMob application's OAuth2 public key.
@@ -202,10 +205,21 @@
 + (SMClient *)defaultClient;
 
 /**
+ Initialize with only the most basic parameters and defaults for the rest.
+ 
+ @param appAPIVersion The API version of your StackMob application which this client instance should use.
+ @param publicKey Your StackMob application's OAuth2 public key.
+ 
+ @return An instance of `SMClient`.
+ @since Available in iOS SDK 1.0.0 and later.
+ */
+- (id)initWithAPIVersion:(NSString *)appAPIVersion publicKey:(NSString *)publicKey;
+
+/**
  Initialize specifying all parameters.
  
  @param appAPIVersion The API version of your StackMob application which this client instance should use.
- @param apiHost The host to connect to for API requests. Default is `api.stackmob.com`.
+ @param apiHost The host (and optionally port) to connect to for API requests. Default is `api.stackmob.com`.
  @param publicKey Your StackMob application's OAuth2 public key.
  @param userSchema The StackMob schema that has been marked as a user object. Default is `@"user"`.
  @param userPrimaryKeyField The StackMob primary key field name for the user object schema. Default is `@"username"`.
@@ -222,15 +236,24 @@
        userPasswordField:(NSString *)userPasswordField;
 
 /**
- Initialize with only the most basic parameters and defaults for the rest.
+ Initialize specifying all parameters.
  
  @param appAPIVersion The API version of your StackMob application which this client instance should use.
  @param publicKey Your StackMob application's OAuth2 public key.
+ @param userSchema The StackMob schema that has been marked as a user object. Default is `@"user"`.
+ @param userPrimaryKeyField The StackMob primary key field name for the user object schema. Default is `@"username"`.
+ @param userPasswordField The StackMob field name for the password. Default is `@"password"`.
  
  @return An instance of `SMClient`.
- @since Available in iOS SDK 1.0.0 and later.
+ @since Available in iOS SDK 2.2.0 and later.
  */
-- (id)initWithAPIVersion:(NSString *)appAPIVersion publicKey:(NSString *)publicKey;
+- (id)initWithAPIVersion:(NSString *)appAPIVersion
+                httpHost:(NSString *)httpHost
+               httpsHost:(NSString *)httpsHost
+               publicKey:(NSString *)publicKey
+              userSchema:(NSString *)userSchema
+     userPrimaryKeyField:(NSString *)userPrimaryKeyField
+       userPasswordField:(NSString *)userPasswordField;
 
 #pragma mark Datastore
 ///-------------------------------

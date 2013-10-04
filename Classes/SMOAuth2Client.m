@@ -36,20 +36,7 @@
                   apiHost:(NSString *)apiHost 
                 publicKey:(NSString *)publicKey 
 {
-    return [self initWithAPIVersion:version scheme:scheme port:nil apiHost:apiHost publicKey:publicKey];
-}
-
-- (id)initWithAPIVersion:(NSString *)version
-                  scheme:(NSString *)scheme
-                    port:(NSNumber *)port
-                 apiHost:(NSString *)apiHost
-               publicKey:(NSString *)publicKey
-{
-    if (port) {
-        self = [super initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", scheme, apiHost, port]]];
-    } else {
-        self = [super initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", scheme, apiHost]]];
-    }
+    self = [super initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", scheme, apiHost]]];
     
     if (self) {
         self.version = version;
