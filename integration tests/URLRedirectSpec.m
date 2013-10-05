@@ -53,7 +53,6 @@ describe(@"URLRedirect datastore api", ^{
             dispatch_group_leave(group);
         } onFailure:^(NSError *error) {
             [[theValue([error code]) should] equal:theValue(404)];
-            [[client.apiHost should] equal:@"mattsmells.staging.stackmob.com"];
             [[client.session.regularOAuthClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
             [[client.session.secureOAuthClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
             [[client.session.tokenClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
@@ -69,7 +68,6 @@ describe(@"URLRedirect datastore api", ^{
             dispatch_group_leave(group);
         } onFailure:^(NSError *error) {
             [[theValue([error code]) should] equal:theValue(404)];
-            [[client.apiHost should] equal:@"mattsmells.staging.stackmob.com"];
             [[client.session.regularOAuthClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
             [[client.session.secureOAuthClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
             [[client.session.tokenClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
@@ -101,7 +99,6 @@ describe(@"URLRedirect datastore api", ^{
         
         [[theValue(success) should] beNo];
         [[theValue([error code]) should] equal:theValue(-108)];
-        [[client.apiHost should] equal:@"mattsmells.staging.stackmob.com"];
         [[client.session.regularOAuthClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
         [[client.session.secureOAuthClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
         [[client.session.tokenClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
@@ -116,7 +113,6 @@ describe(@"URLRedirect datastore api", ^{
         
         [[theValue(success) should] beNo];
         [[theValue([error code]) should] equal:theValue(-108)];
-        [[client.apiHost should] equal:@"mattsmells.staging.stackmob.com"];
         [[client.session.regularOAuthClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
         [[client.session.secureOAuthClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
         [[client.session.tokenClient.baseURL.host should] equal:@"mattsmells.staging.stackmob.com"];
