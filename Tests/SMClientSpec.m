@@ -87,7 +87,8 @@ describe(@"simple configuration", ^{
     
     describe(@"API host", ^{
         it(@"should default to stackmob.com", ^{
-            [[[client apiHost] should] equal:DEFAULT_API_HOST];
+            [[[[client session] getHttpHost] should] equal:DEFAULT_API_HOST];
+            [[[[client session] getHttpsHost] should] equal:DEFAULT_API_HOST];
         });
     });
     
@@ -170,7 +171,8 @@ describe(@"complex configuration", ^{
     
     describe(@"API host", ^{
         it(@"should be set", ^{
-            [[[client apiHost] should] equal:apiHost];
+            [[[[client session] getHttpHost] should] equal:apiHost];
+            [[[[client session] getHttpsHost] should] equal:apiHost];
         });
     });
     
