@@ -239,12 +239,15 @@ extern NSString *const SMRedirectedHostsKey;
  Initialize specifying all parameters.
  
  @param appAPIVersion The API version of your StackMob application which this client instance should use.
+ @param httpHost The HTTP host to connect to for API requests. This includes the port if it is not 80.
+ @param httpsHost The HTTPS host to connect to for API requests. This includes the port if it is not 443.
  @param publicKey Your StackMob application's OAuth2 public key.
  @param userSchema The StackMob schema that has been marked as a user object. Default is `@"user"`.
  @param userPrimaryKeyField The StackMob primary key field name for the user object schema. Default is `@"username"`.
  @param userPasswordField The StackMob field name for the password. Default is `@"password"`.
  
  @return An instance of `SMClient`.
+ 
  @since Available in iOS SDK 2.2.0 and later.
  */
 - (id)initWithAPIVersion:(NSString *)appAPIVersion
@@ -600,7 +603,8 @@ extern NSString *const SMRedirectedHostsKey;
  Sets a new API Host with the option to persist the host to user defaults. This is used internally when requests are sent a redirect response.
  
  @param apiHost The API host to direct future requests to.
- @param port The port to direct future requests to, or nil.
+ @param port The port to direct future requests to, or nil if the deafult 80/443 should be used.
+ @param scheme The scheme for this host, either http or https.
  @param permanent Whether the host should be persisted to user defaults and used during subsequent launches.
  
  @since Available in iOS SDK 2.2.0 and later.
