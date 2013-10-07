@@ -23,6 +23,8 @@
 #define EXPIRES_IN @"expires_in"
 #define MAC_KEY @"mac_key"
 #define REFRESH_TOKEN @"refresh_token"
+#define HTTP @"http"
+#define HTTPS @"https"
 
 @interface SMUserSession ()
 
@@ -66,9 +68,9 @@
 {
     self = [super init];
     if (self) {
-        self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"http" apiHost:httpHost publicKey:publicKey];
-        self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"https" apiHost:httpsHost publicKey:publicKey];
-        self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", httpsHost]]];
+        self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:HTTP apiHost:httpHost publicKey:publicKey];
+        self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:HTTPS apiHost:httpsHost publicKey:publicKey];
+        self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", HTTPS, httpsHost]]];
         
         NSString *acceptHeader = [NSString stringWithFormat:@"application/vnd.stackmob+json; version=%@", version];
         [self.tokenClient setDefaultHeader:@"Accept" value:acceptHeader];

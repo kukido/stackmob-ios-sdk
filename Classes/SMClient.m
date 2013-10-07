@@ -30,6 +30,8 @@
 #define TW_TOKEN_KEY @"tw_tk"
 #define TW_SECRET_KEY @"tw_ts"
 #define UUID_CHAR_NUM 36
+#define HTTP @"http"
+#define HTTPS @"https"
 
 static SMClient *defaultClient = nil;
 
@@ -121,9 +123,7 @@ NSString *const SMRedirectedHostsKey = @"SMRedirectedHostsKey";
             [NSException raise:@"SMClientInitializationException" format:@"Incorrect Public Key format provided.  Please check your public key to make sure you are passing the correct one, and that you are not passing nil."];
         }
         
-        // BEGIN HOST/PORT LOGIC
-        
-        // Pull data from user defaults
+        // Pull host data from user defaults
         NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
         
         NSString *defaultHostsPath = nil;
@@ -149,15 +149,15 @@ NSString *const SMRedirectedHostsKey = @"SMRedirectedHostsKey";
         NSString *hostToUseHTTPS = nil;
         if (defaultHosts) {
             
-            hostToUseHTTP = [self SM_getHostToUseForScheme:@"http" currentHosts:[NSDictionary dictionaryWithObjectsAndKeys:httpHost, @"http", httpsHost, @"https", nil] defaultHosts:defaultHosts defaultPath:defaultHostsPath redirectedHosts:redirectedHosts redirectPath:redirectedHostsPath];
+            hostToUseHTTP = [self SM_getHostToUseForScheme:HTTP currentHosts:[NSDictionary dictionaryWithObjectsAndKeys:httpHost, HTTP, httpsHost, HTTPS, nil] defaultHosts:defaultHosts defaultPath:defaultHostsPath redirectedHosts:redirectedHosts redirectPath:redirectedHostsPath];
             
-            hostToUseHTTPS = [self SM_getHostToUseForScheme:@"https" currentHosts:[NSDictionary dictionaryWithObjectsAndKeys:httpHost, @"http", httpsHost, @"https", nil] defaultHosts:[[NSUserDefaults standardUserDefaults] objectForKey:defaultHostsPath] defaultPath:defaultHostsPath redirectedHosts:[[NSUserDefaults standardUserDefaults] objectForKey:redirectedHostsPath] redirectPath:redirectedHostsPath];
+            hostToUseHTTPS = [self SM_getHostToUseForScheme:HTTPS currentHosts:[NSDictionary dictionaryWithObjectsAndKeys:httpHost, HTTP, httpsHost, HTTPS, nil] defaultHosts:[[NSUserDefaults standardUserDefaults] objectForKey:defaultHostsPath] defaultPath:defaultHostsPath redirectedHosts:[[NSUserDefaults standardUserDefaults] objectForKey:redirectedHostsPath] redirectPath:redirectedHostsPath];
             
         } else {
-            // Never saved current host and port to defaults
+            // Never saved current host/port to defaults
             hostToUseHTTP = httpHost;
             hostToUseHTTPS = httpsHost;
-            NSDictionary *defaultHostsToPersist = [NSDictionary dictionaryWithObjectsAndKeys:httpHost, @"http", httpsHost, @"https", nil];
+            NSDictionary *defaultHostsToPersist = [NSDictionary dictionaryWithObjectsAndKeys:httpHost, HTTP, httpsHost, HTTPS, nil];
             [[NSUserDefaults standardUserDefaults] setObject:defaultHostsToPersist forKey:defaultHostsPath];
             [[NSUserDefaults standardUserDefaults] synchronize];
         }
@@ -173,6 +173,17 @@ NSString *const SMRedirectedHostsKey = @"SMRedirectedHostsKey";
     return self;
 }
 
+/*
+ current/default/redirected hosts all in the form
+ {
+    "http" : "<host>:<port>",
+    "https" : "<host>:<port>"
+ }
+ 
+ Current and default will always have both schemes, redirected may have only one.
+ Port only attached to scheme if not 80/443.
+ 
+ */
 - (NSString *)SM_getHostToUseForScheme:(NSString *)scheme currentHosts:(NSDictionary *)currentHosts defaultHosts:(NSDictionary *)defaultHosts defaultPath:(NSString *)defaultPath redirectedHosts:(NSDictionary *)redirectedHosts redirectPath:(NSString *)redirectPath
 {
     NSString *currentHost = [currentHosts objectForKey:scheme];
