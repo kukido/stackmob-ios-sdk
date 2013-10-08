@@ -134,7 +134,10 @@ extern NSString *const SMRedirectedHostsKey;
  The host to connect to for API requests. 
  
  Default is `api.stackmob.com`.
+ 
  @since Available in iOS SDK 1.0.0 and later.
+ 
+ @note Deprecated in version 2.2.0. Use the `getHttpHost` and `getHttpsHost` methods of the `session` property.
  */
 @property(nonatomic, copy) NSString *apiHost __deprecated;
 
@@ -603,7 +606,7 @@ extern NSString *const SMRedirectedHostsKey;
  Sets a new API Host with the option to persist the host to user defaults. This is used internally when requests are sent a redirect response.
  
  @param apiHost The API host to direct future requests to.
- @param port The port to direct future requests to, or nil if the deafult 80/443 should be used.
+ @param port The port to direct future requests to, or nil if the default 80/443 should be used.
  @param scheme The scheme for this host, either http or https.
  @param permanent Whether the host should be persisted to user defaults and used during subsequent launches.
  

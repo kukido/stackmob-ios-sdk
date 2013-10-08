@@ -163,6 +163,10 @@ NSString *const SMRedirectedHostsKey = @"SMRedirectedHostsKey";
         }
         
         self.session = [[SMUserSession alloc] initWithAPIVersion:appAPIVersion httpHost:hostToUseHTTP httpsHost:hostToUseHTTPS publicKey:publicKey userSchema:userSchema userPrimaryKeyField:userPrimaryKeyField userPasswordField:userPasswordField];
+        
+        // Assign for deprecated purposes
+        _SM_APIHost = hostToUseHTTP;
+        
         self.coreDataStore = nil;
         
         
@@ -170,6 +174,7 @@ NSString *const SMRedirectedHostsKey = @"SMRedirectedHostsKey";
             [SMClient setDefaultClient:self];
         }
     }
+    
     return self;
 }
 
