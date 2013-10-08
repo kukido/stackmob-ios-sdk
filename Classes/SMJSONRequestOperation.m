@@ -16,6 +16,8 @@
 
 #import "SMJSONRequestOperation.h"
 #import "SMClient.h"
+#import "SMUserSession.h"
+#import "SMError.h"
 
 @implementation SMJSONRequestOperation
 
@@ -28,8 +30,15 @@
 {
     if (response) {
         NSString *host = [[request URL] host];
-        if (![[[SMClient defaultClient] apiHost] isEqualToString:host]) {
-            [[SMClient defaultClient] setApiHost:host];
+        NSString *apiHost = nil;
+        if ([[[request URL] scheme] isEqualToString:@"http"]) {
+            apiHost = [[[SMClient defaultClient] session] getHttpHost];
+        } else {
+            apiHost = [[[SMClient defaultClient] session] getHttpsHost];
+        }
+        if (![apiHost isEqualToString:host]) {
+            BOOL permanent = [(NSHTTPURLResponse *)response statusCode] == SMErrorMovedPermanently ? YES : NO;
+            [[SMClient defaultClient] setRedirectedAPIHost:host port:[[request URL] port] scheme:[[request URL] scheme] permanent:permanent];
         }
     }
     return [super connection:connection willSendRequest:request redirectResponse:response];

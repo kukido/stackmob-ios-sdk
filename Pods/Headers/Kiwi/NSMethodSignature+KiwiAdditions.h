@@ -1,1 +1,1 @@
-../../Kiwi/Kiwi/NSMethodSignature+KiwiAdditions.h
+../../Kiwi/Classes/Core/NSMethodSignature+KiwiAdditions.h

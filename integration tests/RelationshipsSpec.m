@@ -54,6 +54,8 @@ describe(@"Create objects", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         dataStore = nil;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"creates multiple objects at once", ^{
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
@@ -75,6 +77,8 @@ describe(@"Create objects", ^{
         }];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
         
         SMQuery *todosQuery = [[SMQuery alloc] initWithSchema:@"todo"];
         dispatch_group_enter(group);
@@ -103,6 +107,8 @@ describe(@"Create objects", ^{
         }];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
     });
     it(@"fails when schema is nil", ^{
         dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
@@ -123,6 +129,8 @@ describe(@"Create objects", ^{
         }];
         
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
     });
 });
 
@@ -202,6 +210,8 @@ describe(@"Upsert", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         dataStore = nil;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Create new todo and category", ^{
         // Create category object. We can specify a manual primary key if we wish, otherwise one will be automatically assigned when it's created.
@@ -237,6 +247,8 @@ describe(@"Upsert", ^{
         
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
+        
+        sleep(SLEEP_TIME);
         
     });
     it(@"Create new todo and category with existing headers", ^{
@@ -275,6 +287,8 @@ describe(@"Upsert", ^{
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
         
+        sleep(SLEEP_TIME);
+        
     });
     it(@"Create new todo and update existing category", ^{
         // Create category object. We can specify a manual primary key if we wish, otherwise one will be automatically assigned when it's created.
@@ -306,6 +320,8 @@ describe(@"Upsert", ^{
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
         
+        sleep(SLEEP_TIME);
+        
         if (success) {
             NSDictionary *categoryUpdate = [NSDictionary dictionaryWithObjectsAndKeys:@"Updated Name", @"name", categoryId, @"category_id", nil];
             
@@ -336,6 +352,8 @@ describe(@"Upsert", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
         }
     });
     it(@"Create new todo and update existing category, one to many", ^{
@@ -368,6 +386,8 @@ describe(@"Upsert", ^{
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
         
+        sleep(SLEEP_TIME);
+        
         if (success) {
             NSDictionary *categoryUpdate = [NSDictionary dictionaryWithObjectsAndKeys:@"Updated Name", @"name", categoryId, @"category_id", nil];
             
@@ -398,6 +418,8 @@ describe(@"Upsert", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
         }
     });
     it(@"Create new todo and update existing category with relationship to other entity", ^{
@@ -429,6 +451,8 @@ describe(@"Upsert", ^{
         
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
+        
+        sleep(SLEEP_TIME);
         
         if (success) {
             NSDictionary *favoriteObject = [NSDictionary dictionaryWithObjectsAndKeys:@"My Favorites", @"genre", nil];
@@ -464,6 +488,8 @@ describe(@"Upsert", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
         }
     });
     it(@"Update existing todo and update existing category", ^{
@@ -506,6 +532,8 @@ describe(@"Upsert", ^{
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
         
+        sleep(SLEEP_TIME);
+        
         if (success) {
             NSDictionary *categoryUpdate = [NSDictionary dictionaryWithObjectsAndKeys:catId, @"category_id", @"updated name", @"name", nil];
             NSDictionary *todoUpdate = [NSDictionary dictionaryWithObjectsAndKeys:todoId, @"todo_id", @"updated title", @"title", categoryUpdate, @"category", nil];
@@ -536,6 +564,8 @@ describe(@"Upsert", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
         }
     });
   
@@ -596,6 +626,8 @@ describe(@"Create and append", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         dataStore = nil;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Appends categories sucessfully", ^{
         
@@ -628,6 +660,8 @@ describe(@"Create and append", ^{
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
         
+        sleep(SLEEP_TIME);
+        
         if (success) {
             success = NO;
             timeout = YES;
@@ -653,6 +687,8 @@ describe(@"Create and append", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
         }
         
     });
@@ -687,6 +723,8 @@ describe(@"Create and append", ^{
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
         
+        sleep(SLEEP_TIME);
+        
         if (success) {
             success = NO;
             timeout = YES;
@@ -714,6 +752,8 @@ describe(@"Create and append", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
         }
         
     });
@@ -884,6 +924,8 @@ describe(@"Append Values", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         dataStore = nil;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Appends realtionship categories sucessfully", ^{
         
@@ -916,6 +958,8 @@ describe(@"Append Values", ^{
         
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
+        
+        sleep(SLEEP_TIME);
         
         if (success) {
             success = NO;
@@ -955,6 +999,8 @@ describe(@"Append Values", ^{
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
             
+            sleep(SLEEP_TIME);
+            
             // Append categories and update todo
             success = NO;
             timeout = YES;
@@ -976,6 +1022,8 @@ describe(@"Append Values", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
         }
         
     });
@@ -1009,6 +1057,8 @@ describe(@"Append Values", ^{
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
         
+        sleep(SLEEP_TIME);
+        
         if (success) {
             
             dispatch_group_enter(group);
@@ -1027,6 +1077,8 @@ describe(@"Append Values", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
         }
         
     });
@@ -1062,6 +1114,8 @@ describe(@"Append Values", ^{
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
         
+        sleep(SLEEP_TIME);
+        
         if (success) {
             success = NO;
             timeout = YES;
@@ -1100,6 +1154,8 @@ describe(@"Append Values", ^{
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
             
+            sleep(SLEEP_TIME);
+            
             // Append categories and update todo
             success = NO;
             timeout = YES;
@@ -1121,6 +1177,8 @@ describe(@"Append Values", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
         }
         
     });
@@ -1154,6 +1212,8 @@ describe(@"Append Values", ^{
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
         
+        sleep(SLEEP_TIME);
+        
         if (success) {
             
             dispatch_group_enter(group);
@@ -1172,6 +1232,8 @@ describe(@"Append Values", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
         }
         
     });
@@ -1432,6 +1494,8 @@ describe(@"Delete Existing Values", ^{
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         
         dataStore = nil;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Deletes related references and objects sucessfully", ^{
         
@@ -1465,6 +1529,8 @@ describe(@"Delete Existing Values", ^{
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
         
+        sleep(SLEEP_TIME);
+        
         if (success) {
             success = NO;
             timeout = YES;
@@ -1491,6 +1557,8 @@ describe(@"Delete Existing Values", ^{
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
             
+            sleep(SLEEP_TIME);
+            
             // Append categories and update todo
             success = NO;
             timeout = YES;
@@ -1511,6 +1579,8 @@ describe(@"Delete Existing Values", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
             
             // Fetch on category should come back emtpy
             success = NO;
@@ -1533,6 +1603,8 @@ describe(@"Delete Existing Values", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
             
             
         }
@@ -1570,6 +1642,8 @@ describe(@"Delete Existing Values", ^{
         [[theValue(success) should] beYes];
         [[theValue(timeout) should] beNo];
         
+        sleep(SLEEP_TIME);
+        
         if (success) {
             success = NO;
             timeout = YES;
@@ -1596,6 +1670,8 @@ describe(@"Delete Existing Values", ^{
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
             
+            sleep(SLEEP_TIME);
+            
             // Append categories and update todo
             success = NO;
             timeout = YES;
@@ -1616,6 +1692,8 @@ describe(@"Delete Existing Values", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
             
             // Fetch on category should come back emtpy
             success = NO;
@@ -1638,6 +1716,8 @@ describe(@"Delete Existing Values", ^{
             
             [[theValue(success) should] beYes];
             [[theValue(timeout) should] beNo];
+            
+            sleep(SLEEP_TIME);
         }
         
     });

@@ -37,6 +37,9 @@ describe(@"with fixtures", ^{
     beforeAll(^{
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
+        
+        sleep(SLEEP_TIME);
+        
         client = [SMIntegrationTestHelpers defaultClient];
         [SMClient setDefaultClient:client];
         NSBundle *classBundle = [NSBundle bundleForClass:[self class]];
@@ -610,7 +613,7 @@ describe(@"OR query from network should return same as cache", ^{
         testProperties = [[SMTestProperties alloc] init];
         [testProperties.client setUserSchema:@"User3"];
         //[[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
         
         user1 = [[User3 alloc] initWithEntity:[NSEntityDescription entityForName:@"User3" inManagedObjectContext:testProperties.moc] insertIntoManagedObjectContext:testProperties.moc];
         user1ID = [NSString stringWithFormat:@"matt%d", arc4random() / 10000];
@@ -636,10 +639,12 @@ describe(@"OR query from network should return same as cache", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         //[[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
         NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         NSError *fetchError = nil;
         NSArray *results = [testProperties.moc executeFetchRequestAndWait:fetch error:&fetchError];
@@ -653,11 +658,15 @@ describe(@"OR query from network should return same as cache", ^{
             }
         }];
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"simple query", ^{
-        [testProperties.client.coreDataStore setCachePolicy:SMCachePolicyTryNetworkOnly];
+        [testProperties.client.coreDataStore setFetchPolicy:SMFetchPolicyNetworkOnly];
         // Should only call the network once
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#endif
         
         [[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -676,7 +685,7 @@ describe(@"OR query from network should return same as cache", ^{
             [[array should] contain:user2ID];
         }
         
-        [testProperties.client.coreDataStore setCachePolicy:SMCachePolicyTryCacheOnly];
+        [testProperties.client.coreDataStore setFetchPolicy:SMFetchPolicyCacheOnly];
         // Second fetch from cache should yeild same results
         NSFetchRequest *secondFetch = [[NSFetchRequest alloc] initWithEntityName:@"User3"];
         [secondFetch setPredicate:predicate];
@@ -704,15 +713,21 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
         [[testProperties.client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [testProperties.cds setCachePolicy:SMCachePolicyTryCacheElseNetwork];
+        [testProperties.cds setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
+        
+        sleep(SLEEP_TIME);
     });
     
     afterEach(^{
         [SMIntegrationTestHelpers destroyAllForFixturesNamed:fixturesToLoad];
         SM_CACHE_ENABLED = NO;
+        
+        sleep(SLEEP_TIME);
     });
     it(@"single or", ^{
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#endif
         // Person where:
         // armor_class = 17 || first_name == "Jonah"
         // Should return Matt and Jonah
@@ -744,7 +759,9 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         }
     });
     it(@"multiple ors", ^{
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#endif
         // Person where:
         // armor_class < 17 && ((first_name == "Jonah" && last_name == "Williams) || first_name == "Jon" || company == "Carbon Five")
         // Should return Jon and Jonah
@@ -790,7 +807,9 @@ describe(@"Advanced OR from network should yeild same results as cache", ^{
         
     });
     it(@"multiple ands in or", ^{
+#if CHECK_RECEIVE_SELECTORS
         [[[testProperties.client.session oauthClientWithHTTPS:NO] should] receive:@selector(enqueueHTTPRequestOperation:) withCount:1];
+#endif
         // Person where:
         // armor_class < 17 && ((first_name == "Jonah" && last_name == "Williams) || (first_name == "Jon" && last_name == "Cooper") || company == "Carbon Five")
         // Should return Jon and Jonah
@@ -886,6 +905,8 @@ describe(@"Fetch request on User which inherits from the SMUserManagedObject", ^
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -901,6 +922,8 @@ describe(@"Fetch request on User which inherits from the SMUserManagedObject", ^
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Should correctly fetch", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -975,6 +998,8 @@ describe(@"fetch requests for managed objects", ^{
             }
         }];
         
+        sleep(SLEEP_TIME);
+        
     });
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -986,6 +1011,8 @@ describe(@"fetch requests for managed objects", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"Should correctly fetch", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
@@ -1029,6 +1056,8 @@ describe(@"empty string", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
     });
     afterEach(^{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Todo"];
@@ -1044,6 +1073,8 @@ describe(@"empty string", ^{
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             [error shouldBeNil];
         }];
+        
+        sleep(SLEEP_TIME);
     });
     it(@"equal to empty string", ^{
         

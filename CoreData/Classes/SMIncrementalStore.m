@@ -507,51 +507,78 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
     SMRequestOptions *options = [threadDictionary objectForKey:SMRequestSpecificOptions];
     if (!options) {
+        // We should be able to use a copy of options
         options = self.coreDataStore.globalRequestOptions;
     }
     
+    BOOL previousStateOfCacheResults = options.cacheResults;
+    
     NSSaveChangesRequest *saveRequest = [[NSSaveChangesRequest alloc] initWithInsertedObjects:[context insertedObjects] updatedObjects:[context updatedObjects] deletedObjects:[context deletedObjects] lockedObjects:nil];
     
-    BOOL networkAvailable;
-    if (SM_CACHE_ENABLED) {
-        networkAvailable = [self SM_checkNetworkAvailability];
-    } else {
-        networkAvailable = YES;
+    SMSavePolicy policyToUse = options.savePolicySet ? options.savePolicy : [self.coreDataStore savePolicy];
+    
+    if (policyToUse != SMSavePolicyCacheOnly) {
+        BOOL networkAvailable;
+        if (SM_CACHE_ENABLED) {
+            networkAvailable = [self SM_checkNetworkAvailability];
+        } else {
+            networkAvailable = YES;
+        }
+        
+        if (!networkAvailable) {
+            policyToUse = SMSavePolicyCacheOnly;
+        } else {
+            if (policyToUse == SMSavePolicyNetworkOnly) {
+                [options setCacheResults:NO];
+            }
+        }
     }
     
     NSSet *insertedObjects = [saveRequest insertedObjects];
     if ([insertedObjects count] > 0) {
-        BOOL insertSuccess = [self SM_handleInsertedObjects:insertedObjects inContext:context options:options error:error networkAvailable:networkAvailable];
+        BOOL insertSuccess = [self SM_handleInsertedObjects:insertedObjects inContext:context options:options savePolicy:policyToUse error:error];
         if (!insertSuccess) {
             return nil;
         }
     }
     NSSet *updatedObjects = [saveRequest updatedObjects];
     if ([updatedObjects count] > 0) {
-        BOOL updateSuccess = [self SM_handleUpdatedObjects:updatedObjects inContext:context options:options error:error networkAvailable:networkAvailable];
+        BOOL updateSuccess = [self SM_handleUpdatedObjects:updatedObjects inContext:context options:options savePolicy:policyToUse error:error];
         if (!updateSuccess) {
             return nil;
         }
     }
     NSSet *deletedObjects = [saveRequest deletedObjects];
     if ([deletedObjects count] > 0) {
-        BOOL deleteSuccess = [self SM_handleDeletedObjects:deletedObjects inContext:context options:options error:error networkAvailable:networkAvailable];
+        BOOL deleteSuccess = [self SM_handleDeletedObjects:deletedObjects inContext:context options:options savePolicy:policyToUse error:error];
         if (!deleteSuccess) {
             return nil;
         }
     }
     
+    [options setCacheResults:previousStateOfCacheResults];
+    
     return [NSArray array];
+    
 }
 
-- (BOOL)SM_handleInsertedObjects:(NSSet *)insertedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error networkAvailable:(BOOL)networkAvailable
+- (BOOL)SM_handleInsertedObjects:(NSSet *)insertedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options savePolicy:(SMSavePolicy)savePolicy error:(NSError *__autoreleasing *)error
 {
     if (SM_CORE_DATA_DEBUG) { DLog() }
     
-    if (networkAvailable) {
-        return [self SM_handleInsertedObjectsWhenOnline:insertedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
-    } else {
-        return [self SM_handleInsertedObjectsWhenOffline:insertedObjects inContext:context options:options error:error];
+    switch (savePolicy) {
+        case SMSavePolicyNetworkThenCache:
+            return [self SM_handleInsertedObjectsWhenOnline:insertedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyNetworkOnly:
+            return [self SM_handleInsertedObjectsWhenOnline:insertedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyCacheOnly:
+            return [self SM_handleInsertedObjectsWhenOffline:insertedObjects inContext:context options:options error:error];
+            break;
+        default:
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to handle inserted objects but passed an invalid save policy."];
+            break;
     }
 }
 
@@ -613,7 +640,11 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 }
                 
                 // Add object to list of objects to be cached [primaryKey, dictionary of object, entity desc, context]
-                NSArray *objectReadyForCache = [NSArray arrayWithObjects:[managedObject valueForKey:[managedObject primaryKeyField]], theObject, [managedObject entity], context, nil];
+                NSString *objectPrimaryKeyField = [managedObject primaryKeyField];
+                if (!objectPrimaryKeyField) {
+                    [NSManagedObject SM_throwExceptionNoPrimaryKeyField:managedObject];
+                }
+                NSArray *objectReadyForCache = [NSArray arrayWithObjects:[managedObject valueForKey:objectPrimaryKeyField], theObject, [managedObject entity], context, nil];
                 [objectsToBeCached addObject:objectReadyForCache];
                 
                 if (successBlockAddition) {
@@ -702,11 +733,15 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         [dictionaryRepOfManagedObject setObject:dateToSet forKey:SMLastModDateKey];
         
         // Add object to list of objects to be cached [primaryKey, dictionary of object, entity desc, context]
-        NSArray *objectReadyForCache = [NSArray arrayWithObjects:[managedObject valueForKey:[managedObject primaryKeyField]], dictionaryRepOfManagedObject, [managedObject entity], context, nil];
+        NSString *objectPrimaryKeyField = [managedObject primaryKeyField];
+        if (!objectPrimaryKeyField) {
+            [NSManagedObject SM_throwExceptionNoPrimaryKeyField:managedObject];
+        }
+        NSArray *objectReadyForCache = [NSArray arrayWithObjects:[managedObject valueForKey:objectPrimaryKeyField], dictionaryRepOfManagedObject, [managedObject entity], context, nil];
         [objectsToBeCached addObject:objectReadyForCache];
         
         // Add object to dirty queue
-        NSDictionary *dirtyObjectDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[managedObject valueForKey:[managedObject primaryKeyField]], SMDirtyObjectPrimaryKey, [[managedObject entity] name], SMDirtyObjectEntityName, nil];
+        NSDictionary *dirtyObjectDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[managedObject valueForKey:objectPrimaryKeyField], SMDirtyObjectPrimaryKey, [[managedObject entity] name], SMDirtyObjectEntityName, nil];
         [dirtyObjects addObject:dirtyObjectDictionary];
         
     }];
@@ -742,13 +777,23 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     return returnDictionary;
 }
 
-- (BOOL)SM_handleUpdatedObjects:(NSSet *)updatedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error networkAvailable:(BOOL)networkAvailable
+- (BOOL)SM_handleUpdatedObjects:(NSSet *)updatedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options savePolicy:(SMSavePolicy)savePolicy error:(NSError *__autoreleasing *)error
 {
     if (SM_CORE_DATA_DEBUG) { DLog() }
-    if (networkAvailable) {
-        return [self SM_handleUpdatedObjectsWhenOnline:updatedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
-    } else {
-        return [self SM_handleUpdatedObjectsWhenOffline:updatedObjects inContext:context options:options error:error];
+    
+    switch (savePolicy) {
+        case SMSavePolicyNetworkThenCache:
+            return [self SM_handleUpdatedObjectsWhenOnline:updatedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyNetworkOnly:
+            return [self SM_handleUpdatedObjectsWhenOnline:updatedObjects inContext:context serializeFullObjects:NO successBlockAddition:nil options:options error:error];
+            break;
+        case SMSavePolicyCacheOnly:
+            return [self SM_handleUpdatedObjectsWhenOffline:updatedObjects inContext:context options:options error:error];
+            break;
+        default:
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to handle updated objects but passed an invalid save policy."];
+            break;
     }
 }
 
@@ -787,7 +832,11 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             if (SM_CORE_DATA_DEBUG) { DLog(@"SMIncrementalStore updated object %@ on schema %@", truncateOutputIfExceedsMaxLogLength(theObject) , schemaName) }
             
             // Add object to list of objects to be cached [primaryKey, dictionary of object, entity desc, context]
-            NSArray *objectReadyForCache = [NSArray arrayWithObjects:[managedObject valueForKey:[managedObject primaryKeyField]], theObject, [managedObject entity], context, nil];
+            NSString *objectPrimaryKeyField = [managedObject primaryKeyField];
+            if (!objectPrimaryKeyField) {
+                [NSManagedObject SM_throwExceptionNoPrimaryKeyField:managedObject];
+            }
+            NSArray *objectReadyForCache = [NSArray arrayWithObjects:[managedObject valueForKey:objectPrimaryKeyField], theObject, [managedObject entity], context, nil];
             [objectsToBeCached addObject:objectReadyForCache];
             
             if (successBlockAddition) {
@@ -838,7 +887,23 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         
         options.isSecure ? [secureOperations addObject:op] : [regularOperations addObject:op];
         
+        /*
+        if (!updatedObjectID) {
+            if (error != NULL && error == nil) {
+                NSError *errorToSet = [NSError errorWithDomain:SMErrorDomain code:SMErrorCoreDataSave userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"nil value for primary key. Object in question is %@", managedObject], NSLocalizedDescriptionKey, nil]];
+                *error = (__bridge id)(__bridge_retained CFTypeRef)errorToSet;
+            }
+            *stop = YES;
+        } else {
+            // add code here
+        }
+        */
+        
     }];
+    
+    if (*error) {
+        return NO;
+    }
     
     success = [self SM_enqueueRegularOperations:regularOperations secureOperations:secureOperations withGroup:group callbackGroup:callbackGroup queue:queue options:options refreshAndRetryUnauthorizedRequests:failedRequestsWithUnauthorizedResponse failedRequests:failedRequests errorListName:SMUpdatedObjectFailures error:error];
     
@@ -847,6 +912,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     if (options.cacheResults) {
         [self SM_serializeAndCacheObjects:objectsToBeCached];
     }
+    
+    
     
 #if !OS_OBJECT_USE_OBJC
     dispatch_release(group);
@@ -883,11 +950,15 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         [dictionaryRepOfManagedObject setObject:[dateToSet dateByAddingTimeInterval:self.serverTimeDiff] forKey:SMLastModDateKey];
         
         // Add object to list of objects to be cached [primaryKey, dictionary of object, entity desc, context]
-        NSArray *objectReadyForCache = [NSArray arrayWithObjects:[managedObject valueForKey:[managedObject primaryKeyField]], dictionaryRepOfManagedObject, [managedObject entity], context, nil];
+        NSString *objectPrimaryKeyField = [managedObject primaryKeyField];
+        if (!objectPrimaryKeyField) {
+            [NSManagedObject SM_throwExceptionNoPrimaryKeyField:managedObject];
+        }
+        NSArray *objectReadyForCache = [NSArray arrayWithObjects:[managedObject valueForKey:objectPrimaryKeyField], dictionaryRepOfManagedObject, [managedObject entity], context, nil];
         [objectsToBeCached addObject:objectReadyForCache];
         
         // Add object to dirty queue
-        NSDictionary *dirtyObjectDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[managedObject valueForKey:[managedObject primaryKeyField]], SMDirtyObjectPrimaryKey, [[managedObject entity] name], SMDirtyObjectEntityName, nil];
+        NSDictionary *dirtyObjectDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[managedObject valueForKey:objectPrimaryKeyField], SMDirtyObjectPrimaryKey, [[managedObject entity] name], SMDirtyObjectEntityName, nil];
         [dirtyObjects addObject:dirtyObjectDictionary];
         
     }];
@@ -902,13 +973,23 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
 }
 
-- (BOOL)SM_handleDeletedObjects:(NSSet *)deletedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options error:(NSError *__autoreleasing *)error networkAvailable:(BOOL)networkAvailable
+- (BOOL)SM_handleDeletedObjects:(NSSet *)deletedObjects inContext:(NSManagedObjectContext *)context options:(SMRequestOptions *)options savePolicy:(SMSavePolicy)savePolicy error:(NSError *__autoreleasing *)error
 {
     if (SM_CORE_DATA_DEBUG) { DLog() }
-    if (networkAvailable) {
-        return [self SM_handleDeletedObjectsWhenOnline:deletedObjects inContext:context options:options error:error];
-    } else {
-        return [self SM_handleDeletedObjectsWhenOffline:deletedObjects inContext:context options:options error:error];
+    
+    switch (savePolicy) {
+        case SMSavePolicyNetworkThenCache:
+            return [self SM_handleDeletedObjectsWhenOnline:deletedObjects inContext:context options:options error:error];
+            break;
+        case SMSavePolicyNetworkOnly:
+            return [self SM_handleDeletedObjectsWhenOnline:deletedObjects inContext:context options:options error:error];
+            break;
+        case SMSavePolicyCacheOnly:
+            return [self SM_handleDeletedObjectsWhenOffline:deletedObjects inContext:context options:options error:error];
+            break;
+        default:
+            [NSException raise:SMExceptionInvalidArugments format:@"Attempting to handle deleted objects but passed an invalid save policy."];
+            break;
     }
 }
 
@@ -998,7 +1079,11 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     __block NSMutableArray *deletedObjectIDs = [NSMutableArray array];
     __block NSMutableArray *deletedObjectInfo = [NSMutableArray array];
     [deletedObjects enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-        NSString *primaryKey = [obj valueForKey:[obj primaryKeyField]];
+        NSString *objectPrimaryKeyField = [obj primaryKeyField];
+        if (!objectPrimaryKeyField) {
+            [NSManagedObject SM_throwExceptionNoPrimaryKeyField:obj];
+        }
+        NSString *primaryKey = [obj valueForKey:objectPrimaryKeyField];
         
         [deletedObjectIDs addObject:[obj objectID]];
         NSDictionary *objectInfo = [NSDictionary dictionaryWithObjectsAndKeys:primaryKey, ObjectID, [[obj entity] name], ObjectEntityName, nil];
@@ -1324,27 +1409,27 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     if (SM_CACHE_ENABLED) {
         id resultsToReturn = nil;
         NSError *tempError = nil;
-        SMCachePolicy policyToUse = options.cachePolicySet ? options.cachePolicy : [self.coreDataStore cachePolicy];
+        SMFetchPolicy policyToUse = options.fetchPolicySet ? options.fetchPolicy : [self.coreDataStore fetchPolicy];
         switch (policyToUse) {
-            case SMCachePolicyTryNetworkOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
+            case SMFetchPolicyNetworkOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkOnly") }
                 resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:error];
                 break;
-            case SMCachePolicyTryCacheOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
+            case SMFetchPolicyCacheOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheOnly") }
                 resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
                 break;
-            case SMCachePolicyTryNetworkElseCache:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
+            case SMFetchPolicyTryNetworkElseCache:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkElseCache") }
                 resultsToReturn = [self SM_fetchObjectsFromNetwork:fetchRequest withContext:context options:options error:&tempError];
                 if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
                     resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
                 }
                 break;
-            case SMCachePolicyTryCacheElseNetwork:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
+            case SMFetchPolicyTryCacheElseNetwork:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheElseNetwork") }
                 resultsToReturn = [self SM_fetchObjectsFromCache:fetchRequest withContext:context error:error];
-                if (*error) {
+                if (error != NULL && *error) {
                     return nil;
                 }
                 if ([resultsToReturn count] == 0) {
@@ -1360,7 +1445,12 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 break;
         }
         
-        if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch results to return are %@ with error %@", resultsToReturn, *error) }
+        if (SM_CORE_DATA_DEBUG) {
+            DLog(@"Fetch results to return are %@ with", resultsToReturn)
+            if (error != NULL && *error) {
+                DLog(@"Error to be returned is %@", *error);
+            }
+        }
         return resultsToReturn;
     } else {
         id resultsToReturn = nil;
@@ -1384,7 +1474,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     NSArray *objects = [self SM_fetchObjects:fetchCopy withContext:context options:options error:error];
     
     // Error check
-    if (*error != nil) {
+    if (error != NULL && *error != nil) {
         return nil;
     }
     
@@ -1400,24 +1490,24 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     if (SM_CACHE_ENABLED) {
         NSArray *resultsToReturn = nil;
         NSError *tempError = nil;
-        switch ([self.coreDataStore cachePolicy]) {
-            case SMCachePolicyTryNetworkOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkOnly") }
+        switch ([self.coreDataStore fetchPolicy]) {
+            case SMFetchPolicyNetworkOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkOnly") }
                 resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:error];
                 break;
-            case SMCachePolicyTryCacheOnly:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheOnly") }
+            case SMFetchPolicyCacheOnly:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheOnly") }
                 resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 break;
-            case SMCachePolicyTryNetworkElseCache:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryNetworkElseCache") }
+            case SMFetchPolicyTryNetworkElseCache:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryNetworkElseCache") }
                 resultsToReturn = [self SM_fetchCountFromNetwork:fetchRequest withContext:context options:options error:&tempError];
                 if (tempError && [tempError code] == SMErrorNetworkNotReachable) {
                     resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 }
                 break;
-            case SMCachePolicyTryCacheElseNetwork:
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMCachePolicyTryCacheElseNetwork") }
+            case SMFetchPolicyTryCacheElseNetwork:
+                if (SM_CORE_DATA_DEBUG) { DLog(@"Fetch switch: SMFetchPolicyTryCacheElseNetwork") }
                 resultsToReturn = [self SM_fetchCountFromCache:fetchRequest withContext:context error:error];
                 if (error != NULL && *error) {
                     return nil;
@@ -1493,7 +1583,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     dispatch_release(queue);
 #endif
     
-    if (*error != nil) {
+    if (error != NULL && *error != nil) {
         return nil;
     }
     
@@ -1515,14 +1605,12 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             }
         }
         
-        // Obtain the primary key for the entity
+        // Obtain the StackMob primary key for the entity
         __block NSString *primaryKeyField = nil;
-        
-        @try {
-            primaryKeyField = [fetchRequest.entity SMFieldNameForProperty:[[fetchRequest.entity propertiesByName] objectForKey:[fetchRequest.entity primaryKeyField]]];
-        }
-        @catch (NSException *exception) {
+        if ([[[[fetchRequest entity] name] lowercaseString] isEqualToString:[self.coreDataStore.session userSchema]]) {
             primaryKeyField = [self.coreDataStore.session userPrimaryKeyField];
+        } else {
+            primaryKeyField = [fetchRequest.entity SMPrimaryKeyField];
         }
         
         // For each result of the fetch
@@ -1531,7 +1619,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             id remoteID = [item objectForKey:primaryKeyField];
             
             if (!remoteID) {
-                [NSException raise:SMExceptionIncompatibleObject format:@"No key for supposed primary key field %@ for item %@", primaryKeyField, item];
+                [NSException raise:SMExceptionIncompatibleObject format:@"No value for supposed primary key field %@ for item %@", primaryKeyField, item];
             }
             
             NSManagedObjectID *sm_managedObjectID = [self newObjectIDForEntity:fetchRequest.entity referenceObject:remoteID];
@@ -1565,14 +1653,12 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         
     } else {
         
-        // Obtain the primary key for the entity
+        // Obtain the StackMob primary key for the entity
         __block NSString *primaryKeyField = nil;
-        
-        @try {
-            primaryKeyField = [fetchRequest.entity SMFieldNameForProperty:[[fetchRequest.entity propertiesByName] objectForKey:[fetchRequest.entity primaryKeyField]]];
-        }
-        @catch (NSException *exception) {
+        if ([[[[fetchRequest entity] name] lowercaseString] isEqualToString:[self.coreDataStore.session userSchema]]) {
             primaryKeyField = [self.coreDataStore.session userPrimaryKeyField];
+        } else {
+            primaryKeyField = [fetchRequest.entity SMPrimaryKeyField];
         }
         
         // For each result of the fetch
@@ -1581,7 +1667,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             id remoteID = [item objectForKey:primaryKeyField];
             
             if (!remoteID) {
-                [NSException raise:SMExceptionIncompatibleObject format:@"No key for supposed primary key field %@ for item %@", primaryKeyField, item];
+                [NSException raise:SMExceptionIncompatibleObject format:@"No value for supposed primary key field %@ for item %@", primaryKeyField, item];
             }
             
             NSManagedObjectID *sm_managedObjectID = [self newObjectIDForEntity:fetchRequest.entity referenceObject:remoteID];
@@ -1630,11 +1716,13 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     }
     
     __block NSString *primaryKeyField = nil;
-    @try {
-        primaryKeyField = [fetchRequest.entity primaryKeyField];
-    }
-    @catch (NSException *exception) {
+    if ([[[[fetchRequest entity] name] lowercaseString] isEqualToString:[self.coreDataStore.session userSchema]]) {
         primaryKeyField = [self.coreDataStore.session userPrimaryKeyField];
+    } else {
+        primaryKeyField = [fetchRequest.entity primaryKeyField];
+        if (!primaryKeyField) {
+            [NSEntityDescription SM_throwExceptionNoPrimaryKey:fetchRequest.entity];
+        }
     }
     
     __block NSMutableArray *results = [NSMutableArray array];
@@ -1648,6 +1736,19 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             
             // Allows us to always return object, faulted or not
             NSManagedObject *sm_managedObject = [context objectWithID:sm_managedObjectID];
+            
+            if (![sm_managedObject isFault]) {
+                
+                // Populate object with possibly updated cache values
+                NSMutableDictionary *objectDict = [NSMutableDictionary dictionary];
+                NSArray *attrKeys = [[[sm_managedObject entity] attributesByName] allKeys];
+                NSDictionary *attrDict = [obj dictionaryWithValuesForKeys:attrKeys];
+                [objectDict addEntriesFromDictionary:attrDict];
+                
+                [objectDict addEntriesFromDictionary:[self SM_translateCacheRelationshipsFromCacheObject:obj callingContext:context inMemoryEntity:[sm_managedObject entity]]];
+                
+                [self SM_populateManagedObject:sm_managedObject withDictionary:objectDict entity:[sm_managedObject entity]];
+            }
             
             [results addObject:sm_managedObject];
         }
@@ -1740,7 +1841,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         return nil;
     }
     
-    return [NSArray arrayWithObject:[NSNumber numberWithUnsignedInt:localCacheCount]];
+    return [NSArray arrayWithObject:[NSNumber numberWithUnsignedLong:localCacheCount]];
 }
 
 - (BOOL)containsSMPredicate:(NSPredicate *)predicate {
@@ -1876,6 +1977,9 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             primaryKeyField = [self.coreDataStore.session userPrimaryKeyField];
         } else {
             primaryKeyField = [[cacheObjectID entity] primaryKeyField];
+            if (!primaryKeyField) {
+                [NSEntityDescription SM_throwExceptionNoPrimaryKey:[cacheObjectID entity]];
+            }
         }
         
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K == %@", primaryKeyField, sm_managedObjectReferenceID];
@@ -2078,12 +2182,14 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         NSManagedObject *objectFromCache = [self.localManagedObjectContext objectWithID:cacheObjectID];
         
         // Get primary key field of relationship
-        NSString *primaryKeyField = nil;
-        @try {
-            primaryKeyField = [[relationship destinationEntity] primaryKeyField];
-        }
-        @catch (NSException *exception) {
+        __block NSString *primaryKeyField = nil;
+        if ([[[[relationship destinationEntity] name] lowercaseString] isEqualToString:[self.coreDataStore.session userSchema]]) {
             primaryKeyField = [self.coreDataStore.session userPrimaryKeyField];
+        } else {
+            primaryKeyField = [relationship.destinationEntity primaryKeyField];
+            if (!primaryKeyField) {
+                [NSEntityDescription SM_throwExceptionNoPrimaryKey:relationship.destinationEntity];
+            }
         }
         
         if ([relationship isToMany]) {
@@ -2230,6 +2336,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     return [array map:^id(id item) {
         NSString *itemId = [item SMObjectId];
         if (!itemId) {
+            // Redundant Exception
             [NSException raise:SMExceptionIncompatibleObject format:@"Item not previously assigned an object ID for it's primary key field, which is used to obtain a permanent ID for the Core Data object.  Before a call to save on the managedObjectContext, be sure to assign an object ID.  This looks something like [newManagedObject setValue:[newManagedObject assignObjectId] forKey:[newManagedObject primaryKeyField]].  The item in question is %@", item];
         }
         
@@ -2469,14 +2576,14 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             // Populate cached object
             [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:values entity:entity];
             
-            NSError *saveError = nil;
-            BOOL saveSuccess = [self SM_saveCache:&saveError];
-            if (!saveSuccess) {
-                if (SM_CORE_DATA_DEBUG) { DLog(@"Did Not Save Cache") }
-            }
-            [self SM_saveCacheMap];
-            
         }];
+        
+        NSError *saveError = nil;
+        BOOL saveSuccess = [self SM_saveCache:&saveError];
+        if (!saveSuccess) {
+            if (SM_CORE_DATA_DEBUG) { DLog(@"Did Not Save Cache") }
+        }
+        [self SM_saveCacheMap];
         
         
     }
@@ -2761,6 +2868,38 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     }
 }
 
+- (NSDictionary *)SM_translateCacheRelationshipsFromCacheObject:(NSManagedObject *)object callingContext:(NSManagedObjectContext *)context inMemoryEntity:(NSEntityDescription *)entity
+{
+    NSMutableDictionary *translatedRelationships = [NSMutableDictionary dictionary];
+    NSArray *relKeys = [[[object entity] relationshipsByName] allKeys];
+    NSDictionary *relDict = [object dictionaryWithValuesForKeys:relKeys];
+    [relDict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        if (obj != [NSNull null]) {
+            NSRelationshipDescription *relDescription = [[entity propertiesByName] valueForKey:key];
+            if ([relDescription isToMany]) {
+                NSMutableArray *translatedToManyObjects = [NSMutableArray array];
+                [(NSSet *)obj enumerateObjectsUsingBlock:^(id value, BOOL *innerStop) {
+                    NSString *relatedObjectReference = [self SM_getRemoteIDForCacheManagedObjectID:[value objectID]];
+                    NSManagedObjectID *relatedObjectID = [self newObjectIDForEntity:[relDescription destinationEntity] referenceObject:relatedObjectReference];
+                    NSManagedObject *relatedObject = [context objectWithID:relatedObjectID];
+                    if (![relatedObject isFault]) {
+                        [context refreshObject:relatedObject mergeChanges:YES];
+                    }
+                    [translatedToManyObjects addObject:relatedObjectID];
+                }];
+                [translatedRelationships setObject:translatedToManyObjects forKey:key];
+            } else {
+                NSString *relatedObjectReference = [self SM_getRemoteIDForCacheManagedObjectID:[obj objectID]];
+                NSManagedObjectID *relatedObjectID = [self newObjectIDForEntity:[relDescription destinationEntity] referenceObject:relatedObjectReference];
+                [translatedRelationships setObject:relatedObjectID forKey:key];
+            }
+        }
+        
+    }];
+    
+    return [NSDictionary dictionaryWithDictionary:translatedRelationships];
+}
+
 - (void)SM_populateManagedObject:(NSManagedObject *)object withDictionary:(NSDictionary *)dictionary entity:(NSEntityDescription *)entity
 {
     if (SM_CORE_DATA_DEBUG) {DLog()}
@@ -2819,16 +2958,19 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                     [(NSSet *)propertyValueFromSerializedDict enumerateObjectsUsingBlock:^(id obj, BOOL *stopEnum) {
                         NSManagedObject *objectToAdd = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:[self referenceObjectForObjectID:obj] entityName:[[property destinationEntity] name] createIfNeeded:YES]];
                         
-                        NSString *objectToAddPrimaryKey = nil;
+                        NSString *objectToAddPrimaryKeyField = nil;
                         if ([[[[property destinationEntity] name] lowercaseString] isEqualToString:[self.coreDataStore.session userSchema]]) {
-                            objectToAddPrimaryKey = [self.coreDataStore.session userPrimaryKeyField];
+                            objectToAddPrimaryKeyField = [self.coreDataStore.session userPrimaryKeyField];
                         } else {
-                            objectToAddPrimaryKey = [[property destinationEntity] primaryKeyField];
+                            objectToAddPrimaryKeyField = [[property destinationEntity] primaryKeyField];
+                            if (!objectToAddPrimaryKeyField) {
+                                [NSEntityDescription SM_throwExceptionNoPrimaryKey:[property destinationEntity]];
+                            }
                         }
                         
-                        if (![objectToAdd valueForKey:objectToAddPrimaryKey]) {
+                        if (![objectToAdd valueForKey:objectToAddPrimaryKeyField]) {
                             // Add a flag if this is a relationship reference
-                            [objectToAdd setValue:[NSString stringWithFormat:@"%@:nil", [self referenceObjectForObjectID:obj]] forKey:[objectToAdd primaryKeyField]];
+                            [objectToAdd setValue:[NSString stringWithFormat:@"%@:nil", [self referenceObjectForObjectID:obj]] forKey:objectToAddPrimaryKeyField];
                         }
                         [objectRelationshipSet addObject:objectToAdd];
                         
@@ -2839,32 +2981,35 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                     [objectRelationshipSet removeAllObjects];
                     [(NSSet *)propertyValueFromSerializedDict enumerateObjectsUsingBlock:^(id obj, BOOL *stopEnum) {
                         
-                        NSString *objectToAddPrimaryKey = nil;
+                        NSString *objectToAddPrimaryKeyField = nil;
                         if ([[[[property destinationEntity] name] lowercaseString] isEqualToString:[self.coreDataStore.session userSchema]]) {
-                            objectToAddPrimaryKey = [self.coreDataStore.session userPrimaryKeyField];
+                            objectToAddPrimaryKeyField = [self.coreDataStore.session userPrimaryKeyField];
                         } else {
-                            objectToAddPrimaryKey = [[property destinationEntity] primaryKeyField];
+                            objectToAddPrimaryKeyField = [[property destinationEntity] primaryKeyField];
+                            if (!objectToAddPrimaryKeyField) {
+                                [NSEntityDescription SM_throwExceptionNoPrimaryKey:[property destinationEntity]];
+                            }
                         }
                         
                         NSManagedObject *objectToAdd = nil;
                         if ([obj isKindOfClass:[NSManagedObject class]]) {
                             objectToAdd = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:[self referenceObjectForObjectID:[obj objectID]] entityName:[[property destinationEntity] name] createIfNeeded:YES]];
-                            if (![objectToAdd valueForKey:objectToAddPrimaryKey]) {
+                            if (![objectToAdd valueForKey:objectToAddPrimaryKeyField]) {
                                 // Add a flag if this is a relationship reference
-                                [objectToAdd setValue:[NSString stringWithFormat:@"%@:nil", [self referenceObjectForObjectID:[obj objectID]]] forKey:[objectToAdd primaryKeyField]];
+                                [objectToAdd setValue:[NSString stringWithFormat:@"%@:nil", [self referenceObjectForObjectID:[obj objectID]]] forKey:objectToAddPrimaryKeyField];
                             }
                         } else if ([obj isKindOfClass:[NSManagedObjectID class]]) {
                             objectToAdd = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:[self referenceObjectForObjectID:obj] entityName:[[property destinationEntity] name] createIfNeeded:YES]];
-                            if (![objectToAdd valueForKey:objectToAddPrimaryKey]) {
+                            if (![objectToAdd valueForKey:objectToAddPrimaryKeyField]) {
                                 // Add a flag if this is a relationship reference
-                                [objectToAdd setValue:[NSString stringWithFormat:@"%@:nil", [self referenceObjectForObjectID:obj]] forKey:[objectToAdd primaryKeyField]];
+                                [objectToAdd setValue:[NSString stringWithFormat:@"%@:nil", [self referenceObjectForObjectID:obj]] forKey:objectToAddPrimaryKeyField];
                             }
                         } else {
                             // String
                             objectToAdd = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:obj entityName:[[property destinationEntity] name] createIfNeeded:YES]];
-                            if (![objectToAdd valueForKey:objectToAddPrimaryKey]) {
+                            if (![objectToAdd valueForKey:objectToAddPrimaryKeyField]) {
                                 // Add a flag if this is a relationship reference
-                                [objectToAdd setValue:[NSString stringWithFormat:@"%@:nil", obj] forKey:[objectToAdd primaryKeyField]];
+                                [objectToAdd setValue:[NSString stringWithFormat:@"%@:nil", obj] forKey:objectToAddPrimaryKeyField];
                             }
                         }
                         
@@ -2876,34 +3021,37 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             
             } else {
                 // Translate StackMob ID to Cache managed object ID and store
-                NSString *objectToSetPrimaryKey = nil;
+                NSString *objectToSetPrimaryKeyField = nil;
                 if ([[[[property destinationEntity] name] lowercaseString] isEqualToString:[self.coreDataStore.session userSchema]]) {
-                    objectToSetPrimaryKey = [self.coreDataStore.session userPrimaryKeyField];
+                    objectToSetPrimaryKeyField = [self.coreDataStore.session userPrimaryKeyField];
                 } else {
-                    objectToSetPrimaryKey = [[property destinationEntity] primaryKeyField];
+                    objectToSetPrimaryKeyField = [[property destinationEntity] primaryKeyField];
+                    if (!objectToSetPrimaryKeyField) {
+                        [NSEntityDescription SM_throwExceptionNoPrimaryKey:[property destinationEntity]];
+                    }
                 }
                 
                 NSManagedObject *setObject = nil;
                 if ([propertyValueFromSerializedDict isKindOfClass:[NSManagedObject class]]) {
                     setObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:[self referenceObjectForObjectID:[propertyValueFromSerializedDict objectID]] entityName:[[property destinationEntity] name] createIfNeeded:YES]];
-                    if (![setObject valueForKey:objectToSetPrimaryKey]) {
+                    if (![setObject valueForKey:objectToSetPrimaryKeyField]) {
                         // Add a flag if this is a relationship reference
-                        [setObject setValue:[NSString stringWithFormat:@"%@:nil", [self referenceObjectForObjectID:[propertyValueFromSerializedDict objectID]]] forKey:[setObject primaryKeyField]];
+                        [setObject setValue:[NSString stringWithFormat:@"%@:nil", [self referenceObjectForObjectID:[propertyValueFromSerializedDict objectID]]] forKey:objectToSetPrimaryKeyField];
                         
                     }
                 } else if ([propertyValueFromSerializedDict isKindOfClass:[NSManagedObjectID class]]) {
                     setObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:[self referenceObjectForObjectID:propertyValueFromSerializedDict] entityName:[[property destinationEntity] name] createIfNeeded:YES]];
-                    if (![setObject valueForKey:objectToSetPrimaryKey]) {
+                    if (![setObject valueForKey:objectToSetPrimaryKeyField]) {
                         // Add a flag if this is a relationship reference
-                        [setObject setValue:[NSString stringWithFormat:@"%@:nil", [self referenceObjectForObjectID:propertyValueFromSerializedDict]] forKey:[setObject primaryKeyField]];
+                        [setObject setValue:[NSString stringWithFormat:@"%@:nil", [self referenceObjectForObjectID:propertyValueFromSerializedDict]] forKey:objectToSetPrimaryKeyField];
                         
                     }
                 } else {
                     // String
                     setObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:propertyValueFromSerializedDict entityName:[[property destinationEntity] name] createIfNeeded:YES]];
-                    if (![setObject valueForKey:objectToSetPrimaryKey]) {
+                    if (![setObject valueForKey:objectToSetPrimaryKeyField]) {
                         // Add a flag if this is a relationship reference
-                        [setObject setValue:[NSString stringWithFormat:@"%@:nil", propertyValueFromSerializedDict] forKey:[setObject primaryKeyField]];
+                        [setObject setValue:[NSString stringWithFormat:@"%@:nil", propertyValueFromSerializedDict] forKey:objectToSetPrimaryKeyField];
                         
                     }
                 }
@@ -2936,6 +3084,9 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         primaryKeyField = [self.coreDataStore.session userPrimaryKeyField];
     } else {
         primaryKeyField = [desc primaryKeyField];
+        if (!primaryKeyField) {
+            [NSEntityDescription SM_throwExceptionNoPrimaryKey:desc];
+        }
     }
     
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K == %@", primaryKeyField, remoteID];
@@ -3300,6 +3451,9 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 objectPrimaryKeyField = self.coreDataStore.session.userPrimaryKeyField;
             } else {
                 objectPrimaryKeyField = [entityDesc primaryKeyField];
+                if (!objectPrimaryKeyField) {
+                    [NSEntityDescription SM_throwExceptionNoPrimaryKey:entityDesc];
+                }
             }
             
             [fetchFromCache setPredicate:[NSPredicate predicateWithFormat:@"%K == %@", objectPrimaryKeyField, objectPrimaryKey]];
@@ -3346,7 +3500,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                     }
                         break;
                     default:
-                        [NSException raise:SMExceptionCacheError format:@"Case %d for merge policy object winner not supported.", objectToUse];
+                        [NSException raise:SMExceptionCacheError format:@"Specified merge policy not supported."];
                         break;
                 }
                 
@@ -3463,6 +3617,9 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                     objectPrimaryKeyField = self.coreDataStore.session.userPrimaryKeyField;
                 } else {
                     objectPrimaryKeyField = [entityDesc primaryKeyField];
+                    if (!objectPrimaryKeyField) {
+                        [NSEntityDescription SM_throwExceptionNoPrimaryKey:entityDesc];
+                    }
                 }
                 
                 NSFetchRequest *fetchFromCache = [[NSFetchRequest alloc] initWithEntityName:objectEntityName];
@@ -3531,7 +3688,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                         }
                             break;
                         default:
-                            [NSException raise:SMExceptionCacheError format:@"Case %d for merge policy object winner not supported.", objectToUse];
+                            [NSException raise:SMExceptionCacheError format:@"Specified merge policy not supported."];
                             break;
                     }
 
@@ -3690,7 +3847,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                         }
                             break;
                         default:
-                            [NSException raise:SMExceptionCacheError format:@"Case %d for merge policy object winner not supported.", objectToUse];
+                            [NSException raise:SMExceptionCacheError format:@"Specified merge policy not supported."];
                             break;
                     }
                     
@@ -3926,7 +4083,11 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         
         // Create object info for every deleted object
         [[self.localManagedObjectContext deletedObjects] enumerateObjectsUsingBlock:^(id deletedObject, BOOL *stop) {
-            NSString *objectID = [deletedObject valueForKey:[deletedObject primaryKeyField]];
+            NSString *deletedObjectPrimaryKeyField = [deletedObject primaryKeyField];
+            if (!deletedObjectPrimaryKeyField) {
+                [NSManagedObject SM_throwExceptionNoPrimaryKeyField:deletedObject];
+            }
+            NSString *objectID = [deletedObject valueForKey:deletedObjectPrimaryKeyField];
             NSArray *array = [objectID componentsSeparatedByString:@":"];
             objectID = [array count] > 1 ? [array objectAtIndex:0] : objectID;
             NSDictionary *objectInfo = [NSDictionary dictionaryWithObjectsAndKeys:[[deletedObject entity] name], ObjectEntityName, objectID, ObjectID, nil];
@@ -3982,7 +4143,11 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         
         // Create object info for every deleted object
         [[self.localManagedObjectContext deletedObjects] enumerateObjectsUsingBlock:^(id deletedObject, BOOL *stop) {
-            NSString *objectID = [deletedObject valueForKey:[deletedObject primaryKeyField]];
+            NSString *deletedObjectPrimaryKeyField = [deletedObject primaryKeyField];
+            if (!deletedObjectPrimaryKeyField) {
+                [NSManagedObject SM_throwExceptionNoPrimaryKeyField:deletedObject];
+            }
+            NSString *objectID = [deletedObject valueForKey:deletedObjectPrimaryKeyField];
             NSArray *array = [objectID componentsSeparatedByString:@":"];
             objectID = [array count] > 1 ? [array objectAtIndex:0] : objectID;
             NSDictionary *objectInfo = [NSDictionary dictionaryWithObjectsAndKeys:[[deletedObject entity] name], ObjectEntityName, objectID, ObjectID, nil];
@@ -4249,7 +4414,11 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     
     NSMutableDictionary *serializedDictCopy = [[*originalDictionary objectForKey:SerializedDictKey] mutableCopy];
     
-    NSString *passwordIdentifier = [self.coreDataStore.session.userIdentifierMap objectForKey:[object valueForKey:[object primaryKeyField]]];
+    NSString *objectPrimaryKeyField = [object primaryKeyField];
+    if (!objectPrimaryKeyField) {
+        [NSManagedObject SM_throwExceptionNoPrimaryKeyField:object];
+    }
+    NSString *passwordIdentifier = [self.coreDataStore.session.userIdentifierMap objectForKey:[object valueForKey:objectPrimaryKeyField]];
     
     if (!passwordIdentifier) {
         [NSException raise:SMExceptionIncompatibleObject format:@"No password identifier found for object.  This might be happening if you are using two instances of SMClient.  If you are unable to resolve yourself, please submit a support ticket to StackMob."];

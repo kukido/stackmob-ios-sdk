@@ -1,1 +1,1 @@
-../../Kiwi/Kiwi/KiwiConfiguration.h
+../../Kiwi/Classes/Core/KiwiConfiguration.h

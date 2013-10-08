@@ -34,6 +34,17 @@ describe(@"-queryForEntity:predicate:error", ^{
         error = nil;
         store = [[SMIncrementalStore alloc] init];
     });
+    
+    describe(@"multiple OR AND predicate", ^{
+        beforeEach(^{
+            predicate = [NSPredicate predicateWithFormat:@"last_name contains[c] %@", @"Kamil"];
+        });
+        it(@"returns good query", ^{
+            query = [store queryForEntity:entity predicate:predicate error:&error];
+            [[error should] beNonNil]; //predicate not supported
+            [[query should] beNonNil];
+        });
+    });
     describe(@"when the left-hand side is not a keypath", ^{
         beforeEach(^{
             predicate = [NSPredicate predicateWithFormat:@"%@ == last_name", @"Vaznaian"];

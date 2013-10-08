@@ -125,16 +125,20 @@ typedef void (^SMTokenRefreshFailureBlock)(NSError *error, SMFailureBlock origin
 ///-------------------------------
 
 /**
- Makes a request to refresh the current user session using the refresh token.
+ Initialize a user session.
  
- @param successCallbackQueue The queue to perform successBlock on.
- @param failureCallbackQueue The queue to perform failureBlock on.
- @param successBlock Upon success provides the user object.
- @param failureBlock Upon failure to refresh the session, provides the error.
+ @param version The API version of your StackMob application which this client instance should use.
+ @param httpHost The HTTP host to connect to for API requests. This includes the port if it is not 80.
+ @param httpsHost The HTTPS host to connect to for API requests. This includes the port if it is not 443.
+ @param publicKey Your StackMob application's OAuth2 public key.
+ @param userSchema The StackMob schema that has been flagged as a user object. Default is `@"user"`.
+ @param userPrimaryKeyField The StackMob primary key field name for the user object schema. Default is `@"username"`.
+ @param userPasswordField The StackMob field name for the password. Default is `@"password"`.
+ @return An instance of `SMUserSession` configured with the provided settings.
  
- @since Available in iOS SDK 1.2.0 and later.
+ @since Available in iOS SDK 2.2.0 and later.
  */
-- (void)refreshTokenWithSuccessCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(void (^)(NSDictionary *userObject))successBlock onFailure:(void (^)(NSError *error))failureBlock;
+- (id)initWithAPIVersion:(NSString *)version httpHost:(NSString *)httpHost httpsHost:(NSString *)httpsHost publicKey:(NSString *)publicKey userSchema:(NSString *)userSchema userPrimaryKeyField:(NSString *)userPrimaryKeyField userPasswordField:(NSString *)userPasswordField;
 
 /**
  Initialize a user session.
@@ -145,11 +149,54 @@ typedef void (^SMTokenRefreshFailureBlock)(NSError *error, SMFailureBlock origin
  @param userSchema The StackMob schema that has been flagged as a user object. Default is `@"user"`.
  @param userPrimaryKeyField The StackMob primary key field name for the user object schema. Default is `@"username"`.
  @param userPasswordField The StackMob field name for the password. Default is `@"password"`.
+ 
  @return An instance of `SMUserSession` configured with the provided settings.
  
  @since Available in iOS SDK 1.0.0 and later.
+ 
+ @note Deprecated in version 2.2.0. Use <initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:>
  */
-- (id)initWithAPIVersion:(NSString *)version apiHost:(NSString *)apiHost publicKey:(NSString *)publicKey userSchema:(NSString *)userSchema userPrimaryKeyField:(NSString *)userPrimaryKeyField userPasswordField:(NSString *)userPasswordField;
+- (id)initWithAPIVersion:(NSString *)version apiHost:(NSString *)apiHost publicKey:(NSString *)publicKey userSchema:(NSString *)userSchema userPrimaryKeyField:(NSString *)userPrimaryKeyField userPasswordField:(NSString *)userPasswordField __attribute__((deprecated("use method with httpHost and httpsHost parameters. First deprecated in v2.2.0.")));
+
+#pragma mark Hosts
+///-------------------------------
+/// @name Get Hosts
+///-------------------------------
+
+/**
+ Returns the host and port (if not 80) used for making HTTP requests.
+ 
+ @return The HTTP host for API requests.
+ 
+ @since Available in iOS SDK 2.2.0 and later.
+ */
+- (NSString *)getHttpHost;
+
+/**
+ Returns the host and port (if not 443) used for making HTTPS requests.
+ 
+ @return The HTTPS host for API requests.
+ 
+ @since Available in iOS SDK 2.2.0 and later.
+ */
+- (NSString *)getHttpsHost;
+
+#pragma mark Refresh
+///-------------------------------
+/// @name Refresh Session
+///-------------------------------
+
+/**
+ Makes a request to refresh the current user session using the refresh token.
+ 
+ @param successCallbackQueue The queue to perform successBlock on.
+ @param failureCallbackQueue The queue to perform failureBlock on.
+ @param successBlock Upon success provides the user object.
+ @param failureBlock Upon failure to refresh the session, provides the error.
+ 
+ @since Available in iOS SDK 1.2.0 and later.
+ */
+- (void)refreshTokenWithSuccessCallbackQueue:(dispatch_queue_t)successCallbackQueue failureCallbackQueue:(dispatch_queue_t)failureCallbackQueue onSuccess:(void (^)(NSDictionary *userObject))successBlock onFailure:(void (^)(NSError *error))failureBlock;
 
 #pragma mark Internal
 ///-------------------------------
@@ -329,9 +376,11 @@ typedef void (^SMTokenRefreshFailureBlock)(NSError *error, SMFailureBlock origin
  Internal method used for changing API hosts, triggered by `SMClient`.
  
  @param apiHost The new host.
+ @param port The port, if not 80/443.
+ @param scheme The scheme for this host (http or https).
  
- @since Available in iOS SDK 1.0.0 and later.
+ @since Available in iOS SDK 2.2.0 and later.
  */
-- (void)setNewAPIHost:(NSString *)apiHost;
+- (void)setNewAPIHost:(NSString *)apiHost port:(NSNumber *)port scheme:(NSString *)scheme;
 
 @end

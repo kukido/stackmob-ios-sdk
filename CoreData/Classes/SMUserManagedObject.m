@@ -66,14 +66,22 @@
         [NSException raise:@"SMKeychainSaveUnsuccessful" format:@"Password could not be saved to keychain"];
     }
     
-    [self.client.session.userIdentifierMap setObject:passwordIdentifier forKey:[self valueForKey:[self primaryKeyField]]];
+    NSString *primaryKeyField = [self primaryKeyField];
+    if (!primaryKeyField) {
+        [NSManagedObject SM_throwExceptionNoPrimaryKeyField:self];
+    }
+    [self.client.session.userIdentifierMap setObject:passwordIdentifier forKey:[self valueForKey:primaryKeyField]];
     [self.client.session SMSaveUserIdentifierMap];
     
 }
 
 - (void)removePassword
 {
-    NSString *primaryKeyValue = [self valueForKey:[self primaryKeyField]];
+    NSString *primaryKeyField = [self primaryKeyField];
+    if (!primaryKeyField) {
+        [NSManagedObject SM_throwExceptionNoPrimaryKeyField:self];
+    }
+    NSString *primaryKeyValue = [self valueForKey:primaryKeyField];
     NSString *passwordIdentifier = [self.client.session.userIdentifierMap objectForKey:primaryKeyValue];
     if (passwordIdentifier) {
         [self.client.session.userIdentifierMap removeObjectForKey:primaryKeyValue];

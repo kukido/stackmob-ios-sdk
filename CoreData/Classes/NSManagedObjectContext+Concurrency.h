@@ -50,6 +50,7 @@
  ## Hooking Up to the Chain Of Contexts ##
  
  If you create your own context and make it a child of a context provided by <SMCoreDataStore>, and you plan to save on your created context, use <setContextShouldObtainPermanentIDsBeforeSaving:> so that permanent IDs for newly inserted objects are created on your child context level.  Otherwise objects in your context will appear to have temporary IDs even after they have been saved!
+ 
  <a name="pr_options"></a>
  ## Per Request Options ##
  
@@ -58,6 +59,9 @@
  **Note:** Not all options provided by the SMRequestOptions class are taken into account during save/fetch requests.  The following options are currently safe to customize and will override the default for the duration of the request:
  
  * isSecure property (HTTPS)
+ * savePolicy (saves only)
+ * fetchPolicy (fetches only)
+ * cacheResults (fetches only)
  
  Customizing other options can result in unexpected requests, which can lead to save/fetch failures.
  

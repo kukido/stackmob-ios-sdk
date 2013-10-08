@@ -29,6 +29,9 @@
 #define DEFAULT_PRIMARY_KEY_FIELD_NAME @"username"
 #define DEFAULT_PASSWORD_FIELD_NAME @"password"
 
+extern NSString *const SMDefaultHostsKey;
+extern NSString *const SMRedirectedHostsKey;
+
 /**
  `SMClient` provides a high level interface to interacting with StackMob. A new client must be given, at the very least, an API version and public key in order to communicate with your StackMob application.
  
@@ -131,9 +134,12 @@
  The host to connect to for API requests. 
  
  Default is `api.stackmob.com`.
+ 
  @since Available in iOS SDK 1.0.0 and later.
+ 
+ @note Deprecated in version 2.2.0. Use the `getHttpHost` and `getHttpsHost` methods of the `session` property.
  */
-@property(nonatomic, copy) NSString *apiHost;
+@property(nonatomic, copy) NSString *apiHost __attribute__((deprecated("use getHttpHost and getHttpsHost methods of session property. First deprecated in v2.2.0.")));
 
 /**
  Your StackMob application's OAuth2 public key.
@@ -202,10 +208,21 @@
 + (SMClient *)defaultClient;
 
 /**
+ Initialize with only the most basic parameters and defaults for the rest.
+ 
+ @param appAPIVersion The API version of your StackMob application which this client instance should use.
+ @param publicKey Your StackMob application's OAuth2 public key.
+ 
+ @return An instance of `SMClient`.
+ @since Available in iOS SDK 1.0.0 and later.
+ */
+- (id)initWithAPIVersion:(NSString *)appAPIVersion publicKey:(NSString *)publicKey;
+
+/**
  Initialize specifying all parameters.
  
  @param appAPIVersion The API version of your StackMob application which this client instance should use.
- @param apiHost The host to connect to for API requests. Default is `api.stackmob.com`.
+ @param apiHost The host (and optionally port) to connect to for API requests. Default is `api.stackmob.com`.
  @param publicKey Your StackMob application's OAuth2 public key.
  @param userSchema The StackMob schema that has been marked as a user object. Default is `@"user"`.
  @param userPrimaryKeyField The StackMob primary key field name for the user object schema. Default is `@"username"`.
@@ -222,15 +239,27 @@
        userPasswordField:(NSString *)userPasswordField;
 
 /**
- Initialize with only the most basic parameters and defaults for the rest.
+ Initialize specifying all parameters.
  
  @param appAPIVersion The API version of your StackMob application which this client instance should use.
+ @param httpHost The HTTP host to connect to for API requests. This includes the port if it is not 80.
+ @param httpsHost The HTTPS host to connect to for API requests. This includes the port if it is not 443.
  @param publicKey Your StackMob application's OAuth2 public key.
+ @param userSchema The StackMob schema that has been marked as a user object. Default is `@"user"`.
+ @param userPrimaryKeyField The StackMob primary key field name for the user object schema. Default is `@"username"`.
+ @param userPasswordField The StackMob field name for the password. Default is `@"password"`.
  
  @return An instance of `SMClient`.
- @since Available in iOS SDK 1.0.0 and later.
+ 
+ @since Available in iOS SDK 2.2.0 and later.
  */
-- (id)initWithAPIVersion:(NSString *)appAPIVersion publicKey:(NSString *)publicKey;
+- (id)initWithAPIVersion:(NSString *)appAPIVersion
+                httpHost:(NSString *)httpHost
+               httpsHost:(NSString *)httpsHost
+               publicKey:(NSString *)publicKey
+              userSchema:(NSString *)userSchema
+     userPrimaryKeyField:(NSString *)userPrimaryKeyField
+       userPasswordField:(NSString *)userPasswordField;
 
 #pragma mark Datastore
 ///-------------------------------
@@ -568,6 +597,23 @@
                              onSuccess:(SMResultSuccessBlock)successBlock
                              onFailure:(SMFailureBlock)failureBlock;
 
+#pragma mark API Host
+///-------------------------------
+/// @name Set Redirected API Host
+///-------------------------------
+
+/**
+ Sets a new API Host with the option to persist the host to user defaults. This is used internally when requests are sent a redirect response.
+ 
+ @param apiHost The API host to direct future requests to.
+ @param port The port to direct future requests to, or nil if the default 80/443 should be used.
+ @param scheme The scheme for this host, either http or https.
+ @param permanent Whether the host should be persisted to user defaults and used during subsequent launches.
+ 
+ @since Available in iOS SDK 2.2.0 and later.
+ */
+- (void)setRedirectedAPIHost:(NSString *)apiHost port:(NSNumber *)port scheme:(NSString *)scheme permanent:(BOOL)permanent;
+
 #pragma mark Facebook
 ///-------------------------------
 /// @name Create a User with Facebook
@@ -726,9 +772,9 @@
  @param successBlock <i>typedef void (^SMResultSuccessBlock)(NSDictionary *result)</i>. A block object to execute upon successful login with the user object for the logged in user.
  @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i>. A block object to execute upon failure.
  @since Available in iOS SDK 1.0.0 and later.
- @note Deprecated in version 1.4.0. Use <loginWithFacebookToken:createUserIfNeeded:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:>.
+ @note Deprecated in version 1.4.0. Use <loginWithFacebookToken:createUserIfNeeded:usernameForCreate:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:>.
  */
-- (void)loginWithFacebookToken:(NSString *)fbToken options:(SMRequestOptions *)options onSuccess:(SMResultSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock __deprecated;
+- (void)loginWithFacebookToken:(NSString *)fbToken options:(SMRequestOptions *)options onSuccess:(SMResultSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock __attribute__((deprecated("use method with createUserIfNeeded parameter. First deprecated in v1.4.0.")));
 
 /**
  Login a user to your app with a Facebook token. Includes parameter for automatically creating a user if one associated with the provided token does not exist, as well as parameters for including request options and callback queues.
@@ -1012,7 +1058,7 @@
                 twitterSecret:(NSString *)twitterSecret
                   options:(SMRequestOptions *)options
                     onSuccess:(SMResultSuccessBlock)successBlock
-                    onFailure:(SMFailureBlock)failureBlock __deprecated;
+                    onFailure:(SMFailureBlock)failureBlock __attribute__((deprecated("use method with createUserIfNeeded parameter. First deprecated in v1.4.0.")));
 
 /**
  Login a user to your app with twitter credentials. Includes parameter for automatically creating a user if one associated with the provided token does not exist, as well as parameters for including request options and callback queues.
@@ -1237,7 +1283,7 @@
        signatureTimestamp:(NSString *)signatureTimestamp
                   options:(SMRequestOptions *)options
                 onSuccess:(SMResultSuccessBlock)successBlock
-                onFailure:(SMFailureBlock)failureBlock __deprecated;
+                onFailure:(SMFailureBlock)failureBlock __attribute__((deprecated("use method with callback queue  parameters. First deprecated in v1.4.0.")));
 
 /**
  Login with Gigya with options parameter.

@@ -18,6 +18,9 @@
 #import "StackMob.h"
 #import "NSManagedObject+StackMobSerialization.h"
 
+#define SLEEP_TIME 3
+#define SLEEP_TIME_MIN 1
+
 typedef void (^SynchronousFetchBlock)(NSArray *results, NSError *error);
 typedef void (^SynchronousErrorBlock)(NSError *error);
 

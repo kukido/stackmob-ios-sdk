@@ -72,10 +72,12 @@
 /**
  Initialize method used by <SMUserSession>.
  @param version The API version of your StackMob application which this client instance should use.
- @param scheme Either http or https
+ @param scheme Either http or https.
  @param apiHost The host to connect to for API requests.
  @param publicKey Your StackMob application's OAuth2 public key.
- @return An instance of `SMOAuth2Client`
+ 
+ @return An instance of `SMOAuth2Client`.
+ 
  @since Available in iOS SDK 1.0.0 and later.
  */
 - (id)initWithAPIVersion:(NSString *)version 

@@ -87,7 +87,8 @@ describe(@"simple configuration", ^{
     
     describe(@"API host", ^{
         it(@"should default to stackmob.com", ^{
-            [[[client apiHost] should] equal:DEFAULT_API_HOST];
+            [[[[client session] getHttpHost] should] equal:DEFAULT_API_HOST];
+            [[[[client session] getHttpsHost] should] equal:DEFAULT_API_HOST];
         });
     });
     
@@ -170,7 +171,8 @@ describe(@"complex configuration", ^{
     
     describe(@"API host", ^{
         it(@"should be set", ^{
-            [[[client apiHost] should] equal:apiHost];
+            [[[[client session] getHttpHost] should] equal:apiHost];
+            [[[[client session] getHttpsHost] should] equal:apiHost];
         });
     });
     
@@ -275,33 +277,33 @@ describe(@"login with SM username and password", ^{
     
 
     it(@"should fail with nil username", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client loginWithUsername:nil password:@"1234"  onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });    
     
     it(@"should fail with nil password", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client loginWithUsername:@"matt" password:nil onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });  
 });
 
@@ -331,48 +333,48 @@ describe(@"login with SM username, temporary password, and new password", ^{
     
     
     it(@"should fail with nil username", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client loginWithUsername:nil temporaryPassword:@"1234" settingNewPassword:@"12345"  onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });    
     
     it(@"should fail with nil password", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client loginWithUsername:@"matt" temporaryPassword:nil settingNewPassword:@"12345"  onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });  
     
     it(@"should fail with nil new password", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client loginWithUsername:@"matt" temporaryPassword:@"1234" settingNewPassword:nil onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });  
 });
 
@@ -424,33 +426,33 @@ describe(@"refreshLogin", ^{
     
     
     it(@"should fail with nil username", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client loginWithUsername:nil password:@"1234"  onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });    
     
     it(@"should fail with nil password", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client loginWithUsername:@"matt" password:nil onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });  
 
 });
@@ -509,18 +511,18 @@ describe(@"forgot password", ^{
 
     
     it(@"should fail with nil username", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client sendForgotPaswordEmailForUser:nil onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });    
 });
 
@@ -555,33 +557,33 @@ describe(@"reset password", ^{
     
     
     it(@"should fail with nil old password", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client changeLoggedInUserPasswordFrom:nil to:@"bar" onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });    
     
     it(@"should fail with nil new password", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client changeLoggedInUserPasswordFrom:@"foo" to:nil onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });  
 });
 
@@ -600,18 +602,18 @@ describe(@"loginWithFacebook", ^{
         [client loginWithFacebookToken:@"foo" onSuccess:nil onFailure:nil];
     });  
     it(@"should fail with nil token", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client loginWithFacebookToken:nil onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });  
 });
 
@@ -629,18 +631,18 @@ describe(@"createWithFacebook", ^{
         [client loginWithFacebookToken:@"foo" onSuccess:nil onFailure:nil];
     });  
     it(@"should fail with nil token", ^{
-        __block BOOL failureBlockCalled = NO;
-        __block BOOL successBlockCalled = NO;
+        __block int failureBlockCalled = 0;
+        __block int successBlockCalled = 0;
         [client loginWithFacebookToken:nil onSuccess:^(NSDictionary *responseObject){
-            successBlockCalled = YES;
+            successBlockCalled = 1;
         } onFailure:^(NSError *error) {
             [error shouldNotBeNil];
             [[error.domain should] equal:SMErrorDomain];
             [[theValue(error.code) should] equal:theValue(SMErrorInvalidArguments)];
-            failureBlockCalled = YES;
+            failureBlockCalled = 1;
         }];
-        [[theValue(successBlockCalled) should] beNo];
-        [[theValue(failureBlockCalled) should] beYes];
+        [[theValue(successBlockCalled) should] equal:theValue(0)];
+        [[theValue(failureBlockCalled) should] equal:theValue(1)];
     });  
 });
 

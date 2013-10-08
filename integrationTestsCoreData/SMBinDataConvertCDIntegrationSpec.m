@@ -22,30 +22,22 @@
 #import "SMCoreDataIntegrationTestHelpers.h"
 #import "Superpower.h"
 #import "SMBinaryDataConversion.h"
+#import "SMTestProperties.h"
 
 SPEC_BEGIN(SMBinDataConvertCDIntegrationSpec)
 
 describe(@"SMBinDataConvertCDIntegration", ^{
-    __block NSManagedObjectContext *moc = nil;
+    __block SMTestProperties *testProperties = nil;
     __block Superpower *superpower = nil;
-    __block SMClient *client = nil;
-    __block SMCoreDataStore *cds = nil;
     beforeEach(^{
-        client = [SMIntegrationTestHelpers defaultClient];
-        [SMClient setDefaultClient:client];
-        [client setUserSchema:@"user3"];
-        NSBundle *classBundle = [NSBundle bundleForClass:[self class]];
-        NSURL *modelURL = [classBundle URLForResource:@"SMCoreDataIntegrationTest" withExtension:@"momd"];
-        NSManagedObjectModel *aModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-        cds = [client coreDataStoreWithManagedObjectModel:aModel];
-        moc = [cds contextForCurrentThread];
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+        testProperties = [[SMTestProperties alloc] init];
+        [testProperties.client setUserSchema:@"user3"];
     });
     describe(@"should successfully set binary data when translated to string", ^{
         __block NSString *dataString = nil;
         beforeEach(^{
-             [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-            superpower = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:moc];
+             [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+            superpower = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:testProperties.moc];
             NSError *error = nil;
             NSBundle *bundle = [NSBundle bundleForClass:[self class]];
             NSString* pathToImageFile = [bundle pathForResource:@"goatPic" ofType:@"jpeg"];
@@ -55,37 +47,50 @@ describe(@"SMBinDataConvertCDIntegration", ^{
             [dataString shouldNotBeNil];
             [superpower setName:@"cool"];
             [superpower setValue:dataString forKey:@"pic"];
-            [superpower setSuperpower_id:[superpower assignObjectId]];
+            [superpower assignObjectId];
         });
         it(@"should persist to StackMob and update after a refresh call", ^{
-             [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-            [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
+             [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+            [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
-                [moc refreshObject:superpower mergeChanges:YES];
+                [testProperties.moc refreshObject:superpower mergeChanges:YES];
                 NSString *picString = [superpower valueForKey:@"pic"];
                 [[[picString substringToIndex:4] should] equal:@"http"];
             }];
-            [SMCoreDataIntegrationTestHelpers executeSynchronousDelete:moc withObject:[superpower objectID] andBlock:^(NSError *error) {
+            
+            sleep(SLEEP_TIME);
+            
+            [SMCoreDataIntegrationTestHelpers executeSynchronousDelete:testProperties.moc withObject:[superpower objectID] andBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
         });
         it(@"should update the object successfully without overwriting the data", ^{
-             [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
+             [[testProperties.client.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
             __block NSString *picURL = nil;
-            [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
+            [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
-                [moc refreshObject:superpower mergeChanges:YES];
+                [testProperties.moc refreshObject:superpower mergeChanges:YES];
                 picURL = [superpower valueForKey:@"pic"];
             }];
+            
+            sleep(SLEEP_TIME);
+            
             [superpower setName:@"the coolest"];
-            [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
+            
+            [SMCoreDataIntegrationTestHelpers executeSynchronousSave:testProperties.moc withBlock:^(NSError *error) {
                 [error shouldBeNil];
                 NSString *picString = [superpower valueForKey:@"pic"];
                 [[picString should] equal:picURL];
             }];
-            [SMCoreDataIntegrationTestHelpers executeSynchronousDelete:moc withObject:[superpower objectID] andBlock:^(NSError *error) {
+            
+            sleep(SLEEP_TIME);
+            
+            [SMCoreDataIntegrationTestHelpers executeSynchronousDelete:testProperties.moc withObject:[superpower objectID] andBlock:^(NSError *error) {
                 [error shouldBeNil];
             }];
+            
+            sleep(SLEEP_TIME);
         });
     });
 });

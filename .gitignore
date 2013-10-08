@@ -16,5 +16,6 @@ profile
 *.moved-aside
 .DS_Store
 .idea/*
+*.xccheckout
 integration\ tests/StackMobCredentials.plist
 AppledocSettings.plist

@@ -37,6 +37,9 @@ describe(@"with fixtures", ^{
     beforeEach(^{
         fixturesToLoad = [NSArray arrayWithObjects:@"person", nil];
         fixtures = [SMIntegrationTestHelpers loadFixturesNamed:fixturesToLoad];
+        
+        sleep(SLEEP_TIME);
+        
         client = [SMIntegrationTestHelpers defaultClient];
         [SMClient setDefaultClient:client];
         NSBundle *classBundle = [NSBundle bundleForClass:[self class]];
@@ -52,14 +55,17 @@ describe(@"with fixtures", ^{
     afterEach(^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         [SMIntegrationTestHelpers destroyAllForFixturesNamed:fixturesToLoad];
+        
+        sleep(SLEEP_TIME);
+        
         [SMCoreDataIntegrationTestHelpers removeObserversrForMOCNotificationsWithContext:moc];
     });
     
     
     describe(@"save requests", ^{
         __block NSArray *people;
-        __block int beforeInsert;
-        __block int afterInsert;
+        __block NSInteger beforeInsert;
+        __block NSInteger afterInsert;
         
         describe(@"insert", ^{
             
@@ -69,14 +75,14 @@ describe(@"with fixtures", ^{
                     [error shouldBeNil];
                     people = results;
                     beforeInsert = [people count];
-                    DLog(@"beforeInsert is %d", beforeInsert);
+                    DLog(@"beforeInsert is %ld", (long)beforeInsert);
                 }];
                 NSManagedObject *sean = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
                 [sean setValue:@"Sean" forKey:@"first_name"];
                 [sean setValue:@"Smith" forKey:@"last_name"];
                 [sean setValue:@"StackMob" forKey:@"company"];
                 [sean setValue:[NSNumber numberWithInt:15] forKey:@"armor_class"];
-                [sean setValue:[sean assignObjectId] forKey:@"person_id"];
+                [sean assignObjectId];
                 DLog(@"inserted objects before save %@", [moc insertedObjects]);
                 [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
                     if (error != nil) {
@@ -84,6 +90,9 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(SLEEP_TIME);
+                
                 DLog(@"inserted objects after save are %@", [moc insertedObjects]);
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
                     if (error != nil) {
@@ -92,7 +101,7 @@ describe(@"with fixtures", ^{
                     }
                     people = results;
                     afterInsert = [people count];
-                    DLog(@"afterInsert is %d", afterInsert);
+                    DLog(@"afterInsert is %ld", (long)afterInsert);
                     [[theValue(afterInsert) should] equal:theValue(beforeInsert + 1)];
                 }];
             });
@@ -105,14 +114,14 @@ describe(@"with fixtures", ^{
                 [sean setValue:@"Bobberson" forKey:@"last_name"];
                 [sean setValue:@"StackMob" forKey:@"company"];
                 [sean setValue:[NSNumber numberWithInt:15] forKey:@"armor_class"];
-                [sean setValue:[sean assignObjectId] forKey:@"person_id"];
+                [sean assignObjectId];
                 
                 
                 // create superpower
                 NSManagedObject *invisibility = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:moc];
                 [invisibility setValue:@"invisibility" forKey:@"name"];
                 [invisibility setValue:[NSNumber numberWithInt:7] forKey:@"level"];
-                [invisibility setValue:[invisibility assignObjectId] forKey:@"superpower_id"];
+                [invisibility assignObjectId];
                 
                 
                 [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
@@ -122,6 +131,8 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
+                sleep(SLEEP_TIME);
+                                
                 //link superpower to person
                 [sean setValue:invisibility forKey:@"superpower"];
                 [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
@@ -130,6 +141,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(SLEEP_TIME);
                 
                 __block NSManagedObject *person;
                 __block NSManagedObject *superpower;
@@ -167,6 +180,8 @@ describe(@"with fixtures", ^{
                     [error shouldBeNil];
                     DLog(@"Did not delete superpower with error userInfo %@", [error userInfo]);
                 }];
+                
+                sleep(SLEEP_TIME);
             });
 
 
@@ -179,17 +194,17 @@ describe(@"with fixtures", ^{
                 [sean setValue:@"Bobberson" forKey:@"last_name"];
                 [sean setValue:@"StackMob" forKey:@"company"];
                 [sean setValue:[NSNumber numberWithInt:15] forKey:@"armor_class"];
-                [sean setValue:[sean assignObjectId] forKey:[sean primaryKeyField]];
+                [sean assignObjectId];
                 // create 2 interests
                 NSManagedObject *basketball = [NSEntityDescription insertNewObjectForEntityForName:@"Interest" inManagedObjectContext:moc];
                 [basketball setValue:@"basketball" forKey:@"name"];
                 [basketball setValue:[NSNumber numberWithInt:10] forKey:@"years_involved"];
-                [basketball setValue:[basketball assignObjectId] forKey:[basketball primaryKeyField]];
+                [basketball assignObjectId];
                 
                 NSManagedObject *tennis = [NSEntityDescription insertNewObjectForEntityForName:@"Interest" inManagedObjectContext:moc];
                 [tennis setValue:@"tennis" forKey:@"name"];
                 [tennis setValue:[NSNumber numberWithInt:3] forKey:@"years_involved"];
-                [tennis setValue:[tennis assignObjectId] forKey:[tennis primaryKeyField]];
+                [tennis assignObjectId];
                 
                 [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
                     if (error != nil) {
@@ -197,6 +212,9 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(SLEEP_TIME);
+                
                 // link the two
                 //[moc refreshObject:sean mergeChanges:YES];
                 [basketball setValue:sean forKey:@"person"];
@@ -210,6 +228,8 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
+                sleep(SLEEP_TIME);
+                
                 [sean setValue:@"Sean" forKey:@"first_name"];
                 
                 [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
@@ -218,6 +238,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(SLEEP_TIME);
                 
                 // fetch and check
                 __block NSString *seanId = [sean valueForKey:[sean primaryKeyField]];
@@ -267,12 +289,17 @@ describe(@"with fixtures", ^{
                     [error shouldBeNil];
                     DLog(@"Did not delete basketball with error userInfo %@",[error userInfo]);
                 }];
+                
+                sleep(SLEEP_TIME);
+                
                 [[[SMIntegrationTestHelpers defaultClient] dataStore] deleteObjectId:[tennis SMObjectId] inSchema:[tennis SMSchema] onSuccess:^(NSString *objectId, NSString *schema) {
                     DLog(@"Deleted tennis");
                 } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
                     [error shouldBeNil];
                     DLog(@"Did not delete tennis with error userInfo %@",[error userInfo]);
                 }];
+                
+                sleep(SLEEP_TIME);
                 
             });
             
@@ -284,23 +311,23 @@ describe(@"with fixtures", ^{
                 [bob setValue:@"Bobberson" forKey:@"last_name"];
                 [bob setValue:@"StackMob" forKey:@"company"];
                 [bob setValue:[NSNumber numberWithInt:15] forKey:@"armor_class"];
-                [bob setValue:[bob assignObjectId] forKey:[bob primaryKeyField]];
+                [bob assignObjectId];
                 
                 NSManagedObject *jack = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
                 [jack setValue:@"Jack" forKey:@"first_name"];
                 [jack setValue:@"Jackerson" forKey:@"last_name"];
                 [jack setValue:@"StackMob" forKey:@"company"];
                 [jack setValue:[NSNumber numberWithInt:20] forKey:@"armor_class"];
-                [jack setValue:[jack assignObjectId] forKey:[jack primaryKeyField]];
+                [jack assignObjectId];
                 
                 // make 2 favorite objects
                 NSManagedObject *blueBottle = [NSEntityDescription insertNewObjectForEntityForName:@"Favorite" inManagedObjectContext:moc];
                 [blueBottle setValue:@"coffee" forKey:@"genre"];
-                [blueBottle setValue:[blueBottle assignObjectId] forKey:[blueBottle primaryKeyField]];
+                [blueBottle assignObjectId];
                 
                 NSManagedObject *batman = [NSEntityDescription insertNewObjectForEntityForName:@"Favorite" inManagedObjectContext:moc];
                 [batman setValue:@"movies" forKey:@"genre"];
-                [batman setValue:[batman assignObjectId] forKey:[batman primaryKeyField]];
+                [batman assignObjectId];
                 
                 [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
                     if (error != nil) {
@@ -308,6 +335,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(SLEEP_TIME);
                 
                 // link bob to each of the favorites
                 NSMutableSet *set = [NSMutableSet set];
@@ -327,6 +356,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(SLEEP_TIME);
                 
                 // fetch and check
                 __block NSString *batmanId = [batman valueForKey:[batman primaryKeyField]];
@@ -435,12 +466,17 @@ describe(@"with fixtures", ^{
                     [error shouldBeNil];
                     DLog(@"Did not delete blueBottle with error userInfo %@",[error userInfo]);
                 }];
+                
+                sleep(SLEEP_TIME);
+                
                 [[[SMIntegrationTestHelpers defaultClient] dataStore] deleteObjectId:[batman SMObjectId] inSchema:[batman SMSchema] onSuccess:^(NSString *objectId, NSString *schema) {
                     DLog(@"Deleted batman");
                 } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
                     [error shouldBeNil];
                     DLog(@"Did not delete batman with error userInfo %@",[error userInfo]);
                 }];
+                
+                sleep(SLEEP_TIME);
                 
             });
 
@@ -466,6 +502,9 @@ describe(@"with fixtures", ^{
                     }
                     DLog(@"Executed syncronous update");
                 }];
+                
+                sleep(SLEEP_TIME);
+                
                 NSLog(@"updated objects after update %@", [moc updatedObjects]);
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
                     if (error != nil) {
@@ -496,6 +535,9 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(SLEEP_TIME);
+                
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
                     if (error != nil) {
                         DLog(@"Error userInfo is %@", [error userInfo]);
@@ -530,7 +572,7 @@ describe(@"with fixtures", ^{
                 // add an interest
                 NSManagedObject *batman = [NSEntityDescription insertNewObjectForEntityForName:@"Favorite" inManagedObjectContext:moc];
                 [batman setValue:@"movies" forKey:@"genre"];
-                [batman setValue:[batman assignObjectId] forKey:[batman primaryKeyField]];
+                [batman assignObjectId];
                 
                 [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
                     if (error != nil) {
@@ -538,6 +580,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(SLEEP_TIME);
                 
                 // link the interest to the person
                 NSSet *aSet = [NSSet setWithObject:firstPerson];
@@ -551,6 +595,8 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
+                sleep(SLEEP_TIME);
+                
                 // delete the person
                 [SMCoreDataIntegrationTestHelpers executeSynchronousDelete:moc withObject:[firstPerson objectID] andBlock:^(NSError *error) {
                     DLog(@"Executed syncronous delete");
@@ -559,6 +605,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(SLEEP_TIME);
                 
                 // make sure everything is cool
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:nil context:moc] andBlock:^(NSArray *results, NSError *error) {
@@ -577,6 +625,8 @@ describe(@"with fixtures", ^{
                     [error shouldBeNil];
                     DLog(@"Did not delete batman with error userInfo %@",[error userInfo]);
                 }];
+                
+                sleep(SLEEP_TIME);
                 
             });
         });
@@ -599,12 +649,12 @@ describe(@"with fixtures", ^{
                 NSManagedObject *basketball = [NSEntityDescription insertNewObjectForEntityForName:@"Interest" inManagedObjectContext:moc];
                 [basketball setValue:@"basketball" forKey:@"name"];
                 [basketball setValue:[NSNumber numberWithInt:10] forKey:@"years_involved"];
-                [basketball setValue:[basketball assignObjectId] forKey:[basketball primaryKeyField]];
+                [basketball assignObjectId];
                 
                 NSManagedObject *tennis = [NSEntityDescription insertNewObjectForEntityForName:@"Interest" inManagedObjectContext:moc];
                 [tennis setValue:@"tennis" forKey:@"name"];
                 [tennis setValue:[NSNumber numberWithInt:3] forKey:@"years_involved"];
-                [tennis setValue:[tennis assignObjectId] forKey:[tennis primaryKeyField]];
+                [tennis assignObjectId];
                 
                 [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
                     if (error != nil) {
@@ -612,6 +662,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(SLEEP_TIME);
                 
                 // link the two
                 [basketball setValue:firstPerson forKey:@"person"];
@@ -624,6 +676,8 @@ describe(@"with fixtures", ^{
                         [error shouldBeNil];
                     }
                 }];
+                
+                sleep(SLEEP_TIME);
                 
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"first_name = %@", firstPersonName];
                 [SMCoreDataIntegrationTestHelpers executeSynchronousFetch:moc withRequest:[SMCoreDataIntegrationTestHelpers makePersonFetchRequest:predicate context:moc] andBlock:^(NSArray *results, NSError *error) {
@@ -644,6 +698,8 @@ describe(@"with fixtures", ^{
                     }
                 }];
                 
+                sleep(SLEEP_TIME);
+                
                 // delete objects
                 [[[SMIntegrationTestHelpers defaultClient] dataStore] deleteObjectId:[basketball SMObjectId] inSchema:[basketball SMSchema] onSuccess:^(NSString *objectId, NSString *schema) {
                     DLog(@"Deleted basketball");
@@ -651,12 +707,17 @@ describe(@"with fixtures", ^{
                     [error shouldBeNil];
                     DLog(@"Did not delete basketball with error userInfo %@", [error userInfo]);
                 }];
+                
+                sleep(SLEEP_TIME);
+                
                 [[[SMIntegrationTestHelpers defaultClient] dataStore] deleteObjectId:[tennis SMObjectId] inSchema:[tennis SMSchema] onSuccess:^(NSString *objectId, NSString *schema) {
                     DLog(@"Deleted tennis");
                 } onFailure:^(NSError *error, NSString *objectId, NSString *schema) {
                     [error shouldBeNil];
                     DLog(@"did not delete tennis with error userInfo %@", [error userInfo]);
                 }];
+                
+                sleep(SLEEP_TIME);
 
             });
                         
@@ -684,12 +745,8 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
         [camelCaseObject setValue:@"new" forKey:@"name"];
         [camelCaseObject setValue:@"1234" forKey:@"server_id"];
         [camelCaseObject setValue:[NSNumber numberWithInt:1900] forKey:@"yearBorn"];
-        [camelCaseObject setValue:[camelCaseObject assignObjectId] forKey:[camelCaseObject primaryKeyField]];
-    });
-    afterEach(^{
-        moc = [cds contextForCurrentThread];
-        [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [moc deleteObject:camelCaseObject];
+        [camelCaseObject assignObjectId];
+        
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             if (error != nil) {
                 DLog(@"Error userInfo is %@", [error userInfo]);
@@ -697,26 +754,34 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
             }
         }];
         
+        sleep(SLEEP_TIME);
     });
-    
-    it(@"Will save without error after creation", ^{
+    afterEach(^{
+        moc = [cds contextForCurrentThread];
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
-            if (error != nil) {
-                DLog(@"Error userInfo is %@", [error userInfo]);
-                [error shouldBeNil];
-            }
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
+        NSError *theerror = nil;
+        NSArray *results = [moc executeFetchRequestAndWait:fetch error:&theerror];
+        [theerror shouldBeNil];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [moc deleteObject:obj];
         }];
+        if ([moc hasChanges]) {
+            [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
+                if (error != nil) {
+                    DLog(@"Error userInfo is %@", [error userInfo]);
+                    [error shouldBeNil];
+                }
+            }];
+            
+            sleep(SLEEP_TIME);
+        }
+        
     });
     
     it(@"Will successfully read with a predicate", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
-            if (error != nil) {
-                DLog(@"Error userInfo is %@", [error userInfo]);
-                [error shouldBeNil];
-            }
-        }];
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Random" inManagedObjectContext:moc];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
@@ -737,13 +802,13 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
         [anotherRandom setValue:@"another" forKey:@"name"];
         [anotherRandom setValue:@"1234" forKey:@"server_id"];
         [anotherRandom setValue:[NSNumber numberWithInt:2012] forKey:@"yearBorn"];
-        [anotherRandom setValue:[anotherRandom assignObjectId] forKey:[anotherRandom primaryKeyField]];
+        [anotherRandom assignObjectId];
         
         NSManagedObject *yetAnotherRandom = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:moc];
         [yetAnotherRandom setValue:@"yetAnother" forKey:@"name"];
         [yetAnotherRandom setValue:@"1234" forKey:@"server_id"];
         [yetAnotherRandom setValue:[NSNumber numberWithInt:1800] forKey:@"yearBorn"];
-        [yetAnotherRandom setValue:[yetAnotherRandom assignObjectId] forKey:[yetAnotherRandom primaryKeyField]];
+        [yetAnotherRandom assignObjectId];
         
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             if (error != nil) {
@@ -751,6 +816,8 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
         
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Random"];
         [fetchRequest setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"yearBorn" ascending:YES]]];
@@ -775,18 +842,13 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
                 [error shouldBeNil];
             }
         }];
-        NSLog(@"end of test");
+        
+        sleep(SLEEP_TIME);
         
     });
     
     it(@"Will save without error after update", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
-        [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
-            if (error != nil) {
-                DLog(@"Error userInfo is %@", [error userInfo]);
-                [error shouldBeNil];
-            }
-        }];
         [camelCaseObject setValue:[NSNumber numberWithInt:2000] forKey:@"yearBorn"];
         [SMCoreDataIntegrationTestHelpers executeSynchronousSave:moc withBlock:^(NSError *error) {
             if (error != nil) {
@@ -794,6 +856,9 @@ describe(@"Testing CRUD on an entity with camelCase property names", ^{
                 [error shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
+        
     });
      
 });
@@ -818,17 +883,17 @@ describe(@"test camel case with relationships", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:moc];
         
+        [todo assignObjectId];
         [todo setValue:@"Hello One-To-One" forKey:@"title"];
-        [todo setValue:[todo assignObjectId] forKey:[todo primaryKeyField]];
         
         category = [NSEntityDescription insertNewObjectForEntityForName:@"Category" inManagedObjectContext:moc];
         
+        [category assignObjectId];
         [category setValue:@"Work" forKey:@"name"];
-        [category setValue:[category assignObjectId] forKey:[category primaryKeyField]];
         
         
         NSError *error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -836,16 +901,20 @@ describe(@"test camel case with relationships", ^{
             DLog(@"You created a Todo and Category object!");
         }
         
+        sleep(SLEEP_TIME);
+        
         [todo setValue:category forKey:@"category"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"You created a relationship between the Todo and Category Object!");
         }
+        
+        sleep(SLEEP_TIME);
         
         [moc deleteObject:todo];
         [moc deleteObject:category];
@@ -855,6 +924,8 @@ describe(@"test camel case with relationships", ^{
                 [saveError shouldBeNil];
             }
         }];
+        
+        sleep(SLEEP_TIME);
     });
 });
 
@@ -879,38 +950,42 @@ describe(@"Updating existing object relationship fields to nil", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         // create person and superpower
         person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        [person assignObjectId];
         
         superpower = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:moc];
-        [superpower setValue:[superpower assignObjectId] forKey:[superpower primaryKeyField]];
+        [superpower assignObjectId];
         
         // save
         NSError *error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
         }
+        
+        sleep(SLEEP_TIME);
         
         // set relationship and save
         [person setValue:superpower forKey:@"superpower"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
         }
+        
+        sleep(SLEEP_TIME);
         
         // set relationship to nil and save
         [person setValue:nil forKey:@"superpower"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -918,55 +993,63 @@ describe(@"Updating existing object relationship fields to nil", ^{
             DLog(@"Saved");
         }
         
+        sleep(SLEEP_TIME);
+        
         // delete objects and save
         [moc deleteObject:person];
         [moc deleteObject:superpower];
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
         }
+        
+        sleep(SLEEP_TIME);
         
     });
     it(@"passes for one-to-many", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         // create person and superpower
         person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        [person assignObjectId];
         
         interest = [NSEntityDescription insertNewObjectForEntityForName:@"Interest" inManagedObjectContext:moc];
-        [interest setValue:[interest assignObjectId] forKey:[interest primaryKeyField]];
+        [interest assignObjectId];
         
         // save
         NSError *error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
         }
+        
+        sleep(SLEEP_TIME);
         
         // set relationship and save
         [person setValue:[NSSet setWithObject:interest] forKey:@"interests"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
         }
+        
+        sleep(SLEEP_TIME);
         
         // set relationship to nil and save
         [person setValue:nil forKey:@"interests"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -974,17 +1057,21 @@ describe(@"Updating existing object relationship fields to nil", ^{
             DLog(@"Saved");
         }
         
+        sleep(SLEEP_TIME);
+        
         // delete objects and save
         [moc deleteObject:person];
         [moc deleteObject:interest];
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
         }
+        
+        sleep(SLEEP_TIME);
     });
 });
 
@@ -1009,23 +1096,25 @@ describe(@"can update a field to null", ^{
     it(@"updates", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        [person assignObjectId];
         [person setValue:[NSNumber numberWithInt:3] forKey:@"armor_class"];
         
         // save
         NSError *error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
         }
+        
+        sleep(SLEEP_TIME);
         
         [person setValue:nil forKey:@"armor_class"];
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -1033,10 +1122,12 @@ describe(@"can update a field to null", ^{
             DLog(@"Saved");
         }
         
+        sleep(SLEEP_TIME);
+        
         // delete objects and save
         [moc deleteObject:person];
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -1044,26 +1135,29 @@ describe(@"can update a field to null", ^{
             DLog(@"Saved");
         }
 
+        sleep(SLEEP_TIME);
         
     });
     it(@"updates with relationships, too", ^{
         [[client.session.networkMonitor stubAndReturn:theValue(1)] currentNetworkStatus];
         person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        [person assignObjectId];
         [person setValue:[NSNumber numberWithInt:3] forKey:@"armor_class"];
         
         superpower = [NSEntityDescription insertNewObjectForEntityForName:@"Superpower" inManagedObjectContext:moc];
-        [superpower setValue:[superpower assignObjectId] forKey:[superpower primaryKeyField]];
+        [superpower assignObjectId];
         
         // save
         NSError *error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
         }
+        
+        sleep(SLEEP_TIME);
         
         // set relationship and save
         [person setValue:superpower forKey:@"superpower"];
@@ -1071,7 +1165,7 @@ describe(@"can update a field to null", ^{
         
         
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
@@ -1079,26 +1173,23 @@ describe(@"can update a field to null", ^{
             DLog(@"Saved");
         }
         
+        sleep(SLEEP_TIME);
+        
         error = nil;
-        if (![moc save:&error]) {
-            DLog(@"There was an error! %@", error);
-            [error shouldBeNil];
-        }
-        else {
-            DLog(@"Saved");
-        }
         
         // delete objects and save
         [moc deleteObject:person];
         [moc deleteObject:superpower];
         error = nil;
-        if (![moc save:&error]) {
+        if (![moc saveAndWait:&error]) {
             DLog(@"There was an error! %@", error);
             [error shouldBeNil];
         }
         else {
             DLog(@"Saved");
-        }        
+        }
+        
+        sleep(SLEEP_TIME);
     });
     
 });
@@ -1117,18 +1208,20 @@ describe(@"Delete propagation with Cascade Rule", ^{
     });
     it(@"properly propagates on standard delete online", ^{
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        [person assignObjectId];
         
         NSManagedObject *todo1 = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
-        [todo1 setValue:[todo1 assignObjectId] forKey:[todo1 primaryKeyField]];
+        [todo1 assignObjectId];
         NSManagedObject *todo2 = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
-        [todo2 setValue:[todo2 assignObjectId] forKey:[todo2 primaryKeyField]];
+        [todo2 assignObjectId];
         
         [person setValue:[NSSet setWithObjects:todo1, todo2, nil] forKey:@"todos"];
         
         NSError *error = nil;
         [testProperties.moc saveAndWait:&error];
         
+        sleep(SLEEP_TIME);
+                
         // Check cache map
         __block NSDictionary *lcMapResults = nil;
         NSURL *cacheMapURL = [SMCoreDataIntegrationTestHelpers SM_getStoreURLForCacheMapTableWithPublicKey:testProperties.client.publicKey];
@@ -1143,6 +1236,9 @@ describe(@"Delete propagation with Cascade Rule", ^{
         [testProperties.moc deleteObject:person];
         error = nil;
         [testProperties.moc saveAndWait:&error];
+        
+        sleep(SLEEP_TIME);
+        
                 
         lcMapResults = nil;
         lcMapResults = [SMCoreDataIntegrationTestHelpers getContentsOfFileAtPath:[cacheMapURL path]];
@@ -1156,12 +1252,12 @@ describe(@"Delete propagation with Cascade Rule", ^{
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        [person assignObjectId];
         
         NSManagedObject *todo1 = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
-        [todo1 setValue:[todo1 assignObjectId] forKey:[todo1 primaryKeyField]];
+        [todo1 assignObjectId];
         NSManagedObject *todo2 = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
-        [todo2 setValue:[todo2 assignObjectId] forKey:[todo2 primaryKeyField]];
+        [todo2 assignObjectId];
         
         [person setValue:[NSSet setWithObjects:todo1, todo2, nil] forKey:@"todos"];
         
@@ -1214,12 +1310,12 @@ describe(@"Delete propagation with Cascade Rule", ^{
         [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
         
         NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:testProperties.moc];
-        [person setValue:[person assignObjectId] forKey:[person primaryKeyField]];
+        [person assignObjectId];
         
         NSManagedObject *todo1 = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
-        [todo1 setValue:[todo1 assignObjectId] forKey:[todo1 primaryKeyField]];
+        [todo1 assignObjectId];
         NSManagedObject *todo2 = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
-        [todo2 setValue:[todo2 assignObjectId] forKey:[todo2 primaryKeyField]];
+        [todo2 assignObjectId];
         
         [person setValue:[NSSet setWithObjects:todo1, todo2, nil] forKey:@"todos"];
         

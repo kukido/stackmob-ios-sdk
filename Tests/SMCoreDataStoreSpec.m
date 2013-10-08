@@ -55,7 +55,7 @@ describe(@"SMCoreDataStore", ^{
                 NSArray *momEntities = [mom entities];
                 NSArray *cdsEntities = [[[coreDataStore persistentStoreCoordinator] managedObjectModel] entities];
                 for (NSEntityDescription *entityDescription in momEntities) {
-                    int anIndex = [cdsEntities indexOfObject:entityDescription];
+                    NSInteger anIndex = [cdsEntities indexOfObject:entityDescription];
                     [[theValue(anIndex) shouldNot] equal:theValue(NSNotFound)];
                 }
             });

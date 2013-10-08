@@ -24,13 +24,19 @@
 #import "SMRequestOptions.h"
 #import "SMError.h"
 #import "SMNetworkReachability.h"
+#import "FileManagement.h"
 
 #define FB_TOKEN_KEY @"fb_at"
 #define TW_TOKEN_KEY @"tw_tk"
 #define TW_SECRET_KEY @"tw_ts"
 #define UUID_CHAR_NUM 36
+#define HTTP @"http"
+#define HTTPS @"https"
 
 static SMClient *defaultClient = nil;
+
+NSString *const SMDefaultHostsKey = @"SMDefaultHostsKey";
+NSString *const SMRedirectedHostsKey = @"SMRedirectedHostsKey";
 
 
 @interface SMClient ()
@@ -68,18 +74,38 @@ static SMClient *defaultClient = nil;
     return defaultClient;
 }
 
+- (id)initWithAPIVersion:(NSString *)appAPIVersion publicKey:(NSString *)publicKey
+{
+    return [self initWithAPIVersion:appAPIVersion
+                            apiHost:DEFAULT_API_HOST
+                          publicKey:publicKey
+                         userSchema:DEFAULT_USER_SCHEMA
+                userPrimaryKeyField:DEFAULT_PRIMARY_KEY_FIELD_NAME
+                  userPasswordField:DEFAULT_PASSWORD_FIELD_NAME];
+}
+
 - (id)initWithAPIVersion:(NSString *)appAPIVersion 
                  apiHost:(NSString *)apiHost 
                publicKey:(NSString *)publicKey 
               userSchema:(NSString *)userSchema
      userPrimaryKeyField:(NSString *)userPrimaryKeyField
-       userPasswordField:(NSString *)userPasswordField;
+       userPasswordField:(NSString *)userPasswordField
+{
+    return [self initWithAPIVersion:appAPIVersion httpHost:apiHost httpsHost:apiHost publicKey:publicKey userSchema:userSchema userPrimaryKeyField:userPrimaryKeyField userPasswordField:userPasswordField];
+}
+
+- (id)initWithAPIVersion:(NSString *)appAPIVersion
+                httpHost:(NSString *)httpHost
+               httpsHost:(NSString *)httpsHost
+               publicKey:(NSString *)publicKey
+              userSchema:(NSString *)userSchema
+     userPrimaryKeyField:(NSString *)userPrimaryKeyField
+       userPasswordField:(NSString *)userPasswordField
 {
     self = [super init];
     if (self)
     {
         self.appAPIVersion = appAPIVersion;
-        self.apiHost = apiHost;
         self.publicKey = publicKey;
         self.userSchema = [userSchema lowercaseString];
         self.userPrimaryKeyField = userPrimaryKeyField;
@@ -97,26 +123,106 @@ static SMClient *defaultClient = nil;
             [NSException raise:@"SMClientInitializationException" format:@"Incorrect Public Key format provided.  Please check your public key to make sure you are passing the correct one, and that you are not passing nil."];
         }
         
-        self.session = [[SMUserSession alloc] initWithAPIVersion:appAPIVersion apiHost:apiHost publicKey:publicKey userSchema:userSchema userPrimaryKeyField:userPrimaryKeyField userPasswordField:userPasswordField];
+        // Pull host data from user defaults
+        NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
+        
+        NSString *defaultHostsPath = nil;
+        if (applicationName != nil) {
+            defaultHostsPath = [NSString stringWithFormat:@"%@-%@-%@", applicationName, publicKey, SMDefaultHostsKey];
+        } else {
+            defaultHostsPath = [NSString stringWithFormat:@"%@-%@", publicKey, SMDefaultHostsKey];
+        }
+        
+        NSString *redirectedHostsPath = nil;
+        if (applicationName != nil) {
+            redirectedHostsPath = [NSString stringWithFormat:@"%@-%@-%@", applicationName, publicKey, SMRedirectedHostsKey];
+        } else {
+            redirectedHostsPath = [NSString stringWithFormat:@"%@-%@", publicKey, SMRedirectedHostsKey];
+        }
+        
+        NSDictionary *defaultHosts = [[NSUserDefaults standardUserDefaults] objectForKey:defaultHostsPath];
+        NSDictionary *redirectedHosts = [[NSUserDefaults standardUserDefaults] objectForKey:redirectedHostsPath];
+        
+        
+        // Check defaults
+        NSString *hostToUseHTTP = nil;
+        NSString *hostToUseHTTPS = nil;
+        if (defaultHosts) {
+            
+            hostToUseHTTP = [self SM_getHostToUseForScheme:HTTP currentHosts:[NSDictionary dictionaryWithObjectsAndKeys:httpHost, HTTP, httpsHost, HTTPS, nil] defaultHosts:defaultHosts defaultPath:defaultHostsPath redirectedHosts:redirectedHosts redirectPath:redirectedHostsPath];
+            
+            hostToUseHTTPS = [self SM_getHostToUseForScheme:HTTPS currentHosts:[NSDictionary dictionaryWithObjectsAndKeys:httpHost, HTTP, httpsHost, HTTPS, nil] defaultHosts:[[NSUserDefaults standardUserDefaults] objectForKey:defaultHostsPath] defaultPath:defaultHostsPath redirectedHosts:[[NSUserDefaults standardUserDefaults] objectForKey:redirectedHostsPath] redirectPath:redirectedHostsPath];
+            
+        } else {
+            // Never saved current host/port to defaults
+            hostToUseHTTP = httpHost;
+            hostToUseHTTPS = httpsHost;
+            NSDictionary *defaultHostsToPersist = [NSDictionary dictionaryWithObjectsAndKeys:httpHost, HTTP, httpsHost, HTTPS, nil];
+            [[NSUserDefaults standardUserDefaults] setObject:defaultHostsToPersist forKey:defaultHostsPath];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
+        
+        self.session = [[SMUserSession alloc] initWithAPIVersion:appAPIVersion httpHost:hostToUseHTTP httpsHost:hostToUseHTTPS publicKey:publicKey userSchema:userSchema userPrimaryKeyField:userPrimaryKeyField userPasswordField:userPasswordField];
+        
+        // Assign for deprecated purposes
+        _SM_APIHost = hostToUseHTTP;
+        
         self.coreDataStore = nil;
         
         
-        if ([SMClient defaultClient] == nil)
-        {
+        if ([SMClient defaultClient] == nil) {
             [SMClient setDefaultClient:self];
         }
     }
-    return self;  
+    
+    return self;
 }
 
-- (id)initWithAPIVersion:(NSString *)appAPIVersion publicKey:(NSString *)publicKey
+/*
+ current/default/redirected hosts all in the form
+ {
+    "http" : "<host>:<port>",
+    "https" : "<host>:<port>"
+ }
+ 
+ Current and default will always have both schemes, redirected may have only one.
+ Port only attached to scheme if not 80/443.
+ 
+ */
+- (NSString *)SM_getHostToUseForScheme:(NSString *)scheme currentHosts:(NSDictionary *)currentHosts defaultHosts:(NSDictionary *)defaultHosts defaultPath:(NSString *)defaultPath redirectedHosts:(NSDictionary *)redirectedHosts redirectPath:(NSString *)redirectPath
 {
-    return [self initWithAPIVersion:appAPIVersion
-                            apiHost:DEFAULT_API_HOST 
-                          publicKey:publicKey 
-                         userSchema:DEFAULT_USER_SCHEMA
-                userPrimaryKeyField:DEFAULT_PRIMARY_KEY_FIELD_NAME
-                  userPasswordField:DEFAULT_PASSWORD_FIELD_NAME];
+    NSString *currentHost = [currentHosts objectForKey:scheme];
+    NSString *defaultHost = [defaultHosts objectForKey:scheme];
+    NSString *redirectedHost = [redirectedHosts objectForKey:scheme];
+    
+    if (![currentHost isEqualToString:defaultHost]) {
+        // Initializing with a new default, use it and clear any redirects
+        
+        NSMutableDictionary *defaultValuesCopy = [defaultHosts mutableCopy];
+        [defaultValuesCopy setObject:currentHost forKey:scheme];
+        [[NSUserDefaults standardUserDefaults] setObject:defaultValuesCopy forKey:defaultPath];
+        
+        NSMutableDictionary *redirectedValuesCopy = [redirectedHosts mutableCopy];
+        [redirectedValuesCopy removeObjectForKey:scheme];
+        [redirectedValuesCopy count] == 0 ? [[NSUserDefaults standardUserDefaults] removeObjectForKey:redirectPath] : [[NSUserDefaults standardUserDefaults] setObject:redirectedValuesCopy forKey:redirectPath];
+        
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        return currentHost;
+        
+    } else {
+        
+        // Check redirect flag
+        if (redirectedHost) {
+            // Use this value as the host for this scheme
+            return redirectedHost;
+        } else {
+            // Use currentHost for this scheme
+            return currentHost;
+        }
+    }
+    
+    return nil;
 }
 
 - (SMDataStore *)dataStore
@@ -162,11 +268,38 @@ static SMClient *defaultClient = nil;
     }
 }
 
-- (void)setApiHost:(NSString *)apiHost
+- (void)setRedirectedAPIHost:(NSString *)apiHost port:(NSNumber *)port scheme:(NSString *)scheme permanent:(BOOL)permanent
 {
-    if (![_SM_APIHost isEqualToString:apiHost]) {
-        _SM_APIHost = apiHost;
-        [self.session setNewAPIHost:apiHost];
+    
+    [self.session setNewAPIHost:apiHost port:port scheme:scheme];
+    
+    if (permanent) {
+        NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
+        
+        NSString *baseRedirectKey = nil;
+        if (applicationName != nil) {
+            baseRedirectKey = [NSString stringWithFormat:@"%@-%@-", applicationName, self.publicKey];
+        } else {
+            baseRedirectKey = [NSString stringWithFormat:@"%@-", self.publicKey];
+        }
+        
+        NSString *hostRedirectKey = [NSString stringWithFormat:@"%@%@", baseRedirectKey, SMRedirectedHostsKey];
+        
+        NSString *fullHostString = port ? [NSString stringWithFormat:@"%@:%@", apiHost, port] : apiHost;
+        
+        NSDictionary *redirectedHosts = [[NSUserDefaults standardUserDefaults] objectForKey:hostRedirectKey];
+        
+        if (redirectedHosts) {
+            // Update existing
+            NSMutableDictionary *redirectedHostsCopy = [redirectedHosts mutableCopy];
+            [redirectedHostsCopy setObject:fullHostString forKey:scheme];
+            [[NSUserDefaults standardUserDefaults] setObject:redirectedHostsCopy forKey:hostRedirectKey];
+        } else {
+            NSDictionary *redirectedHostDict = [NSDictionary dictionaryWithObjectsAndKeys:fullHostString, scheme, nil];
+            [[NSUserDefaults standardUserDefaults] setObject:redirectedHostDict forKey:hostRedirectKey];
+        }
+        
+        [[NSUserDefaults standardUserDefaults] synchronize];
     }
 }
 

@@ -23,6 +23,8 @@
 #define SM_TEST_API_VERSION @"0"
 #define SM_TEST_API_BASEURL @"http://api.stackmob.com"
 #define TEST_CUSTOM_CODE 0
+#define SLEEP_TIME 3
+#define CHECK_RECEIVE_SELECTORS 0 
 
 #define DLog(fmt, ...) NSLog((@"Performing %s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
 

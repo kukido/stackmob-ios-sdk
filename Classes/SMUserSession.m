@@ -23,6 +23,8 @@
 #define EXPIRES_IN @"expires_in"
 #define MAC_KEY @"mac_key"
 #define REFRESH_TOKEN @"refresh_token"
+#define HTTP @"http"
+#define HTTPS @"https"
 
 @interface SMUserSession ()
 
@@ -57,7 +59,8 @@
 @synthesize version = _version;
 
 - (id)initWithAPIVersion:(NSString *)version
-                 apiHost:(NSString *)apiHost
+                httpHost:(NSString *)httpHost
+               httpsHost:(NSString *)httpsHost
                publicKey:(NSString *)publicKey
               userSchema:(NSString *)userSchema
      userPrimaryKeyField:(NSString *)userPrimaryKeyField
@@ -65,9 +68,10 @@
 {
     self = [super init];
     if (self) {
-        self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"http" apiHost:apiHost publicKey:publicKey];
-        self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:@"https" apiHost:apiHost publicKey:publicKey];
-        self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiHost]]];
+        self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:HTTP apiHost:httpHost publicKey:publicKey];
+        self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:version scheme:HTTPS apiHost:httpsHost publicKey:publicKey];
+        self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", HTTPS, httpsHost]]];
+        
         NSString *acceptHeader = [NSString stringWithFormat:@"application/vnd.stackmob+json; version=%@", version];
         [self.tokenClient setDefaultHeader:@"Accept" value:acceptHeader];
         [self.tokenClient setDefaultHeader:@"X-StackMob-API-Key" value:publicKey];
@@ -83,6 +87,7 @@
         self.version = version;
         
         NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
+        
         if (!applicationName) {
             applicationName = @"nil";
         }
@@ -96,6 +101,35 @@
     return self;
 }
 
+- (id)initWithAPIVersion:(NSString *)version
+                 apiHost:(NSString *)apiHost
+               publicKey:(NSString *)publicKey
+              userSchema:(NSString *)userSchema
+     userPrimaryKeyField:(NSString *)userPrimaryKeyField
+       userPasswordField:(NSString *)userPasswordField
+{
+    return [self initWithAPIVersion:version httpHost:apiHost httpsHost:apiHost publicKey:publicKey userSchema:userSchema userPrimaryKeyField:userPrimaryKeyField userPasswordField:userPasswordField];
+}
+
+- (NSString *)getHttpHost
+{
+    NSNumber *port = self.regularOAuthClient.baseURL.port;
+    if (port) {
+        return [NSString stringWithFormat:@"%@:%@", self.regularOAuthClient.baseURL.host, port];
+    } else {
+        return self.regularOAuthClient.baseURL.host;
+    }
+}
+
+- (NSString *)getHttpsHost
+{
+    NSNumber *port = self.secureOAuthClient.baseURL.port;
+    if (port) {
+        return [NSString stringWithFormat:@"%@:%@", self.secureOAuthClient.baseURL.host, port];
+    } else {
+        return self.secureOAuthClient.baseURL.host;
+    }
+}
 
 - (BOOL)accessTokenHasExpired
 {
@@ -341,20 +375,39 @@
     _tokenRefreshFailureBlock = block;
 }
 
-- (void)setNewAPIHost:(NSString *)apiHost
+- (void)setNewAPIHost:(NSString *)apiHost port:(NSNumber *)port scheme:(NSString *)scheme
 {
-    self.regularOAuthClient = nil;
-    self.secureOAuthClient = nil;
-    self.tokenClient = nil;
+    __block BOOL resetTokenClientHeaders = NO;
+    if (port) {
+        if ([scheme isEqualToString:@"https"]) {
+            self.secureOAuthClient = nil;
+            self.tokenClient = nil;
+            self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"https" apiHost:[NSString stringWithFormat:@"%@:%@", apiHost, port] publicKey:self.publicKey];
+            self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%@", apiHost, port]]];
+            resetTokenClientHeaders = YES;
+        } else {
+            self.regularOAuthClient = nil;
+            self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"http" apiHost:[NSString stringWithFormat:@"%@:%@", apiHost, port] publicKey:self.publicKey];
+        }
+    } else if ([scheme isEqualToString:@"https"]) {
+        self.secureOAuthClient = nil;
+        self.tokenClient = nil;
+        self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"https" apiHost:apiHost publicKey:self.publicKey];
+        self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiHost]]];
+        resetTokenClientHeaders = YES;
+    } else {
+        self.regularOAuthClient = nil;
+        
+        self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"http" apiHost:apiHost publicKey:self.publicKey];
+    }
     
-    self.regularOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"http" apiHost:apiHost publicKey:self.publicKey];
-    self.secureOAuthClient = [[SMOAuth2Client alloc] initWithAPIVersion:self.version scheme:@"https" apiHost:apiHost publicKey:self.publicKey];
-    self.tokenClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiHost]]];
-    NSString *acceptHeader = [NSString stringWithFormat:@"application/vnd.stackmob+json; version=%@", self.version];
-    [self.tokenClient setDefaultHeader:@"Accept" value:acceptHeader];
-    [self.tokenClient setDefaultHeader:@"X-StackMob-API-Key" value:self.publicKey];
-    [self.tokenClient setDefaultHeader:@"Content-Type" value:@"application/x-www-form-urlencoded"];
-    [self.tokenClient setDefaultHeader:@"User-Agent" value:[NSString stringWithFormat:@"StackMob/%@ (%@/%@; %@;)", SDK_VERSION, smDeviceModel(), smSystemVersion(), [[NSLocale currentLocale] localeIdentifier]]];
+    if (resetTokenClientHeaders) {
+        NSString *acceptHeader = [NSString stringWithFormat:@"application/vnd.stackmob+json; version=%@", self.version];
+        [self.tokenClient setDefaultHeader:@"Accept" value:acceptHeader];
+        [self.tokenClient setDefaultHeader:@"X-StackMob-API-Key" value:self.publicKey];
+        [self.tokenClient setDefaultHeader:@"Content-Type" value:@"application/x-www-form-urlencoded"];
+        [self.tokenClient setDefaultHeader:@"User-Agent" value:[NSString stringWithFormat:@"StackMob/%@ (%@/%@; %@;)", SDK_VERSION, smDeviceModel(), smSystemVersion(), [[NSLocale currentLocale] localeIdentifier]]];
+    }
 }
 
 

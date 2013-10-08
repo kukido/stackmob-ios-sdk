@@ -23,9 +23,9 @@ extern NSString * SMNetworkStatusDidChangeNotification;
 extern NSString * SMCurrentNetworkStatusKey;
 
 typedef enum {
-    Unknown __deprecated = -1,
-    NotReachable __deprecated = 0,
-    Reachable __deprecated = 1,
+    Unknown __attribute__((deprecated("use SMNetworkStatusUnknown. First deprecated in v2.0.0."))) = -1,
+    NotReachable __attribute__((deprecated("use SMNetworkStatusNotReachable. First deprecated in v2.0.0."))) = 0,
+    Reachable __attribute__((deprecated("use SMNetworkStatusReachable. First deprecated in v2.0.0."))) = 1,
     SMNetworkStatusUnknown = -1,
     SMNetworkStatusNotReachable = 0,
     SMNetworkStatusReachable = 1,
@@ -145,7 +145,20 @@ typedef enum {
  @param block The block to execute when the network status changes.
  
  @since Available in iOS SDK 1.1.3 and later.
+ 
+ @note Deprecated in version 2.2.0. Use <setNetworkStatusChangeBlockWithFetchPolicyReturn:>.
  */
-- (void)setNetworkStatusChangeBlockWithCachePolicyReturn:(SMCachePolicy (^)(SMNetworkStatus status))block;
+- (void)setNetworkStatusChangeBlockWithCachePolicyReturn:(SMCachePolicy (^)(SMNetworkStatus status))block __attribute__((deprecated("use setNetworkStatusChangeBlockWithFetchPolicyReturn:. First deprecated in v2.2.0.")));
+
+/**
+ Provide a block to execute whenever there is a change in network reachability.
+ 
+ The block must return an SMFetchPolicy.  This method is useful when you want to set the fetch policy based on the network status.
+ 
+ @param block The block to execute when the network status changes.
+ 
+ @since Available in iOS SDK 2.2.0 and later.
+ */
+- (void)setNetworkStatusChangeBlockWithFetchPolicyReturn:(SMFetchPolicy (^)(SMNetworkStatus status))block;
 
 @end

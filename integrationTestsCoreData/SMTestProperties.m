@@ -21,8 +21,17 @@
 @synthesize cds = _cds;
 @synthesize moc = _moc;
 
+void myExceptionHandler(NSException *exception)
+{
+    NSLog(@"EXCEPTION THROWN, %@", [exception reason]);
+    NSArray *stack = [exception callStackReturnAddresses];
+    NSLog(@"Stack trace: %@", stack);
+}
+
 - (id)init
 {
+    NSSetUncaughtExceptionHandler(&myExceptionHandler);
+    
     self = [super init];
     if (self) {
         // Client
