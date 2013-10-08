@@ -11,7 +11,7 @@
 
 **Fixes**
 
-* When fetching from the cache, object data is properly updated in-memory. This handled the issue of fetching from the cache and not seeing updated server values from the last save operation.
+* When fetching from the cache, object data is properly updated in-memory. This handled the issue of fetching from the cache and not seeing updated server values from the previous save operation.
 * Proper query string encoding for Custom Code requests. Query string parameters with special characters were causing mismatches in OAuth signatures. 
 
 **Update Notes**

@@ -139,7 +139,7 @@ extern NSString *const SMRedirectedHostsKey;
  
  @note Deprecated in version 2.2.0. Use the `getHttpHost` and `getHttpsHost` methods of the `session` property.
  */
-@property(nonatomic, copy) NSString *apiHost __deprecated;
+@property(nonatomic, copy) NSString *apiHost __attribute__((deprecated("use getHttpHost and getHttpsHost methods of session property. First deprecated in v2.2.0.")));
 
 /**
  Your StackMob application's OAuth2 public key.
@@ -772,9 +772,9 @@ extern NSString *const SMRedirectedHostsKey;
  @param successBlock <i>typedef void (^SMResultSuccessBlock)(NSDictionary *result)</i>. A block object to execute upon successful login with the user object for the logged in user.
  @param failureBlock <i>typedef void (^SMFailureBlock)(NSError *error)</i>. A block object to execute upon failure.
  @since Available in iOS SDK 1.0.0 and later.
- @note Deprecated in version 1.4.0. Use <loginWithFacebookToken:createUserIfNeeded:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:>.
+ @note Deprecated in version 1.4.0. Use <loginWithFacebookToken:createUserIfNeeded:usernameForCreate:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:>.
  */
-- (void)loginWithFacebookToken:(NSString *)fbToken options:(SMRequestOptions *)options onSuccess:(SMResultSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock __deprecated;
+- (void)loginWithFacebookToken:(NSString *)fbToken options:(SMRequestOptions *)options onSuccess:(SMResultSuccessBlock)successBlock onFailure:(SMFailureBlock)failureBlock __attribute__((deprecated("use method with createUserIfNeeded parameter. First deprecated in v1.4.0.")));
 
 /**
  Login a user to your app with a Facebook token. Includes parameter for automatically creating a user if one associated with the provided token does not exist, as well as parameters for including request options and callback queues.
@@ -1058,7 +1058,7 @@ extern NSString *const SMRedirectedHostsKey;
                 twitterSecret:(NSString *)twitterSecret
                   options:(SMRequestOptions *)options
                     onSuccess:(SMResultSuccessBlock)successBlock
-                    onFailure:(SMFailureBlock)failureBlock __deprecated;
+                    onFailure:(SMFailureBlock)failureBlock __attribute__((deprecated("use method with createUserIfNeeded parameter. First deprecated in v1.4.0.")));
 
 /**
  Login a user to your app with twitter credentials. Includes parameter for automatically creating a user if one associated with the provided token does not exist, as well as parameters for including request options and callback queues.
@@ -1283,7 +1283,7 @@ extern NSString *const SMRedirectedHostsKey;
        signatureTimestamp:(NSString *)signatureTimestamp
                   options:(SMRequestOptions *)options
                 onSuccess:(SMResultSuccessBlock)successBlock
-                onFailure:(SMFailureBlock)failureBlock __deprecated;
+                onFailure:(SMFailureBlock)failureBlock __attribute__((deprecated("use method with callback queue  parameters. First deprecated in v1.4.0.")));
 
 /**
  Login with Gigya with options parameter.

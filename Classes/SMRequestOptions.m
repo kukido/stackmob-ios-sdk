@@ -19,7 +19,7 @@
 
 @interface SMRequestOptions ()
 
-@property (nonatomic, readwrite) BOOL cachePolicySet __attribute__((deprecated));
+@property (nonatomic, readwrite) BOOL cachePolicySet __attribute__((deprecated("use fetchPolicySet. First deprecated in v2.2.0.")));
 @property (nonatomic, readwrite) BOOL fetchPolicySet;
 @property (nonatomic, readwrite) BOOL savePolicySet;
 
