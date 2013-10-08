@@ -268,14 +268,6 @@ NSString *const SMRedirectedHostsKey = @"SMRedirectedHostsKey";
     }
 }
 
-- (void)setHTTPPort:(NSNumber *)port {
-    
-}
-
-- (void)setHTTPSPort:(NSNumber *)port {
-    
-}
-
 - (void)setRedirectedAPIHost:(NSString *)apiHost port:(NSNumber *)port scheme:(NSString *)scheme permanent:(BOOL)permanent
 {
     

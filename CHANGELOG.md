@@ -5,14 +5,14 @@
 **Features**
 
 * 64-bit architecture support (arm64).
-* Save policies. With the `SMSavePolicy` property in `SMCoreDataStore` you can direct save requests to the network only (results are not cached), to the cache only (objects are marked for the next time syncWithServer is called), or the default behavior which is to the network then cache (the current behavior you're used to). See <> for more information.
+* Save policies. With the `SMSavePolicy` property in `SMCoreDataStore` you can direct save requests to the network only (results are not cached), to the cache only (objects are marked for the next time syncWithServer is called), or the default behavior which is to the network then cache (the current behavior you're used to). See the <a href="https://developer.stackmob.com/ios-sdk/offline-sync-guide#WritingtotheCache">Writing to the Cache</a> section of the Caching and Offline Sync Guide.
 * Permanent URL redirect support for API hosts.
-* Remove primaryKeyField exceptions. You might have seen the "No attribute which matches to primary key field" exceptions when you have an "All Exceptions" breakpoint set, and we've removed them so they don't interrupt your debugging sessions.
+* Remove `primaryKeyField` exceptions. You might have seen the "No attribute which matches to primary key field" exceptions when you have an "All Exceptions" breakpoint set, and we've removed them so they don't interrupt your debugging sessions.
 
 **Fixes**
 
-* When fetching from the cache, object data is properly updated in-memory.
-* Proper query string encoding with Custom Code requests.
+* When fetching from the cache, object data is properly updated in-memory. This handled the issue of fetching from the cache and not seeing updated server values from the last save operation.
+* Proper query string encoding for Custom Code requests. Query string parameters with special characters were causing mismatches in OAuth signatures. 
 
 **Update Notes**
 
