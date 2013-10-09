@@ -106,6 +106,8 @@
 	
 	<option value="//api/name/initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</option>
 	
+	<option value="//api/name/initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</option>
+	
 	<option value="//api/name/initWithAPIVersion:publicKey:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithAPIVersion:publicKey:</option>
 	
 	<option value="//api/name/isLoggedIn">&nbsp;&nbsp;&nbsp;&nbsp;- isLoggedIn</option>
@@ -172,6 +174,8 @@
 	
 	<option value="//api/name/sendForgotPaswordEmailForUser:onSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- sendForgotPaswordEmailForUser:onSuccess:onFailure:</option>
 	
+	<option value="//api/name/setRedirectedAPIHost:port:scheme:permanent:">&nbsp;&nbsp;&nbsp;&nbsp;- setRedirectedAPIHost:port:scheme:permanent:</option>
+	
 	<option value="//api/name/setTokenRefreshFailureBlock:">&nbsp;&nbsp;&nbsp;&nbsp;- setTokenRefreshFailureBlock:</option>
 	
 	<option value="//api/name/unlinkLoggedInUserFromFacebookOnSuccess:onFailure:">&nbsp;&nbsp;&nbsp;&nbsp;- unlinkLoggedInUserFromFacebookOnSuccess:onFailure:</option>
@@ -227,6 +231,8 @@
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Logout">Logout</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Resetting Password">Resetting Password</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Set Redirected API Host">Set Redirected API Host</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Create a User with Facebook">Create a User with Facebook</a></span></li>
 	
@@ -328,6 +334,8 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithAPIVersion:publicKey:">initWithAPIVersion:publicKey:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/isLoggedIn">isLoggedIn</a></span></li>
@@ -393,6 +401,8 @@
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/refreshLoginWithOnSuccess:onFailure:">refreshLoginWithOnSuccess:onFailure:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/sendForgotPaswordEmailForUser:onSuccess:onFailure:">sendForgotPaswordEmailForUser:onSuccess:onFailure:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setRedirectedAPIHost:port:scheme:permanent:">setRedirectedAPIHost:port:scheme:permanent:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setTokenRefreshFailureBlock:">setTokenRefreshFailureBlock:</a></span></li>
 	
@@ -634,6 +644,13 @@ via <a href="#//api/name/setDefaultClient:">setDefaultClient:</a>.</p></span>
 	
 </li><li>
 	<span class="tooltip">
+		<code><a href="#//api/name/initWithAPIVersion:publicKey:">&ndash;&nbsp;initWithAPIVersion:publicKey:</a></code>
+		<span class="tooltip"><p>Initialize with only the most basic parameters and defaults for the rest.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
 		<code><a href="#//api/name/initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">&ndash;&nbsp;initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</a></code>
 		<span class="tooltip"><p>Initialize specifying all parameters.</p></span>
 	</span>
@@ -641,8 +658,8 @@ via <a href="#//api/name/setDefaultClient:">setDefaultClient:</a>.</p></span>
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/initWithAPIVersion:publicKey:">&ndash;&nbsp;initWithAPIVersion:publicKey:</a></code>
-		<span class="tooltip"><p>Initialize with only the most basic parameters and defaults for the rest.</p></span>
+		<code><a href="#//api/name/initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">&ndash;&nbsp;initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</a></code>
+		<span class="tooltip"><p>Initialize specifying all parameters.</p></span>
 	</span>
 	
 	
@@ -846,6 +863,21 @@ via <a href="#//api/name/setDefaultClient:">setDefaultClient:</a>.</p></span>
 	<span class="tooltip">
 		<code><a href="#//api/name/changeLoggedInUserPasswordFrom:to:onSuccess:onFailure:">&ndash;&nbsp;changeLoggedInUserPasswordFrom:to:onSuccess:onFailure:</a></code>
 		<span class="tooltip"><p>Reset a user&rsquo;s password securely.</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
+						
+						
+						<a title="Set Redirected API Host" name="task_Set Redirected API Host"></a>
+						<h3 class="subsubtitle task-title">Set Redirected API Host</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/setRedirectedAPIHost:port:scheme:permanent:">&ndash;&nbsp;setRedirectedAPIHost:port:scheme:permanent:</a></code>
+		<span class="tooltip"><p>Sets a new API Host with the option to persist the host to user defaults. This is used internally when requests are sent a redirect response.</p></span>
 	</span>
 	
 	
@@ -1260,7 +1292,7 @@ via <a href="#//api/name/setDefaultClient:">setDefaultClient:</a>.</p></span>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>Default is <code>api.stackmob.com</code>.</p>
+		<p>Default is <code>api.stackmob.com</code>.</p><div class="note"><p><strong>Note:</strong> Deprecated in version 2.2.0. Use the <code>getHttpHost</code> and <code>getHttpsHost</code> methods of the <code>session</code> property.</p></div>
 	</div>
 	
 	
@@ -2866,7 +2898,7 @@ will result in an error. This API requires the user to be logged in as well as t
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>apiHost</em></dt>
-			<dd><p>The host to connect to for API requests. Default is <code>api.stackmob.com</code>.</p></dd>
+			<dd><p>The host (and optionally port) to connect to for API requests. Default is <code>api.stackmob.com</code>.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
@@ -2903,6 +2935,92 @@ will result in an error. This API requires the user to be logged in as well as t
 	<div class="method-subsection availability">
 		<h4 class="method-subtitle parameter-title">Availability</h4>
 		<p>Available in iOS SDK 1.0.0 and later.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMClient.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:" title="initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:"></a>
+	<h3 class="subsubtitle method-title">initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Initialize specifying all parameters.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (id)initWithAPIVersion:(NSString *)<em>appAPIVersion</em> httpHost:(NSString *)<em>httpHost</em> httpsHost:(NSString *)<em>httpsHost</em> publicKey:(NSString *)<em>publicKey</em> userSchema:(NSString *)<em>userSchema</em> userPrimaryKeyField:(NSString *)<em>userPrimaryKeyField</em> userPasswordField:(NSString *)<em>userPasswordField</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>appAPIVersion</em></dt>
+			<dd><p>The API version of your StackMob application which this client instance should use.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>httpHost</em></dt>
+			<dd><p>The HTTP host to connect to for API requests. This includes the port if it is not 80.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>httpsHost</em></dt>
+			<dd><p>The HTTPS host to connect to for API requests. This includes the port if it is not 443.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>publicKey</em></dt>
+			<dd><p>Your StackMob application&rsquo;s OAuth2 public key.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>userSchema</em></dt>
+			<dd><p>The StackMob schema that has been marked as a user object. Default is <code>@"user"</code>.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>userPrimaryKeyField</em></dt>
+			<dd><p>The StackMob primary key field name for the user object schema. Default is <code>@"username"</code>.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>userPasswordField</em></dt>
+			<dd><p>The StackMob field name for the password. Default is <code>@"password"</code>.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	<div class="method-subsection return">
+		<h4 class="method-subtitle parameter-title">Return Value</h4>
+		<p>An instance of <code>SMClient</code>.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
 	</div>
 	
 	
@@ -3868,7 +3986,7 @@ will result in an error. This API requires the user to be logged in as well as t
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>The credentials should match a existing user object that has a linked Facebook account, via either <a href="#//api/name/createUserWithFacebookToken:onSuccess:onFailure:">createUserWithFacebookToken:onSuccess:onFailure:</a>, or <a href="#//api/name/linkLoggedInUserWithFacebookToken:onSuccess:onFailure:">linkLoggedInUserWithFacebookToken:onSuccess:onFailure:</a>.</p><div class="note"><p><strong>Note:</strong> Deprecated in version 1.4.0. Use &lt;loginWithFacebookToken:createUserIfNeeded:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:>.</p></div>
+		<p>The credentials should match a existing user object that has a linked Facebook account, via either <a href="#//api/name/createUserWithFacebookToken:onSuccess:onFailure:">createUserWithFacebookToken:onSuccess:onFailure:</a>, or <a href="#//api/name/linkLoggedInUserWithFacebookToken:onSuccess:onFailure:">linkLoggedInUserWithFacebookToken:onSuccess:onFailure:</a>.</p><div class="note"><p><strong>Note:</strong> Deprecated in version 1.4.0. Use <a href="#//api/name/loginWithFacebookToken:createUserIfNeeded:usernameForCreate:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">loginWithFacebookToken:createUserIfNeeded:usernameForCreate:options:successCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a>.</p></div>
 	</div>
 	
 	
@@ -5318,6 +5436,72 @@ password. They can then use that temporary password to login with <a href="#//ap
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/setRedirectedAPIHost:port:scheme:permanent:" title="setRedirectedAPIHost:port:scheme:permanent:"></a>
+	<h3 class="subsubtitle method-title">setRedirectedAPIHost:port:scheme:permanent:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Sets a new API Host with the option to persist the host to user defaults. This is used internally when requests are sent a redirect response.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (void)setRedirectedAPIHost:(NSString *)<em>apiHost</em> port:(NSNumber *)<em>port</em> scheme:(NSString *)<em>scheme</em> permanent:(BOOL)<em>permanent</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>apiHost</em></dt>
+			<dd><p>The API host to direct future requests to.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>port</em></dt>
+			<dd><p>The port to direct future requests to, or nil if the default 80/443 should be used.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>scheme</em></dt>
+			<dd><p>The scheme for this host, either http or https.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>permanent</em></dt>
+			<dd><p>Whether the host should be persisted to user defaults and used during subsequent launches.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMClient.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/setTokenRefreshFailureBlock:" title="setTokenRefreshFailureBlock:"></a>
 	<h3 class="subsubtitle method-title">setTokenRefreshFailureBlock:</h3>
 	
@@ -6060,7 +6244,7 @@ password. They can then use that temporary password to login with <a href="#//ap
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2013 StackMob. All rights reserved. (Last updated: 2013-08-21)</span><br />
+						<p><span class="copyright">&copy; 2013 StackMob. All rights reserved. (Last updated: 2013-10-09)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						

@@ -46,6 +46,10 @@
 	
 	<option value="//api/name/cacheResults">&nbsp;&nbsp;&nbsp;&nbsp;cacheResults</option>
 	
+	<option value="//api/name/fetchPolicy">&nbsp;&nbsp;&nbsp;&nbsp;fetchPolicy</option>
+	
+	<option value="//api/name/fetchPolicySet">&nbsp;&nbsp;&nbsp;&nbsp;fetchPolicySet</option>
+	
 	<option value="//api/name/headers">&nbsp;&nbsp;&nbsp;&nbsp;headers</option>
 	
 	<option value="//api/name/isSecure">&nbsp;&nbsp;&nbsp;&nbsp;isSecure</option>
@@ -53,6 +57,10 @@
 	<option value="//api/name/numberOfRetries">&nbsp;&nbsp;&nbsp;&nbsp;numberOfRetries</option>
 	
 	<option value="//api/name/retryBlock">&nbsp;&nbsp;&nbsp;&nbsp;retryBlock</option>
+	
+	<option value="//api/name/savePolicy">&nbsp;&nbsp;&nbsp;&nbsp;savePolicy</option>
+	
+	<option value="//api/name/savePolicySet">&nbsp;&nbsp;&nbsp;&nbsp;savePolicySet</option>
 	
 	<option value="//api/name/tryRefreshToken">&nbsp;&nbsp;&nbsp;&nbsp;tryRefreshToken</option>
 	
@@ -69,11 +77,15 @@
 	
 	<option value="//api/name/optionsWithExpandDepth:">&nbsp;&nbsp;&nbsp;&nbsp;+ optionsWithExpandDepth:</option>
 	
+	<option value="//api/name/optionsWithFetchPolicy:">&nbsp;&nbsp;&nbsp;&nbsp;+ optionsWithFetchPolicy:</option>
+	
 	<option value="//api/name/optionsWithHTTPS">&nbsp;&nbsp;&nbsp;&nbsp;+ optionsWithHTTPS</option>
 	
 	<option value="//api/name/optionsWithHeaders:">&nbsp;&nbsp;&nbsp;&nbsp;+ optionsWithHeaders:</option>
 	
 	<option value="//api/name/optionsWithReturnedFieldsRestrictedTo:">&nbsp;&nbsp;&nbsp;&nbsp;+ optionsWithReturnedFieldsRestrictedTo:</option>
+	
+	<option value="//api/name/optionsWithSavePolicy:">&nbsp;&nbsp;&nbsp;&nbsp;+ optionsWithSavePolicy:</option>
 	
 	
 	
@@ -134,6 +146,10 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/cacheResults">cacheResults</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fetchPolicy">fetchPolicy</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fetchPolicySet">fetchPolicySet</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/headers">headers</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/isSecure">isSecure</a></span></li>
@@ -141,6 +157,10 @@
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/numberOfRetries">numberOfRetries</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/retryBlock">retryBlock</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/savePolicy">savePolicy</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/savePolicySet">savePolicySet</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/tryRefreshToken">tryRefreshToken</a></span></li>
 	
@@ -158,11 +178,15 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/optionsWithExpandDepth:">optionsWithExpandDepth:</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/optionsWithFetchPolicy:">optionsWithFetchPolicy:</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/optionsWithHTTPS">optionsWithHTTPS</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/optionsWithHeaders:">optionsWithHeaders:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/optionsWithReturnedFieldsRestrictedTo:">optionsWithReturnedFieldsRestrictedTo:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/optionsWithSavePolicy:">optionsWithSavePolicy:</a></span></li>
 	
 </ul></li>
 
@@ -285,15 +309,43 @@
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/cacheResults">&nbsp;&nbsp;cacheResults</a></code>
-		<span class="tooltip"><p>Whether or not any fetched or saved objects should be cached.</p></span>
+		<code><a href="#//api/name/cachePolicySet">&nbsp;&nbsp;cachePolicySet</a></code>
+		<span class="tooltip"><p>Whether or not the cache policy property has been set.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/cachePolicySet">&nbsp;&nbsp;cachePolicySet</a></code>
-		<span class="tooltip"><p>Whether or not the cache policy property has been set.</p></span>
+		<code><a href="#//api/name/fetchPolicy">&nbsp;&nbsp;fetchPolicy</a></code>
+		<span class="tooltip"><p>A fetch policy for the request these options are passed to.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/fetchPolicySet">&nbsp;&nbsp;fetchPolicySet</a></code>
+		<span class="tooltip"><p>Whether or not the fetch policy property has been set.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/savePolicy">&nbsp;&nbsp;savePolicy</a></code>
+		<span class="tooltip"><p>A save policy for the request these options are passed to.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/savePolicySet">&nbsp;&nbsp;savePolicySet</a></code>
+		<span class="tooltip"><p>Whether or not the save policy property has been set.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/cacheResults">&nbsp;&nbsp;cacheResults</a></code>
+		<span class="tooltip"><p>Whether or not any fetched or saved objects should be cached.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -387,8 +439,22 @@
 	
 </li><li>
 	<span class="tooltip">
+		<code><a href="#//api/name/optionsWithFetchPolicy:">+&nbsp;optionsWithFetchPolicy:</a></code>
+		<span class="tooltip"><p>Options that will define a fetch policy for the request it is passed to.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
 		<code><a href="#//api/name/optionsWithCacheResults:">+&nbsp;optionsWithCacheResults:</a></code>
 		<span class="tooltip"><p>Options that will define whether or not any fetched or saved objects should be cached.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/optionsWithSavePolicy:">+&nbsp;optionsWithSavePolicy:</a></code>
+		<span class="tooltip"><p>Options that will define a save policy for the request it is passed to.</p></span>
 	</span>
 	
 	
@@ -471,7 +537,7 @@
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>Use to override the current default cache policy exclusively for one request.</p><div class="note"><p><strong>Note:</strong> This option is only used for Core Data fetch requests.</p></div>
+		<p>Use to override the current default cache policy exclusively for one request.</p><div class="note"><p><strong>Note:</strong> Deprecated in version 2.2.0. Use <a href="#//api/name/fetchPolicy">fetchPolicy</a>.</p></div>
 	</div>
 	
 	
@@ -517,7 +583,7 @@
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>Default is NO. Used internally.</p>
+		<p>Default is NO. Used internally.</p><div class="note"><p><strong>Note:</strong> Deprecated in version 2.2.0. Use <a href="#//api/name/fetchPolicySet">fetchPolicySet</a>.</p></div>
 	</div>
 	
 	
@@ -568,6 +634,98 @@
 <p>Applied to saves, fetches, and any objects that need to be retrieved, such as related objects, during the process of either of these operations.</p>
 
 <p>Pass the options to one of the save or fetch methods in the <code>NSManagedObjectContext+Concurrency</code> category.</p><div class="note"><p><strong>Note:</strong> This option is only used for Core Data requests.</p></div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMRequestOptions.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/fetchPolicy" title="fetchPolicy"></a>
+	<h3 class="subsubtitle method-title">fetchPolicy</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>A fetch policy for the request these options are passed to.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>@property (nonatomic) SMFetchPolicy fetchPolicy</code></div>
+
+    
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Use to override the current default fetch policy exclusively for one request.</p><div class="note"><p><strong>Note:</strong> This option is only used for Core Data fetch requests.</p></div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMRequestOptions.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/fetchPolicySet" title="fetchPolicySet"></a>
+	<h3 class="subsubtitle method-title">fetchPolicySet</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Whether or not the fetch policy property has been set.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) BOOL fetchPolicySet</code></div>
+
+    
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Default is NO. Used internally.</p>
 	</div>
 	
 	
@@ -762,6 +920,98 @@
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/savePolicy" title="savePolicy"></a>
+	<h3 class="subsubtitle method-title">savePolicy</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>A save policy for the request these options are passed to.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>@property (nonatomic) SMSavePolicy savePolicy</code></div>
+
+    
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Use to override the current default save policy exclusively for one request.</p><div class="note"><p><strong>Note:</strong> This option is only used for Core Data save requests.</p></div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMRequestOptions.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/savePolicySet" title="savePolicySet"></a>
+	<h3 class="subsubtitle method-title">savePolicySet</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Whether or not the save policy property has been set.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) BOOL savePolicySet</code></div>
+
+    
+	
+	
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Default is NO. Used internally.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMRequestOptions.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/tryRefreshToken" title="tryRefreshToken"></a>
 	<h3 class="subsubtitle method-title">tryRefreshToken</h3>
 	
@@ -902,7 +1152,7 @@
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>Use to override the current default cache policy for a particular request.</p>
 
-<p>Pass the options to one of the fetch methods in the <code>NSManagedObjectContext+Concurrency</code> category.</p><div class="note"><p><strong>Note:</strong> This option is only used for Core Data fetch requests.</p></div>
+<p>Pass the options to one of the fetch methods in the <code>NSManagedObjectContext+Concurrency</code> category.</p><div class="note"><p><strong>Note:</strong> Deprecated in version 2.2.0. Use <a href="#//api/name/optionsWithFetchPolicy:">optionsWithFetchPolicy:</a>.</p></div>
 	</div>
 	
 	
@@ -1025,6 +1275,69 @@
 	</div>
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMRequestOptions.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/optionsWithFetchPolicy:" title="optionsWithFetchPolicy:"></a>
+	<h3 class="subsubtitle method-title">optionsWithFetchPolicy:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Options that will define a fetch policy for the request it is passed to.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>+ (SMRequestOptions *)optionsWithFetchPolicy:(SMFetchPolicy)<em>fetchPolicy</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>fetchPolicy</em></dt>
+			<dd><p>The fetch policy.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	<div class="method-subsection return">
+		<h4 class="method-subtitle parameter-title">Return Value</h4>
+		<p>An <code>SMRequestOptions</code> object with a fetch policy set.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Use to override the current default fetch policy for a particular request.</p>
+
+<p>Pass the options to one of the fetch methods in the <code>NSManagedObjectContext+Concurrency</code> category.</p><div class="note"><p><strong>Note:</strong> This option is only used for Core Data fetch requests.</p></div>
+	</div>
 	
 	
 	
@@ -1183,6 +1496,69 @@
 	</div>
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMRequestOptions.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/optionsWithSavePolicy:" title="optionsWithSavePolicy:"></a>
+	<h3 class="subsubtitle method-title">optionsWithSavePolicy:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Options that will define a save policy for the request it is passed to.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>+ (SMRequestOptions *)optionsWithSavePolicy:(SMSavePolicy)<em>savePolicy</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>savePolicy</em></dt>
+			<dd><p>The save policy.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	<div class="method-subsection return">
+		<h4 class="method-subtitle parameter-title">Return Value</h4>
+		<p>An <code>SMRequestOptions</code> object with a save policy set.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Use to override the current default save policy for a particular request.</p>
+
+<p>Pass the options to one of the save methods in the <code>NSManagedObjectContext+Concurrency</code> category.</p><div class="note"><p><strong>Note:</strong> This option is only used for Core Data save requests.</p></div>
+	</div>
 	
 	
 	
@@ -1514,7 +1890,7 @@
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2013 StackMob. All rights reserved. (Last updated: 2013-08-21)</span><br />
+						<p><span class="copyright">&copy; 2013 StackMob. All rights reserved. (Last updated: 2013-10-09)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						

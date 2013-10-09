@@ -83,7 +83,13 @@
 	
 	<option value="//api/name/eligibleForTokenRefresh:">&nbsp;&nbsp;&nbsp;&nbsp;- eligibleForTokenRefresh:</option>
 	
+	<option value="//api/name/getHttpHost">&nbsp;&nbsp;&nbsp;&nbsp;- getHttpHost</option>
+	
+	<option value="//api/name/getHttpsHost">&nbsp;&nbsp;&nbsp;&nbsp;- getHttpsHost</option>
+	
 	<option value="//api/name/initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</option>
+	
+	<option value="//api/name/initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</option>
 	
 	<option value="//api/name/oauthClientWithHTTPS:">&nbsp;&nbsp;&nbsp;&nbsp;- oauthClientWithHTTPS:</option>
 	
@@ -95,7 +101,7 @@
 	
 	<option value="//api/name/saveAccessTokenInfo:">&nbsp;&nbsp;&nbsp;&nbsp;- saveAccessTokenInfo:</option>
 	
-	<option value="//api/name/setNewAPIHost:">&nbsp;&nbsp;&nbsp;&nbsp;- setNewAPIHost:</option>
+	<option value="//api/name/setNewAPIHost:port:scheme:">&nbsp;&nbsp;&nbsp;&nbsp;- setNewAPIHost:port:scheme:</option>
 	
 	<option value="//api/name/setTokenRefreshFailureBlock:">&nbsp;&nbsp;&nbsp;&nbsp;- setTokenRefreshFailureBlock:</option>
 	
@@ -118,6 +124,10 @@
 <li role="treeitem" id="task_treeitem"><span class="nodisclosure"></span><span class="sectionName"><a href="#tasks">Tasks</a></span><ul>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Initialize">Initialize</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Get Hosts">Get Hosts</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Refresh Session">Refresh Session</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Refreshing Session">Refreshing Session</a></span></li>
 	
@@ -175,7 +185,13 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/eligibleForTokenRefresh:">eligibleForTokenRefresh:</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/getHttpHost">getHttpHost</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/getHttpsHost">getHttpsHost</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/oauthClientWithHTTPS:">oauthClientWithHTTPS:</a></span></li>
 	
@@ -187,7 +203,7 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/saveAccessTokenInfo:">saveAccessTokenInfo:</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setNewAPIHost:">setNewAPIHost:</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setNewAPIHost:port:scheme:">setNewAPIHost:port:scheme:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setTokenRefreshFailureBlock:">setTokenRefreshFailureBlock:</a></span></li>
 	
@@ -347,8 +363,8 @@
 						<ul class="task-list">
 							<li>
 	<span class="tooltip">
-		<code><a href="#//api/name/refreshTokenWithSuccessCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&ndash;&nbsp;refreshTokenWithSuccessCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></code>
-		<span class="tooltip"><p>Makes a request to refresh the current user session using the refresh token.</p></span>
+		<code><a href="#//api/name/initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">&ndash;&nbsp;initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</a></code>
+		<span class="tooltip"><p>Initialize a user session.</p></span>
 	</span>
 	
 	
@@ -356,6 +372,43 @@
 	<span class="tooltip">
 		<code><a href="#//api/name/initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">&ndash;&nbsp;initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</a></code>
 		<span class="tooltip"><p>Initialize a user session.</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
+						
+						
+						<a title="Get Hosts" name="task_Get Hosts"></a>
+						<h3 class="subsubtitle task-title">Get Hosts</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/getHttpHost">&ndash;&nbsp;getHttpHost</a></code>
+		<span class="tooltip"><p>Returns the host and port (if not 80) used for making HTTP requests.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/getHttpsHost">&ndash;&nbsp;getHttpsHost</a></code>
+		<span class="tooltip"><p>Returns the host and port (if not 443) used for making HTTPS requests.</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
+						
+						
+						<a title="Refresh Session" name="task_Refresh Session"></a>
+						<h3 class="subsubtitle task-title">Refresh Session</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/refreshTokenWithSuccessCallbackQueue:failureCallbackQueue:onSuccess:onFailure:">&ndash;&nbsp;refreshTokenWithSuccessCallbackQueue:failureCallbackQueue:onSuccess:onFailure:</a></code>
+		<span class="tooltip"><p>Makes a request to refresh the current user session using the refresh token.</p></span>
 	</span>
 	
 	
@@ -461,7 +514,7 @@
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/setNewAPIHost:">&ndash;&nbsp;setNewAPIHost:</a></code>
+		<code><a href="#//api/name/setNewAPIHost:port:scheme:">&ndash;&nbsp;setNewAPIHost:port:scheme:</a></code>
 		<span class="tooltip"><p>Internal method used for changing API hosts, triggered by <code>SMClient</code>.</p></span>
 	</span>
 	
@@ -1288,6 +1341,98 @@
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/getHttpHost" title="getHttpHost"></a>
+	<h3 class="subsubtitle method-title">getHttpHost</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Returns the host and port (if not 80) used for making HTTP requests.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (NSString *)getHttpHost</code></div>
+
+    
+	
+	
+	
+	<div class="method-subsection return">
+		<h4 class="method-subtitle parameter-title">Return Value</h4>
+		<p>The HTTP host for API requests.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMUserSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/getHttpsHost" title="getHttpsHost"></a>
+	<h3 class="subsubtitle method-title">getHttpsHost</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Returns the host and port (if not 443) used for making HTTPS requests.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (NSString *)getHttpsHost</code></div>
+
+    
+	
+	
+	
+	<div class="method-subsection return">
+		<h4 class="method-subtitle parameter-title">Return Value</h4>
+		<p>The HTTPS host for API requests.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMUserSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:" title="initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:"></a>
 	<h3 class="subsubtitle method-title">initWithAPIVersion:apiHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</h3>
 	
@@ -1350,6 +1495,97 @@
 	<div class="method-subsection availability">
 		<h4 class="method-subtitle parameter-title">Availability</h4>
 		<p>Available in iOS SDK 1.0.0 and later.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<div class="note"><p><strong>Note:</strong> Deprecated in version 2.2.0. Use <a href="#//api/name/initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:">initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</a></p></div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SMUserSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:" title="initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:"></a>
+	<h3 class="subsubtitle method-title">initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Initialize a user session.</p>
+	</div>		
+	
+    
+
+	<div class="method-subsection method-declaration"><code>- (id)initWithAPIVersion:(NSString *)<em>version</em> httpHost:(NSString *)<em>httpHost</em> httpsHost:(NSString *)<em>httpsHost</em> publicKey:(NSString *)<em>publicKey</em> userSchema:(NSString *)<em>userSchema</em> userPrimaryKeyField:(NSString *)<em>userPrimaryKeyField</em> userPasswordField:(NSString *)<em>userPasswordField</em></code></div>
+
+    
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>version</em></dt>
+			<dd><p>The API version of your StackMob application which this client instance should use.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>httpHost</em></dt>
+			<dd><p>The HTTP host to connect to for API requests. This includes the port if it is not 80.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>httpsHost</em></dt>
+			<dd><p>The HTTPS host to connect to for API requests. This includes the port if it is not 443.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>publicKey</em></dt>
+			<dd><p>Your StackMob application&rsquo;s OAuth2 public key.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>userSchema</em></dt>
+			<dd><p>The StackMob schema that has been flagged as a user object. Default is <code>@"user"</code>.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>userPrimaryKeyField</em></dt>
+			<dd><p>The StackMob primary key field name for the user object schema. Default is <code>@"username"</code>.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>userPasswordField</em></dt>
+			<dd><p>The StackMob field name for the password. Default is <code>@"password"</code>.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	<div class="method-subsection return">
+		<h4 class="method-subtitle parameter-title">Return Value</h4>
+		<p>An instance of <code>SMUserSession</code> configured with the provided settings.</p>
+	</div>
+	
+	
+	
+	<div class="method-subsection availability">
+		<h4 class="method-subtitle parameter-title">Availability</h4>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
 	</div>
 	
 	
@@ -1659,8 +1895,8 @@
 </div>
 						
 						<div class="section-method">
-	<a name="//api/name/setNewAPIHost:" title="setNewAPIHost:"></a>
-	<h3 class="subsubtitle method-title">setNewAPIHost:</h3>
+	<a name="//api/name/setNewAPIHost:port:scheme:" title="setNewAPIHost:port:scheme:"></a>
+	<h3 class="subsubtitle method-title">setNewAPIHost:port:scheme:</h3>
 	
 	
 	
@@ -1670,7 +1906,7 @@
 	
     
 
-	<div class="method-subsection method-declaration"><code>- (void)setNewAPIHost:(NSString *)<em>apiHost</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (void)setNewAPIHost:(NSString *)<em>apiHost</em> port:(NSNumber *)<em>port</em> scheme:(NSString *)<em>scheme</em></code></div>
 
     
 	
@@ -1682,6 +1918,16 @@
 			<dd><p>The new host.</p></dd>
 		</dl>
 		
+		<dl class="argument-def parameter-def">
+			<dt><em>port</em></dt>
+			<dd><p>The port, if not 80/443.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>scheme</em></dt>
+			<dd><p>The scheme for this host (http or https).</p></dd>
+		</dl>
+		
 	</div>
 	
 	
@@ -1690,7 +1936,7 @@
 	
 	<div class="method-subsection availability">
 		<h4 class="method-subtitle parameter-title">Availability</h4>
-		<p>Available in iOS SDK 1.0.0 and later.</p>
+		<p>Available in iOS SDK 2.2.0 and later.</p>
 	</div>
 	
 	
@@ -1871,7 +2117,7 @@ NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Todo
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2013 StackMob. All rights reserved. (Last updated: 2013-08-21)</span><br />
+						<p><span class="copyright">&copy; 2013 StackMob. All rights reserved. (Last updated: 2013-10-09)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						
