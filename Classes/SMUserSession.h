@@ -128,23 +128,6 @@ typedef void (^SMTokenRefreshFailureBlock)(NSError *error, SMFailureBlock origin
  Initialize a user session.
  
  @param version The API version of your StackMob application which this client instance should use.
- @param apiHost The host to connect to for API requests.
- @param publicKey Your StackMob application's OAuth2 public key.
- @param userSchema The StackMob schema that has been flagged as a user object. Default is `@"user"`.
- @param userPrimaryKeyField The StackMob primary key field name for the user object schema. Default is `@"username"`.
- @param userPasswordField The StackMob field name for the password. Default is `@"password"`.
- @return An instance of `SMUserSession` configured with the provided settings.
- 
- @since Available in iOS SDK 1.0.0 and later.
- 
- @note Deprecated in version 2.2.0. Use <initWitAPIVersion:apiHost:ports:publicKey:userSchema:userPrimaryKeyField:userPasswordField:>
- */
-- (id)initWithAPIVersion:(NSString *)version apiHost:(NSString *)apiHost publicKey:(NSString *)publicKey userSchema:(NSString *)userSchema userPrimaryKeyField:(NSString *)userPrimaryKeyField userPasswordField:(NSString *)userPasswordField __deprecated;
-
-/**
- Initialize a user session.
- 
- @param version The API version of your StackMob application which this client instance should use.
  @param httpHost The HTTP host to connect to for API requests. This includes the port if it is not 80.
  @param httpsHost The HTTPS host to connect to for API requests. This includes the port if it is not 443.
  @param publicKey Your StackMob application's OAuth2 public key.
@@ -156,6 +139,24 @@ typedef void (^SMTokenRefreshFailureBlock)(NSError *error, SMFailureBlock origin
  @since Available in iOS SDK 2.2.0 and later.
  */
 - (id)initWithAPIVersion:(NSString *)version httpHost:(NSString *)httpHost httpsHost:(NSString *)httpsHost publicKey:(NSString *)publicKey userSchema:(NSString *)userSchema userPrimaryKeyField:(NSString *)userPrimaryKeyField userPasswordField:(NSString *)userPasswordField;
+
+/**
+ Initialize a user session.
+ 
+ @param version The API version of your StackMob application which this client instance should use.
+ @param apiHost The host to connect to for API requests.
+ @param publicKey Your StackMob application's OAuth2 public key.
+ @param userSchema The StackMob schema that has been flagged as a user object. Default is `@"user"`.
+ @param userPrimaryKeyField The StackMob primary key field name for the user object schema. Default is `@"username"`.
+ @param userPasswordField The StackMob field name for the password. Default is `@"password"`.
+ 
+ @return An instance of `SMUserSession` configured with the provided settings.
+ 
+ @since Available in iOS SDK 1.0.0 and later.
+ 
+ @note Deprecated in version 2.2.0. Use <initWithAPIVersion:httpHost:httpsHost:publicKey:userSchema:userPrimaryKeyField:userPasswordField:>
+ */
+- (id)initWithAPIVersion:(NSString *)version apiHost:(NSString *)apiHost publicKey:(NSString *)publicKey userSchema:(NSString *)userSchema userPrimaryKeyField:(NSString *)userPrimaryKeyField userPasswordField:(NSString *)userPasswordField __attribute__((deprecated("use method with httpHost and httpsHost parameters. First deprecated in v2.2.0.")));
 
 #pragma mark Hosts
 ///-------------------------------

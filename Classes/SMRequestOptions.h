@@ -78,11 +78,11 @@
  
  Use to override the current default cache policy exclusively for one request.
  
- @note This option is only used for Core Data fetch requests.
- 
  @since Available in iOS SDK 2.1.0 and later.
+ 
+ @note Deprecated in version 2.2.0. Use <fetchPolicy>.
  */
-@property (nonatomic) SMCachePolicy cachePolicy __attribute__((deprecated));
+@property (nonatomic) SMCachePolicy cachePolicy __attribute__((deprecated("use fetchPolicy. First deprecated in v2.2.0.")));
 
 /**
  Whether or not the cache policy property has been set.
@@ -90,8 +90,10 @@
  Default is NO. Used internally.
  
  @since Available in iOS SDK 2.1.0 and later.
+ 
+ @note Deprecated in version 2.2.0. Use <fetchPolicySet>.
  */
-@property (nonatomic, readonly) BOOL cachePolicySet __attribute__((deprecated));
+@property (nonatomic, readonly) BOOL cachePolicySet __attribute__((deprecated("use fetchPolicySet. First deprecated in v2.2.0.")));
 
 /**
  A fetch policy for the request these options are passed to.
@@ -249,15 +251,15 @@
  
  Pass the options to one of the fetch methods in the `NSManagedObjectContext+Concurrency` category.
  
- @note This option is only used for Core Data fetch requests.
- 
  @param cachePolicy The cache policy.
  
  @return An `SMRequestOptions` object with a cache policy set.
  
  @since Available in iOS SDK 2.1.0 and later.
+ 
+ @note Deprecated in version 2.2.0. Use <optionsWithFetchPolicy:>.
  */
-+ (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy __attribute__((deprecated));
++ (SMRequestOptions *)optionsWithCachePolicy:(SMCachePolicy)cachePolicy __attribute__((deprecated("use optionsWithFetchPolicy:. First deprecated in v2.2.0.")));
 
 /**
  Options that will define a fetch policy for the request it is passed to.

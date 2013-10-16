@@ -1,5 +1,24 @@
 <h2>StackMob iOS SDK Change Log</h2>
 
+<h3>v2.2.0 - October 9, 2013</h3>
+
+**Features**
+
+* 64-bit architecture support (arm64).
+* Save policies. With the `SMSavePolicy` property in `SMCoreDataStore` you can direct save requests to the network only (results are not cached), to the cache only (objects are marked for the next time syncWithServer is called), or the default behavior which is to the network then cache (the current behavior you're used to). See the <a href="https://developer.stackmob.com/ios-sdk/offline-sync-guide#WritingtotheCache">Writing to the Cache</a> section of the Caching and Offline Sync Guide.
+* Remove `primaryKeyField` exceptions. You might have seen the "No attribute which matches to primary key field" exceptions when you have an "All Exceptions" breakpoint set, and we've removed them so they don't interrupt your debugging sessions.
+
+**Fixes**
+
+* When fetching from the cache, object data is properly updated in-memory. This handled the issue of fetching from the cache and not seeing updated server values from the previous save operation.
+* Proper query string encoding for Custom Code requests. Query string parameters with special characters were causing mismatches in OAuth signatures. 
+
+**Update Notes**
+
+* `SMCachePolicy` has been deprecated in favor of `SMFetchPolicy`. The new fetch policies, which work exactly like their cache policy counterparts, are: `SMFetchPolicyCacheOnly`, `SMFetchPolicyNetworkOnly`, `SMFetchPolicyNetworkElseCache`, `SMFetchPolicyCacheElseNetwork`. Notice the word "Try" has been removed from the ...CacheOnly and ...NetworkOnly policies.
+* Other properties/methods such as `cachePolicy` in `SMRequestOptions` are also deprecated for their fetch policy equivalent. This usually means simply replacing the word `cache` with `fetch` to get the updated name.
+* The `apiHost` property of `SMClient` has been deprecated. Use the `getHttpHost` and `getHttpsHost` methods of the `session` property.
+
 
 <h3>v2.1.1 - August 22, 2013</h3>
 

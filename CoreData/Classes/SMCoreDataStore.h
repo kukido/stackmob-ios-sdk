@@ -28,10 +28,10 @@ extern NSString *const SMDirtyQueueNotification;
 extern BOOL SM_CACHE_ENABLED;
 
 typedef NS_ENUM(NSInteger, SMCachePolicy ) {
-    SMCachePolicyTryNetworkOnly __attribute__((deprecated)),
-    SMCachePolicyTryCacheOnly __attribute__((deprecated)),
-    SMCachePolicyTryNetworkElseCache __attribute__((deprecated)),
-    SMCachePolicyTryCacheElseNetwork __attribute__((deprecated))
+    SMCachePolicyTryNetworkOnly __attribute__((deprecated("use SMFetchPolicyNetworkOnly. First deprecated in v2.2.0."))),
+    SMCachePolicyTryCacheOnly __attribute__((deprecated("use SMFetchPolicyCacheOnly. First deprecated in v2.2.0."))),
+    SMCachePolicyTryNetworkElseCache __attribute__((deprecated("use SMFetchPolicyTryNetworkElseCache. First deprecated in v2.2.0."))),
+    SMCachePolicyTryCacheElseNetwork __attribute__((deprecated("use SMFetchPolicyTryCacheElseNetwork. First deprecated in v2.2.0.")))
 };
 
 typedef NS_ENUM(NSInteger, SMFetchPolicy) {
@@ -113,14 +113,16 @@ extern SMMergePolicy const SMMergePolicyServerModifiedWins;
  
  @note Deprecated in version 1.2.0. Use <contextForCurrentThread>.
  */
-@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext __attribute__((deprecated));
+@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext __attribute__((deprecated("use contextForCurrentThread. First deprecated in v1.2.0.")));
 
 /**
  The cache policy to adhere by during fetch requests.
  
  @since Available in iOS SDK 1.2.0 and later.
+ 
+ @note Deprecated in version 2.2.0. Use <fetchPolicy>.
  */
-@property (nonatomic) SMCachePolicy cachePolicy __attribute__((deprecated));
+@property (nonatomic) SMCachePolicy cachePolicy __attribute__((deprecated("use fetchPolicy. First deprecated in v2.2.0.")));
 
 /**
  The policy defining where to fetch requests.
@@ -293,7 +295,7 @@ extern SMMergePolicy const SMMergePolicyServerModifiedWins;
  
  @note Deprecated in version 2.0.0. Use <setDefaultCoreDataMergePolicy:applyToMainThreadContextAndParent:>.
  */
-- (void)setDefaultMergePolicy:(id)mergePolicy applyToMainThreadContextAndParent:(BOOL)apply __deprecated;
+- (void)setDefaultMergePolicy:(id)mergePolicy applyToMainThreadContextAndParent:(BOOL)apply __attribute__((deprecated("use setDefaultCoreDataMergePolicy:applyToMainThreadContextAndParent:. First deprecated in v2.0.0.")));
 
 /**
  Sets the merge policy that is set by default to any context returned from <contextForCurrentThread>.

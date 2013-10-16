@@ -114,7 +114,6 @@ SMMergePolicy const SMMergePolicyServerModifiedWins = ^(NSDictionary *clientObje
         self.globalRequestOptions = [SMRequestOptions options];
         
         /// Set default cache and merge policies
-        //[self setCachePolicy:SMCachePolicyTryNetworkOnly];
         [self setFetchPolicy:SMFetchPolicyNetworkOnly];
         [self setSavePolicy:SMSavePolicyNetworkThenCache];
         
