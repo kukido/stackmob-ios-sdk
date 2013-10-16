@@ -122,7 +122,7 @@
     [valuesToSerialize enumerateKeysAndObjectsUsingBlock:^(id propertyKey, id propertyValue, BOOL *stop) {
         
         NSPropertyDescription *property = [[selfEntity propertiesByName] objectForKey:propertyKey];
-        if ([property isKindOfClass:[NSAttributeDescription class]]) {
+        if (![property isTransient] && [property isKindOfClass:[NSAttributeDescription class]]) {
             NSAttributeDescription *attributeDescription = (NSAttributeDescription *)property;
             NSString *fieldName = [selfEntity SMFieldNameForProperty:property];
             if (attributeDescription.attributeType != NSUndefinedAttributeType) {
@@ -162,7 +162,7 @@
                 [attributesToCheckForDefaultValues removeObject:propertyKey];
             }
         }
-        else if ([property isKindOfClass:[NSRelationshipDescription class]]) {
+        else if (![property isTransient] && [property isKindOfClass:[NSRelationshipDescription class]]) {
             NSRelationshipDescription *relationship = (NSRelationshipDescription *)property;
             if ([relationship isToMany]) {
                 NSMutableArray *relatedObjectDictionaries = [NSMutableArray array];
@@ -251,7 +251,7 @@
     if (attributesToCheckForDefaultValues && [attributesToCheckForDefaultValues count] > 0) {
         [attributesToCheckForDefaultValues enumerateObjectsUsingBlock:^(id key, NSUInteger idx, BOOL *stop) {
             NSAttributeDescription *attribute = [[selfEntity attributesByName] objectForKey:key];
-            if ([attribute defaultValue]) {
+            if (![attribute isTransient] && [attribute defaultValue]) {
                 NSPropertyDescription *property = [[selfEntity propertiesByName] objectForKey:key];
                 
                 if (attribute.attributeType == NSBooleanAttributeType) {

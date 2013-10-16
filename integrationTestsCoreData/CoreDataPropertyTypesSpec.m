@@ -22,6 +22,15 @@
 
 SPEC_BEGIN(CoreDataPropertyTypesSpec)
 
+describe(@"transient properties", ^{
+    // attribute without default value, online
+    // attribute with default value, online
+    // relationship, online
+    // attribute without default value, offline
+    // attribute with default value, offline
+    // relationship, offline
+});
+
 describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
     __block NSManagedObjectContext *moc = nil;
     __block NSManagedObject *camelCaseObject = nil;
