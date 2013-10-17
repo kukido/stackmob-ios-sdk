@@ -19,16 +19,335 @@
 #import "SMCoreDataIntegrationTestHelpers.h"
 #import "SMIntegrationTestHelpers.h"
 #import "Random.h"
+#import "SMTestProperties.h"
 
 SPEC_BEGIN(CoreDataPropertyTypesSpec)
 
-describe(@"transient properties", ^{
-    // attribute without default value, online
-    // attribute with default value, online
-    // relationship, online
-    // attribute without default value, offline
-    // attribute with default value, offline
-    // relationship, offline
+describe(@"transient properties, online", ^{
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        testProperties = [[SMTestProperties alloc] init];
+    });
+    it(@"attribute without default value, is ignored", ^{
+        NSString *todoId = nil;
+        NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        todoId = [todo assignObjectId];
+        [todo setValue:@"new" forKey:@"title"];
+        [todo setValue:@"not saved" forKey:@"transient1"];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
+        
+        // read from database, shouldn't include transient property
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        dispatch_group_enter(group);
+        [[testProperties.client dataStore] readObjectWithId:todoId inSchema:@"todo" options:nil successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            __block BOOL didntSave = NO;
+            if (![object objectForKey:@"transient1"]) {
+                didntSave = YES;
+            }
+            [[theValue(didntSave) should] beYes];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theerror, NSString *objectId, NSString *schema) {
+            [[theerror should] beNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+    it(@"attribute with default value, is ignored", ^{
+        NSString *todoId = nil;
+        NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        todoId = [todo assignObjectId];
+        [todo setValue:@"new" forKey:@"title"];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
+        
+        // read from database, shouldn't include transient property
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        dispatch_group_enter(group);
+        [[testProperties.client dataStore] readObjectWithId:todoId inSchema:@"todo" options:nil successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            __block BOOL didntSave = NO;
+            if (![object objectForKey:@"transient2"]) {
+                didntSave = YES;
+            }
+            [[theValue(didntSave) should] beYes];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theerror, NSString *objectId, NSString *schema) {
+            [[theerror should] beNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+    it(@"relationship, is ignored", ^{
+        NSString *todoId = nil;
+        NSString *randomId = nil;
+        NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        todoId = [todo assignObjectId];
+        [todo setValue:@"new" forKey:@"title"];
+        
+        NSManagedObject *random = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:testProperties.moc];
+        randomId = [random assignObjectId];
+        [random setValue:@"rando" forKey:@"name"];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
+        
+        // Relate
+        [todo setValue:random forKey:@"transientrandom"];
+        
+        error = nil;
+        success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        sleep(SLEEP_TIME);
+        
+        // read from database, shouldn't include transient property
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        dispatch_group_enter(group);
+        [[testProperties.client dataStore] readObjectWithId:todoId inSchema:@"todo" options:nil successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            __block BOOL didntSave = NO;
+            if (![object objectForKey:@"transientrandom"]) {
+                didntSave = YES;
+            }
+            [[theValue(didntSave) should] beYes];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theerror, NSString *objectId, NSString *schema) {
+            [[theerror should] beNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        [[testProperties.client dataStore] readObjectWithId:randomId inSchema:@"random" options:nil successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            __block BOOL didntSave = NO;
+            if (![object objectForKey:@"transienttodo"]) {
+                didntSave = YES;
+            }
+            [[theValue(didntSave) should] beYes];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theerror, NSString *objectId, NSString *schema) {
+            [[theerror should] beNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+});
+
+describe(@"transient properties, offline", ^{
+    __block SMTestProperties *testProperties = nil;
+    beforeEach(^{
+        SM_CACHE_ENABLED = YES;
+        testProperties = [[SMTestProperties alloc] init];
+    });
+    afterEach(^{
+        SM_CACHE_ENABLED = NO;
+    });
+    it(@"attribute without default value, is ignored", ^{
+        // Mock offline
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        NSString *todoId = nil;
+        NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        todoId = [todo assignObjectId];
+        [todo setValue:@"new" forKey:@"title"];
+        [todo setValue:@"not saved" forKey:@"transient1"];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        // sync
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            [[objects should] haveCountOf:1];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
+        
+        // read from database, shouldn't include transient property
+        
+        dispatch_group_enter(group);
+        [[testProperties.client dataStore] readObjectWithId:todoId inSchema:@"todo" options:nil successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            __block BOOL didntSave = NO;
+            if (![object objectForKey:@"transient1"]) {
+                didntSave = YES;
+            }
+            [[theValue(didntSave) should] beYes];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theerror, NSString *objectId, NSString *schema) {
+            [[theerror should] beNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+    it(@"attribute with default value, is ignored", ^{
+        // Mock offline
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        NSString *todoId = nil;
+        NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        todoId = [todo assignObjectId];
+        [todo setValue:@"new" forKey:@"title"];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        // sync
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            [[objects should] haveCountOf:1];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
+        
+        // read from database, shouldn't include transient property
+        
+        dispatch_group_enter(group);
+        [[testProperties.client dataStore] readObjectWithId:todoId inSchema:@"todo" options:nil successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            __block BOOL didntSave = NO;
+            if (![object objectForKey:@"transient2"]) {
+                didntSave = YES;
+            }
+            [[theValue(didntSave) should] beYes];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theerror, NSString *objectId, NSString *schema) {
+            [[theerror should] beNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
+    it(@"relationship, is ignored", ^{
+        // Mock offline
+        NSArray *persistentStores = [testProperties.cds.persistentStoreCoordinator persistentStores];
+        SMIncrementalStore *store = [persistentStores lastObject];
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(NO)];
+        
+        NSString *todoId = nil;
+        NSString *randomId = nil;
+        NSManagedObject *todo = [NSEntityDescription insertNewObjectForEntityForName:@"Todo" inManagedObjectContext:testProperties.moc];
+        todoId = [todo assignObjectId];
+        [todo setValue:@"new" forKey:@"title"];
+        
+        NSManagedObject *random = [NSEntityDescription insertNewObjectForEntityForName:@"Random" inManagedObjectContext:testProperties.moc];
+        randomId = [random assignObjectId];
+        [random setValue:@"rando" forKey:@"name"];
+        
+        // Relate
+        [todo setValue:random forKey:@"transientrandom"];
+        
+        NSError *error = nil;
+        BOOL success = [testProperties.moc saveAndWait:&error];
+        
+        [[theValue(success) should] beYes];
+        
+        // sync
+        dispatch_queue_t queue = dispatch_queue_create("queue", NULL);
+        dispatch_group_t group = dispatch_group_create();
+        
+        [store stub:@selector(SM_checkNetworkAvailability) andReturn:theValue(YES)];
+        
+        [testProperties.cds setSyncCallbackQueue:queue];
+        [testProperties.cds setDefaultSMMergePolicy:SMMergePolicyClientWins];
+        [testProperties.cds setSyncCompletionCallback:^(NSArray *objects) {
+            [[objects should] haveCountOf:2];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        
+        [testProperties.cds syncWithServer];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        
+        sleep(SLEEP_TIME);
+        
+        // read from database, shouldn't include transient property
+        
+        dispatch_group_enter(group);
+        [[testProperties.client dataStore] readObjectWithId:todoId inSchema:@"todo" options:nil successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            __block BOOL didntSave = NO;
+            if (![object objectForKey:@"transientrandom"]) {
+                didntSave = YES;
+            }
+            [[theValue(didntSave) should] beYes];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theerror, NSString *objectId, NSString *schema) {
+            [[theerror should] beNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_enter(group);
+        [[testProperties.client dataStore] readObjectWithId:randomId inSchema:@"random" options:nil successCallbackQueue:queue failureCallbackQueue:queue onSuccess:^(NSDictionary *object, NSString *schema) {
+            __block BOOL didntSave = NO;
+            if (![object objectForKey:@"transienttodo"]) {
+                didntSave = YES;
+            }
+            [[theValue(didntSave) should] beYes];
+            dispatch_group_leave(group);
+        } onFailure:^(NSError *theerror, NSString *objectId, NSString *schema) {
+            [[theerror should] beNil];
+            dispatch_group_leave(group);
+        }];
+        
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    });
 });
 
 describe(@"Testing CRUD on an Entity with an NSDate attribute", ^{
