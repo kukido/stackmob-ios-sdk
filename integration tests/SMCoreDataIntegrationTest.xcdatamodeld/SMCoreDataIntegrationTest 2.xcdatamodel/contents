@@ -79,6 +79,7 @@
         <attribute name="server_id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="yearBorn" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="transienttodo" optional="YES" transient="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Todo" inverseName="transientrandom" inverseEntity="Todo" syncable="YES"/>
     </entity>
     <entity name="Superpower" representedClassName="Superpower" syncable="YES">
         <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
@@ -95,8 +96,11 @@
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" defaultValueString="What!" syncable="YES"/>
         <attribute name="todoId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="transient1" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
+        <attribute name="transient2" optional="YES" transient="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <relationship name="category" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="todo" inverseEntity="Category" syncable="YES"/>
         <relationship name="person" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Person" inverseName="todos" inverseEntity="Person" syncable="YES"/>
+        <relationship name="transientrandom" optional="YES" transient="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Random" inverseName="transienttodo" inverseEntity="Random" syncable="YES"/>
         <relationship name="user3" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="User3" inverseName="todos" inverseEntity="User3" syncable="YES"/>
     </entity>
     <entity name="User3" representedClassName="User3" syncable="YES">
