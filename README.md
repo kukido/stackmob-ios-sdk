@@ -28,10 +28,10 @@ We need to create a Podfile to contain our project's configuration for CocoaPods
 		$ touch Podfile
 		$ open Podfile 
 
-Your Podfile defines your app's dependencies on other libraries. Add StackMob to it.
+Your Podfile defines your app's dependencies on other libraries. Add StackMob to it. The Podfile iOS Deployment Target should match your project's deployment target, being at least 5.0.
 
 		platform :ios, '5.0'
-		pod 'StackMob', '2.2.0'
+		pod 'StackMob'
 
 Now you can use CocoaPods to install your dependencies.
 
