@@ -1590,7 +1590,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -f \"./integration tests/StackMobCredentials.plist\" ]\nthen\ncp ~/Documents/StackMobCredentials.plist ./integration\\ tests/\nfi";
+			shellScript = "if [ ! -f \"./integration tests/StackMobCredentials.plist\" ]\nthen\ncp /usr/share/xcode/StackMobCredentials.plist ./integration\\ tests/\nfi";
 		};
 		E54A72C4A114467D9226113B /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
