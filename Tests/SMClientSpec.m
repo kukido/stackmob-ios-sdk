@@ -38,7 +38,6 @@ describe(@"+defaultClient", ^{
                 client = [[SMClient alloc] initWithAPIVersion:@"1" publicKey:@"XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"];
             });
             it(@"should set the default client", ^{
-                [[SMClient should] beNil];
                 [[[SMClient defaultClient] should] equal:client];
             });
         });
