@@ -64,7 +64,6 @@
 		8CCCE4FA1580389800C38962 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CCCE4F91580389800C38962 /* UIKit.framework */; };
 		8CCCE4FB1580389800C38962 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CCCE4E91580389800C38962 /* Foundation.framework */; };
 		8CCCE5041580389800C38962 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8CCCE5021580389800C38962 /* InfoPlist.strings */; };
-		8CD0DEEA1592409D0087801F /* StackMobCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CD0DEE91592409D0087801F /* StackMobCredentials.plist */; };
 		98370AD3EB434211AE6072C4 /* libPods-cacheAndSyncIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA04C13E09164D2A9F9AFB08 /* libPods-cacheAndSyncIntegrationTests.a */; };
 		C5D09E3636254F06947D27B1 /* libPods-integrationTestsCoreDataDeprecated.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9DA6654A454471392E98D71 /* libPods-integrationTestsCoreDataDeprecated.a */; };
 		C63B76A317FA5499001B6889 /* CoreDataPropertyTypesSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DF4D7EF1631EBF400875E0F /* CoreDataPropertyTypesSpec.m */; };
@@ -170,7 +169,6 @@
 		DE0CC7C115CB6A9000E491C4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DE0CC7BF15CB6A9000E491C4 /* InfoPlist.strings */; };
 		DE0CC7CB15CB6ADF00E491C4 /* Superpower.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0CC7AF15CB605900E491C4 /* Superpower.m */; };
 		DE0CC7CC15CB6AE300E491C4 /* person.json in Resources */ = {isa = PBXBuildFile; fileRef = DE0CC79F15CB5DED00E491C4 /* person.json */; };
-		DE0CC7CE15CB6AFD00E491C4 /* StackMobCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CD0DEE91592409D0087801F /* StackMobCredentials.plist */; };
 		DE0CC7CF15CB6B1F00E491C4 /* SMIntegrationTestHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 619EDF15159292CF0075BB93 /* SMIntegrationTestHelpers.m */; };
 		DE0CC7D515CB6C5B00E491C4 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3E7067158AA67400E22505 /* CoreData.framework */; };
 		DE0CC7D615CB6C6400E491C4 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3E7071158AEBB000E22505 /* CoreLocation.framework */; };
@@ -204,7 +202,6 @@
 		DE288A1E17CC1B8D00CFB8A3 /* SMCoreDataIntegrationTestHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0CC7A515CB5EA200E491C4 /* SMCoreDataIntegrationTestHelpers.m */; };
 		DE288A1F17CC1BDC00CFB8A3 /* SMIntegrationTestHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 619EDF15159292CF0075BB93 /* SMIntegrationTestHelpers.m */; };
 		DE288A2017CC1C4B00CFB8A3 /* SMCoreDataIntegrationTest.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DE0CC7A115CB5E0200E491C4 /* SMCoreDataIntegrationTest.xcdatamodeld */; };
-		DE288A2117CC1C5000CFB8A3 /* StackMobCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CD0DEE91592409D0087801F /* StackMobCredentials.plist */; };
 		DE288A3217CC1DD300CFB8A3 /* SMMergePolicyUpdatesSpec copy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE288A2B17CC1DD200CFB8A3 /* SMMergePolicyUpdatesSpec copy.m */; };
 		DE288A3A17CD4A9A00CFB8A3 /* Superpower.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0CC7AF15CB605900E491C4 /* Superpower.m */; };
 		DE288A3B17CD4A9E00CFB8A3 /* Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D8351CE16C08D6F00814C71 /* Random.m */; };
@@ -235,7 +232,6 @@
 		DE5B5CB417C6CFE70051905F /* placespermissions.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1BDE311682C106009282BA /* placespermissions.json */; };
 		DE5B5CB517C6D0900051905F /* SMCoreDataIntegrationTestHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0CC7A515CB5EA200E491C4 /* SMCoreDataIntegrationTestHelpers.m */; };
 		DE5B5CB617C6D0980051905F /* SMIntegrationTestHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 619EDF15159292CF0075BB93 /* SMIntegrationTestHelpers.m */; };
-		DE5B5CB717C6D11F0051905F /* StackMobCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CD0DEE91592409D0087801F /* StackMobCredentials.plist */; };
 		DE5B5CB817C6D1570051905F /* libstackmob-ios-sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CCCE4E61580389800C38962 /* libstackmob-ios-sdk.a */; };
 		DE64D6011623777900237570 /* SMUserManagedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = DE64D5FF1623777900237570 /* SMUserManagedObject.h */; };
 		DE64D6021623777900237570 /* SMUserManagedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DE64D6001623777900237570 /* SMUserManagedObject.m */; };
@@ -337,6 +333,9 @@
 		DEFA4EC01628A93E00E75101 /* User4.m in Sources */ = {isa = PBXBuildFile; fileRef = DEFA4EBE1628A93E00E75101 /* User4.m */; };
 		DEFA4EC61628D0E700E75101 /* KeychainWrapper.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DEF756B41624918E006FD554 /* KeychainWrapper.h */; };
 		DEFA4EC71628D0F000E75101 /* SMUserManagedObject.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = DE64D5FF1623777900237570 /* SMUserManagedObject.h */; };
+		DEFA6818182064D40047D8F6 /* StackMobCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = DEFA6817182064D40047D8F6 /* StackMobCredentials.plist */; };
+		DEFA6819182064D40047D8F6 /* StackMobCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = DEFA6817182064D40047D8F6 /* StackMobCredentials.plist */; };
+		DEFA681A182064D40047D8F6 /* StackMobCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = DEFA6817182064D40047D8F6 /* StackMobCredentials.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -453,7 +452,6 @@
 		8CCCE4F91580389800C38962 /* UIKit.framework */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		8CCCE5011580389800C38962 /* stackmob-ios-sdkTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "stackmob-ios-sdkTests-Info.plist"; sourceTree = "<group>"; };
 		8CCCE5031580389800C38962 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		8CD0DEE91592409D0087801F /* StackMobCredentials.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = StackMobCredentials.plist; sourceTree = "<group>"; };
 		8CFB465A158135EA005C7C69 /* Pods-stackmob-ios-sdkTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Pods-stackmob-ios-sdkTests.xcconfig"; path = "Pods/Pods-stackmob-ios-sdkTests.xcconfig"; sourceTree = "<group>"; };
 		9FC525CBE9284EC88F303CAD /* Pods-integration tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-integration tests.xcconfig"; path = "Pods/Pods-integration tests.xcconfig"; sourceTree = SOURCE_ROOT; };
 		C6E2DFE017FE2C42007C8D57 /* SMURLRedirect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMURLRedirect.m; sourceTree = "<group>"; };
@@ -633,6 +631,7 @@
 		DEF9B4C415992FA100B1D5AE /* SMUserSessionSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUserSessionSpec.m; sourceTree = "<group>"; };
 		DEFA4EBD1628A93E00E75101 /* User4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User4.h; sourceTree = "<group>"; };
 		DEFA4EBE1628A93E00E75101 /* User4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User4.m; sourceTree = "<group>"; };
+		DEFA6817182064D40047D8F6 /* StackMobCredentials.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = StackMobCredentials.plist; sourceTree = "<group>"; };
 		DF466DF8360C471D88249CB8 /* Pods-cacheAndSyncIntegrationTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-cacheAndSyncIntegrationTests.xcconfig"; path = "Pods/Pods-cacheAndSyncIntegrationTests.xcconfig"; sourceTree = SOURCE_ROOT; };
 		F19DAB09E04A42F58CE99823 /* libPods-integrationTestsCoreData.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-integrationTestsCoreData.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA04C13E09164D2A9F9AFB08 /* libPods-cacheAndSyncIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-cacheAndSyncIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -791,7 +790,7 @@
 				8C33B04E15912B1F00BE2570 /* integration tests-Info.plist */,
 				8C33B04F15912B1F00BE2570 /* InfoPlist.strings */,
 				8C33B05515912B1F00BE2570 /* integration tests-Prefix.pch */,
-				8CD0DEE91592409D0087801F /* StackMobCredentials.plist */,
+				DEFA6817182064D40047D8F6 /* StackMobCredentials.plist */,
 				8C4A8D6F15928D7800FC1319 /* StackMobCredentials.plist.example */,
 			);
 			name = "Supporting Files";
@@ -1206,6 +1205,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8C33B05815912B1F00BE2570 /* Build configuration list for PBXNativeTarget "integration tests" */;
 			buildPhases = (
+				DEFA6816182062FC0047D8F6 /* ShellScript */,
 				8C33B04315912B1F00BE2570 /* Sources */,
 				8C33B04415912B1F00BE2570 /* Frameworks */,
 				8C33B04515912B1F00BE2570 /* Resources */,
@@ -1352,7 +1352,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8C33B05115912B1F00BE2570 /* InfoPlist.strings in Resources */,
-				8CD0DEEA1592409D0087801F /* StackMobCredentials.plist in Resources */,
+				DEFA6818182064D40047D8F6 /* StackMobCredentials.plist in Resources */,
 				6102E0CF1593B60500B0C774 /* people.json in Resources */,
 				61AF93481593EC2600E4279C /* blogposts.json in Resources */,
 				61AF934A1593EC2B00E4279C /* places.json in Resources */,
@@ -1380,10 +1380,10 @@
 			files = (
 				DE0CC7C115CB6A9000E491C4 /* InfoPlist.strings in Resources */,
 				DE0CC7CC15CB6AE300E491C4 /* person.json in Resources */,
-				DE0CC7CE15CB6AFD00E491C4 /* StackMobCredentials.plist in Resources */,
 				DE05E13E15E2BE9000224E4E /* goatPic.jpeg in Resources */,
 				DE1BDE381682C119009282BA /* personpermissions.json in Resources */,
 				DE1BDE391682C120009282BA /* peoplepermissions.json in Resources */,
+				DEFA6819182064D40047D8F6 /* StackMobCredentials.plist in Resources */,
 				DE1BDE3A1682C129009282BA /* placespermissions.json in Resources */,
 				DE1BDE3B1682C151009282BA /* blogpostspermissions.json in Resources */,
 			);
@@ -1394,7 +1394,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE288A0117CC1A0C00CFB8A3 /* InfoPlist.strings in Resources */,
-				DE288A2117CC1C5000CFB8A3 /* StackMobCredentials.plist in Resources */,
 				DE288A4117CD4FD700CFB8A3 /* person.json in Resources */,
 				DE288A4217CD4FDA00CFB8A3 /* personpermissions.json in Resources */,
 				DE288A4317CD4FDE00CFB8A3 /* peoplepermissions.json in Resources */,
@@ -1413,8 +1412,8 @@
 				DE5B5CB117C6CFD60051905F /* personpermissions.json in Resources */,
 				DE5B5CB217C6CFDD0051905F /* peoplepermissions.json in Resources */,
 				DE5B5CB317C6CFE20051905F /* blogpostspermissions.json in Resources */,
+				DEFA681A182064D40047D8F6 /* StackMobCredentials.plist in Resources */,
 				DE5B5CB417C6CFE70051905F /* placespermissions.json in Resources */,
-				DE5B5CB717C6D11F0051905F /* StackMobCredentials.plist in Resources */,
 				DE288A4A17CD579F00CFB8A3 /* goatPic.jpeg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1579,6 +1578,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "cd \"${PROJECT_DIR}/build/${SDK_VERSION}\"\n\nzip -r \"stackmob-ios-sdk-v${SDK_VERSION}.zip\" \"StackMob-v${SDK_VERSION}\"";
+		};
+		DEFA6816182062FC0047D8F6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -f \"./integration tests/StackMobCredentials.plist\" ]\nthen\ncp ~/Documents/StackMobCredentials.plist ./integration\\ tests/\nfi";
 		};
 		E54A72C4A114467D9226113B /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
