@@ -1261,6 +1261,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DE0CC7C615CB6A9000E491C4 /* Build configuration list for PBXNativeTarget "integrationTestsCoreData" */;
 			buildPhases = (
+				DEFA681B182079940047D8F6 /* ShellScript */,
 				DE0CC7B315CB6A9000E491C4 /* Sources */,
 				DE0CC7B415CB6A9000E491C4 /* Frameworks */,
 				DE0CC7B515CB6A9000E491C4 /* Resources */,
@@ -1279,6 +1280,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DE288A0617CC1A0C00CFB8A3 /* Build configuration list for PBXNativeTarget "integrationTestsCoreDataDeprecated" */;
 			buildPhases = (
+				DEFA681E182079E60047D8F6 /* ShellScript */,
 				349322F7DF414B96B8520107 /* Check Pods Manifest.lock */,
 				DE2889F317CC1A0C00CFB8A3 /* Sources */,
 				DE2889F417CC1A0C00CFB8A3 /* Frameworks */,
@@ -1298,6 +1300,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DEAEA4A117C6AFAA004417A5 /* Build configuration list for PBXNativeTarget "cacheAndSyncIntegrationTests" */;
 			buildPhases = (
+				DEFA681D182079D50047D8F6 /* ShellScript */,
 				F1FD957D1BDF452CAC828194 /* Check Pods Manifest.lock */,
 				DEAEA48E17C6AFAA004417A5 /* Sources */,
 				DEAEA48F17C6AFAA004417A5 /* Frameworks */,
@@ -1580,6 +1583,45 @@
 			shellScript = "cd \"${PROJECT_DIR}/build/${SDK_VERSION}\"\n\nzip -r \"stackmob-ios-sdk-v${SDK_VERSION}.zip\" \"StackMob-v${SDK_VERSION}\"";
 		};
 		DEFA6816182062FC0047D8F6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -f \"./integration tests/StackMobCredentials.plist\" ]\nthen\ncp /usr/share/xcode/StackMobCredentials.plist ./integration\\ tests/\nfi";
+		};
+		DEFA681B182079940047D8F6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -f \"./integration tests/StackMobCredentials.plist\" ]\nthen\ncp /usr/share/xcode/StackMobCredentials.plist ./integration\\ tests/\nfi";
+		};
+		DEFA681D182079D50047D8F6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -f \"./integration tests/StackMobCredentials.plist\" ]\nthen\ncp /usr/share/xcode/StackMobCredentials.plist ./integration\\ tests/\nfi";
+		};
+		DEFA681E182079E60047D8F6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
