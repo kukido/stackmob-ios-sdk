@@ -1631,8 +1631,12 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
                 [self SM_populateManagedObject:sm_managedObject withDictionary:serializedObjectDict entity:[sm_managedObject entity]];
             }
             
+            //Create an NSDate from the raw date integer
+            long double convertedValue = [[serializedObjectDict objectForKey:SMLastModDateKey] doubleValue] / 1000.0000;
+            NSDate *serverLastModDate = [NSDate dateWithTimeIntervalSince1970:convertedValue];
+            
             // Obtain cache object representation, or create if needed
-            __block NSManagedObject *cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:remoteID entityName:[[sm_managedObject entity] name] createIfNeeded:YES serverLastModDate:[serializedObjectDict objectForKey:SMLastModDateKey]]];
+            __block NSManagedObject *cacheManagedObject = [self.localManagedObjectContext objectWithID:[self SM_retrieveCacheObjectForRemoteID:remoteID entityName:[[sm_managedObject entity] name] createIfNeeded:YES serverLastModDate:serverLastModDate]];
         
             [self SM_populateCacheManagedObject:cacheManagedObject withDictionary:serializedObjectDict entity:fetchRequest.entity];
             if (SM_CORE_DATA_DEBUG) { DLog(@"Cache mananged object after population:\n%@", cacheManagedObject) }
