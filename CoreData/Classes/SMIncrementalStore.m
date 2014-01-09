@@ -1958,7 +1958,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             } else {
                 optionsForRequest = self.coreDataStore.globalRequestOptions;
             }
-            NSDictionary *serializedObjectDict = [self SM_retrieveAndSerializeObjectWithID:sm_managedObjectReferenceID entity:[sm_managedObject entity] options:optionsForRequest context:context includeRelationships:NO cacheResult:(!self.isSaving && optionsForRequest.cacheResults) error:error];
+            NSDictionary *serializedObjectDict = [self SM_retrieveAndSerializeObjectWithID:sm_managedObjectReferenceID entity:[sm_managedObject entity] options:optionsForRequest context:context includeRelationships:NO cacheResult:NO error:error];
             
             if (error != NULL && *error) {
                 return nil;
@@ -2024,7 +2024,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
             } else {
                 optionsForRequest = self.coreDataStore.globalRequestOptions;
             }
-            NSDictionary *serializedObjectDict = [self SM_retrieveAndSerializeObjectWithID:sm_managedObjectReferenceID entity:[sm_managedObject entity] options:optionsForRequest context:context includeRelationships:NO cacheResult:optionsForRequest.cacheResults error:error];
+            NSDictionary *serializedObjectDict = [self SM_retrieveAndSerializeObjectWithID:sm_managedObjectReferenceID entity:[sm_managedObject entity] options:optionsForRequest context:context includeRelationships:NO cacheResult:NO error:error];
             
             if (error != NULL && *error) {
                 return nil;
